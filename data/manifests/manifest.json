@@ -1,0 +1,228 @@
+{
+  "generated_at": "2026-10-07T11:08:45.876270+05:30",
+  "total_equities": 6,
+  "equities": {
+    "TCS.NS": {
+      "symbol": "TCS.NS",
+      "raw_path": "D:\\Downloads\\Stock_SenseAi\\data\\raw\\TCS.NS.csv",
+      "manifest": {
+        "symbol": "TCS.NS",
+        "clean_symbol": "TCS_NS",
+        "source": "Yahoo Finance",
+        "provider_package": "yfinance",
+        "interval": "1d",
+        "retrieval_timestamp": "2026-10-07T11:08:42.240264+05:30",
+        "start_date": "2021-10-07",
+        "end_date": "2026-10-07",
+        "row_count": 1241,
+        "columns": [
+          "Date",
+          "Open",
+          "High",
+          "Low",
+          "Close",
+          "Volume"
+        ],
+        "validation": {
+          "missing_values": 0,
+          "duplicate_rows": 0,
+          "invalid_ohlc_rows": 0,
+          "is_chronologically_sorted": true,
+          "is_valid": true,
+          "issues": []
+        },
+        "history_limitation_note": "Standard mature equity series (~5 years of trading sessions)."
+      },
+      "rows": 1241,
+      "processed_rows": 1241,
+      "start_date": "2021-10-07",
+      "end_date": "2026-10-07",
+      "is_valid": true
+    },
+    "INFY.NS": {
+      "symbol": "INFY.NS",
+      "raw_path": "D:\\Downloads\\Stock_SenseAi\\data\\raw\\INFY.NS.csv",
+      "manifest": {
+        "symbol": "INFY.NS",
+        "clean_symbol": "INFY_NS",
+        "source": "Yahoo Finance",
+        "provider_package": "yfinance",
+        "interval": "1d",
+        "retrieval_timestamp": "2026-10-07T11:08:42.932055+05:30",
+        "start_date": "2021-10-07",
+        "end_date": "2026-10-07",
+        "row_count": 1241,
+        "columns": [
+          "Date",
+          "Open",
+          "High",
+          "Low",
+          "Close",
+          "Volume"
+        ],
+        "validation": {
+          "missing_values": 0,
+          "duplicate_rows": 0,
+          "invalid_ohlc_rows": 0,
+          "is_chronologically_sorted": true,
+          "is_valid": true,
+          "issues": []
+        },
+        "history_limitation_note": "Standard mature equity series (~5 years of trading sessions)."
+      },
+      "rows": 1241,
+      "processed_rows": 1241,
+      "start_date": "2021-10-07",
+      "end_date": "2026-10-07",
+      "is_valid": true
+    },
+    "HDFCBANK.NS": {
+      "symbol": "HDFCBANK.NS",
+      "raw_path": "D:\\Downloads\\Stock_SenseAi\\data\\raw\\HDFCBANK.NS.csv",
+      "manifest": {
+        "symbol": "HDFCBANK.NS",
+        "clean_symbol": "HDFCBANK_NS",
+        "source": "Yahoo Finance",
+        "provider_package": "yfinance",
+        "interval": "1d",
+        "retrieval_timestamp": "2026-10-07T11:08:43.833384+05:30",
+        "start_date": "2021-10-07",
+        "end_date": "2026-10-07",
+        "row_count": 1241,
+        "columns": [
+          "Date",
+          "Open",
+          "High",
+          "Low",
+          "Close",
+          "Volume"
+        ],
+        "validation": {
+          "missing_values": 0,
+          "duplicate_rows": 0,
+          "invalid_ohlc_rows": 0,
+          "is_chronologically_sorted": true,
+          "is_valid": true,
+          "issues": []
+        },
+        "history_limitation_note": "Standard mature equity series (~5 years of trading sessions)."
+      },
+      "rows": 1241,
+      "processed_rows": 1241,
+      "start_date": "2021-10-07",
+      "end_date": "2026-10-07",
+      "is_valid": true
+    },
+    "ICICIBANK.NS": {
+      "symbol": "ICICIBANK.NS",
+      "raw_path": "D:\\Downloads\\Stock_SenseAi\\data\\raw\\ICICIBANK.NS.csv",
+      "manifest": {
+        "symbol": "ICICIBANK.NS",
+        "clean_symbol": "ICICIBANK_NS",
+        "source": "Yahoo Finance",
+        "provider_package": "yfinance",
+        "interval": "1d",
+        "retrieval_timestamp": "2026-10-07T11:08:44.887583+05:30",
+        "start_date": "2021-10-07",
+        "end_date": "2026-10-07",
+        "row_count": 1241,
+        "columns": [
+          "Date",
+          "Open",
+          "High",
+          "Low",
+          "Close",
+          "Volume"
+        ],
+        "validation": {
+          "missing_values": 0,
+          "duplicate_rows": 0,
+          "invalid_ohlc_rows": 0,
+          "is_chronologically_sorted": true,
+          "is_valid": true,
+          "issues": []
+        },
+        "history_limitation_note": "Standard mature equity series (~5 years of trading sessions)."
+      },
+      "rows": 1241,
+      "processed_rows": 1241,
+      "start_date": "2021-10-07",
+      "end_date": "2026-10-07",
+      "is_valid": true
+    },
+    "RELIANCE.NS": {
+      "symbol": "RELIANCE.NS",
+      "raw_path": "D:\\Downloads\\Stock_SenseAi\\data\\raw\\RELIANCE.NS.csv",
+      "manifest": {
+        "symbol": "RELIANCE.NS",
+        "clean_symbol": "RELIANCE_NS",
+        "source": "Yahoo Finance",
+        "provider_package": "yfinance",
+        "interval": "1d",
+        "retrieval_timestamp": "2026-10-07T11:08:45.495415+05:30",
+        "start_date": "2021-10-07",
+        "end_date": "2026-10-07",
+        "row_count": 1241,
+        "columns": [
+          "Date",
+          "Open",
+          "High",
+          "Low",
+          "Close",
+          "Volume"
+        ],
+        "validation": {
+          "missing_values": 0,
+          "duplicate_rows": 0,
+          "invalid_ohlc_rows": 0,
+          "is_chronologically_sorted": true,
+          "is_valid": true,
+          "issues": []
+        },
+        "history_limitation_note": "Standard mature equity series (~5 years of trading sessions)."
+      },
+      "rows": 1241,
+      "processed_rows": 1241,
+      "start_date": "2021-10-07",
+      "end_date": "2026-10-07",
+      "is_valid": true
+    },
+    "ATHERENERG.NS": {
+      "symbol": "ATHERENERG.NS",
+      "raw_path": "D:\\Downloads\\Stock_SenseAi\\data\\raw\\ATHERENERG.NS.csv",
+      "manifest": {
+        "symbol": "ATHERENERG.NS",
+        "clean_symbol": "ATHERENERG_NS",
+        "source": "Yahoo Finance",
+        "provider_package": "yfinance",
+        "interval": "1d",
+        "retrieval_timestamp": "2026-10-07T11:08:45.838971+05:30",
+        "start_date": "2025-05-06",
+        "end_date": "2026-10-07",
+        "row_count": 360,
+        "columns": [
+          "Date",
+          "Open",
+          "High",
+          "Low",
+          "Close",
+          "Volume"
+        ],
+        "validation": {
+          "missing_values": 0,
+          "duplicate_rows": 0,
+          "invalid_ohlc_rows": 0,
+          "is_chronologically_sorted": true,
+          "is_valid": true,
+          "issues": []
+        },
+        "history_limitation_note": "Ather Energy Ltd (ATHERENERG.NS) was listed on the NSE in May 2025. Available market history is naturally limited to ~360 trading sessions. No synthetic historical data was fabricated to maintain strict empirical integrity."
+      },
+      "rows": 360,
+      "processed_rows": 360,
+      "start_date": "2025-05-06",
+      "end_date": "2026-10-07",
+      "is_valid": true
+    }
+  }
+}

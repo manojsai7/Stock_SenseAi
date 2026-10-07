@@ -1,0 +1,26 @@
+experiment_id,stock,model,window_size,features,epochs,batch_size,learning_rate,mae,rmse,mape,directional_accuracy,timestamp
+exp_001_baseline,TCS.NS,Naive Persistence,30,Close,0,0,0,34.12,48.76,1.41,52.72,2026-10-06 20:07:41
+exp_002_lstm,TCS.NS,Standard LSTM (TensorFlow),30,"Open,High,Low,Close,Volume,MA20",35,32,0.001,235.65,253.6,10.26,45.11,2026-10-06 20:08:04
+exp_003_cnn_lstm,TCS.NS,CNN-LSTM Hybrid (TensorFlow),30,"Open,High,Low,Close,Volume,MA20",35,32,0.001,432.3,475.4,19.01,43.48,2026-10-06 20:08:22
+exp_004_window20,TCS.NS,CNN-LSTM (Window=20),20,"Open,High,Low,Close,Volume,MA20",25,32,0.001,312.45,337.69,13.69,45.11,2026-10-06 20:08:35
+exp_005_window60,TCS.NS,CNN-LSTM (Window=60),60,"Open,High,Low,Close,Volume,MA20",25,32,0.001,383.19,415.72,16.8,45.11,2026-10-06 20:08:52
+exp_001_baseline,RELIANCE.NS,Naive Persistence,30,Close,0,0,0,14.17,18.52,1.06,44.02,2026-10-06 20:08:53
+exp_002_lstm,RELIANCE.NS,Standard LSTM (TensorFlow),30,"Open,High,Low,Close,Volume,MA20",35,32,0.001,18.28,23.34,1.36,54.35,2026-10-06 20:09:17
+exp_003_cnn_lstm,RELIANCE.NS,CNN-LSTM Hybrid (TensorFlow),30,"Open,High,Low,Close,Volume,MA20",35,32,0.001,19.28,24.22,1.44,52.72,2026-10-06 20:09:31
+exp_004_window20,RELIANCE.NS,CNN-LSTM (Window=20),20,"Open,High,Low,Close,Volume,MA20",25,32,0.001,22.84,28.86,1.68,52.17,2026-10-06 20:09:44
+exp_005_window60,RELIANCE.NS,CNN-LSTM (Window=60),60,"Open,High,Low,Close,Volume,MA20",25,32,0.001,23.83,29.7,1.75,52.17,2026-10-06 20:10:03
+exp_001_baseline,INFY.NS,Naive Persistence,30,Close,0,0,0,18.16,25.83,1.51,57.07,2026-10-06 20:10:03
+exp_002_lstm,INFY.NS,Standard LSTM (TensorFlow),30,"Open,High,Low,Close,Volume,MA20",35,32,0.001,35.67,47.43,3.02,51.63,2026-10-06 20:10:26
+exp_003_cnn_lstm,INFY.NS,CNN-LSTM Hybrid (TensorFlow),30,"Open,High,Low,Close,Volume,MA20",35,32,0.001,28.5,38.69,2.4,55.43,2026-10-06 20:10:43
+exp_004_window20,INFY.NS,CNN-LSTM (Window=20),20,"Open,High,Low,Close,Volume,MA20",25,32,0.001,62.91,80.04,5.47,57.07,2026-10-06 20:10:57
+exp_005_window60,INFY.NS,CNN-LSTM (Window=60),60,"Open,High,Low,Close,Volume,MA20",25,32,0.001,39.48,50.97,3.34,54.35,2026-10-06 20:11:15
+exp_001_baseline,HDFCBANK.NS,Naive Persistence,30,Close,0,0,0,8.97,12.18,1.14,51.09,2026-10-06 20:11:22
+exp_002_lstm,HDFCBANK.NS,Standard LSTM (TensorFlow),30,"Open,High,Low,Close,Volume,MA20",35,32,0.001,11.45,15.25,1.46,51.63,2026-10-06 20:11:40
+exp_003_cnn_lstm,HDFCBANK.NS,CNN-LSTM Hybrid (TensorFlow),30,"Open,High,Low,Close,Volume,MA20",35,32,0.001,10.27,13.49,1.3,51.63,2026-10-06 20:11:59
+exp_004_window20,HDFCBANK.NS,CNN-LSTM (Window=20),20,"Open,High,Low,Close,Volume,MA20",25,32,0.001,10.11,13.66,1.27,60.33,2026-10-06 20:12:13
+exp_005_window60,HDFCBANK.NS,CNN-LSTM (Window=60),60,"Open,High,Low,Close,Volume,MA20",25,32,0.001,12.49,16.34,1.54,63.04,2026-10-06 20:12:35
+exp_001_baseline,ICICIBANK.NS,Naive Persistence,30,Close,0,0,0,13.28,17.11,0.99,48.91,2026-10-06 20:12:38
+exp_002_lstm,ICICIBANK.NS,Standard LSTM (TensorFlow),30,"Open,High,Low,Close,Volume,MA20",35,32,0.001,23.61,29.29,1.76,47.28,2026-10-06 20:12:55
+exp_003_cnn_lstm,ICICIBANK.NS,CNN-LSTM Hybrid (TensorFlow),30,"Open,High,Low,Close,Volume,MA20",35,32,0.001,38.02,46.61,2.89,47.28,2026-10-06 20:13:09
+exp_004_window20,ICICIBANK.NS,CNN-LSTM (Window=20),20,"Open,High,Low,Close,Volume,MA20",25,32,0.001,54.47,60.15,3.99,50.0,2026-10-06 20:13:27
+exp_005_window60,ICICIBANK.NS,CNN-LSTM (Window=60),60,"Open,High,Low,Close,Volume,MA20",25,32,0.001,52.77,57.81,3.86,50.0,2026-10-06 20:13:51

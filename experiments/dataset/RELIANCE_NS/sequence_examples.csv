@@ -1,0 +1,7 @@
+split,sample_idx,input_start_date,input_end_date,window_timesteps,last_input_close,target_close_t_plus_1,target_delta_inr,actual_direction
+train,0,2021-11-04,2021-12-17,30,1080.1173,1050.9967,-29.12,DOWN
+train,1,2021-11-08,2021-12-20,30,1050.9967,1066.6415,15.64,UP
+train,2,2021-11-09,2021-12-21,30,1066.6415,1091.9547,25.31,UP
+test,0,2025-12-03,2026-01-14,30,1458.8,1458.8,0.0,UP
+test,1,2025-12-04,2026-01-15,30,1458.8,1457.9,-0.9,DOWN
+test,2,2025-12-05,2026-01-16,30,1457.9,1413.6,-44.3,DOWN

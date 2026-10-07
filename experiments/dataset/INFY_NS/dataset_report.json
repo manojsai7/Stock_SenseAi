@@ -1,0 +1,79 @@
+{
+  "symbol": "INFY.NS",
+  "clean_symbol": "INFY_NS",
+  "raw_observations": 1241,
+  "ma20_warmup_dropped": 19,
+  "unpaired_last_row_dropped": 1,
+  "usable_observations": 1221,
+  "total_sequences": 1192,
+  "train_sequences": 825,
+  "validation_sequences": 183,
+  "test_sequences": 184,
+  "window_size": 30,
+  "feature_count": 6,
+  "feature_names": [
+    "Open",
+    "High",
+    "Low",
+    "Close",
+    "Volume",
+    "MA20"
+  ],
+  "target_definition": "Next trading day Close (Close_t+1)",
+  "shapes": {
+    "X_train": [
+      825,
+      30,
+      6
+    ],
+    "y_train": [
+      825
+    ],
+    "X_val": [
+      183,
+      30,
+      6
+    ],
+    "y_val": [
+      183
+    ],
+    "X_test": [
+      184,
+      30,
+      6
+    ],
+    "y_test": [
+      184
+    ]
+  },
+  "first_target_date": "2021-12-17",
+  "last_target_date": "2026-10-06",
+  "split_ratios": {
+    "train": 0.7,
+    "validation": 0.15,
+    "test": 0.15
+  },
+  "scaler_parameters": {
+    "feature_min": [
+      1225.949951171875,
+      1230.0,
+      1185.300048828125,
+      1223.4000244140625,
+      0.0,
+      1250.5174987792968
+    ],
+    "feature_max": [
+      1995.449951171875,
+      2006.449951171875,
+      1977.5999755859373,
+      1999.699951171875,
+      53171705.0,
+      1940.2425048828125
+    ],
+    "target_min": 1223.4000244140625,
+    "target_max": 1999.699951171875
+  },
+  "is_short_history": false,
+  "history_note": "Standard mature 5-year series (~1192 sequences).",
+  "created_at": "2026-10-07T11:29:52.089685+05:30"
+}

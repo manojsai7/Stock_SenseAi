@@ -1,0 +1,477 @@
+{
+  "symbol": "RELIANCE.NS",
+  "trained_at": "2026-10-06T20:10:03.503220",
+  "deep_learning_framework": "TensorFlow 2.17+ with Keras API",
+  "model_version": "v2.0 Defensible",
+  "window_size": 30,
+  "prediction_horizon": "Next Trading Day",
+  "features": [
+    "Open",
+    "High",
+    "Low",
+    "Close",
+    "Volume",
+    "MA20"
+  ],
+  "architecture": {
+    "framework": "TensorFlow / Keras",
+    "layers": [
+      "Input(shape=(30, 6))",
+      "Conv1D(filters=64, kernel_size=3, padding='same', activation='relu')",
+      "MaxPooling1D(pool_size=2)",
+      "LSTM(units=50, return_sequences=False)",
+      "Dropout(rate=0.2)",
+      "Dense(units=32)",
+      "LeakyReLU(negative_slope=0.1)",
+      "Dense(units=1, activation='linear')"
+    ]
+  },
+  "dataset_summary": {
+    "total_samples": 1221,
+    "train_samples": 854,
+    "val_samples": 183,
+    "test_samples": 184
+  },
+  "metrics_comparison": {
+    "naive": {
+      "mae": 14.17,
+      "rmse": 18.52,
+      "mape": 1.06,
+      "directional_accuracy": 44.02
+    },
+    "lstm": {
+      "mae": 18.28,
+      "rmse": 23.34,
+      "mape": 1.36,
+      "directional_accuracy": 54.35
+    },
+    "cnn_lstm": {
+      "mae": 19.28,
+      "rmse": 24.22,
+      "mape": 1.44,
+      "directional_accuracy": 52.72
+    }
+  },
+  "test_trajectory": [
+    {
+      "date": "2026-07-14",
+      "actual": 1295.5,
+      "naive": 1293.0,
+      "lstm": 1293.98,
+      "cnn_lstm": 1295.38
+    },
+    {
+      "date": "2026-07-15",
+      "actual": 1296.6,
+      "naive": 1295.5,
+      "lstm": 1295.88,
+      "cnn_lstm": 1297.95
+    },
+    {
+      "date": "2026-07-16",
+      "actual": 1327.2,
+      "naive": 1296.6,
+      "lstm": 1296.61,
+      "cnn_lstm": 1295.59
+    },
+    {
+      "date": "2026-07-17",
+      "actual": 1323.1,
+      "naive": 1327.2,
+      "lstm": 1303.99,
+      "cnn_lstm": 1304.13
+    },
+    {
+      "date": "2026-07-20",
+      "actual": 1303.7,
+      "naive": 1323.1,
+      "lstm": 1313.82,
+      "cnn_lstm": 1314.21
+    },
+    {
+      "date": "2026-07-21",
+      "actual": 1288.6,
+      "naive": 1303.7,
+      "lstm": 1313.37,
+      "cnn_lstm": 1310.92
+    },
+    {
+      "date": "2026-07-22",
+      "actual": 1272.2,
+      "naive": 1288.6,
+      "lstm": 1303.27,
+      "cnn_lstm": 1301.54
+    },
+    {
+      "date": "2026-07-23",
+      "actual": 1278.0,
+      "naive": 1272.2,
+      "lstm": 1289.47,
+      "cnn_lstm": 1290.82
+    },
+    {
+      "date": "2026-07-24",
+      "actual": 1280.0,
+      "naive": 1278.0,
+      "lstm": 1277.69,
+      "cnn_lstm": 1283.29
+    },
+    {
+      "date": "2026-07-27",
+      "actual": 1267.7,
+      "naive": 1280.0,
+      "lstm": 1278.92,
+      "cnn_lstm": 1288.32
+    },
+    {
+      "date": "2026-07-28",
+      "actual": 1275.9,
+      "naive": 1267.7,
+      "lstm": 1274.57,
+      "cnn_lstm": 1280.82
+    },
+    {
+      "date": "2026-07-29",
+      "actual": 1292.9,
+      "naive": 1275.9,
+      "lstm": 1274.35,
+      "cnn_lstm": 1280.11
+    },
+    {
+      "date": "2026-07-30",
+      "actual": 1307.8,
+      "naive": 1292.9,
+      "lstm": 1279.76,
+      "cnn_lstm": 1284.05
+    },
+    {
+      "date": "2026-07-31",
+      "actual": 1319.0,
+      "naive": 1307.8,
+      "lstm": 1290.77,
+      "cnn_lstm": 1294.47
+    },
+    {
+      "date": "2026-08-03",
+      "actual": 1290.9,
+      "naive": 1319.0,
+      "lstm": 1304.09,
+      "cnn_lstm": 1303.32
+    },
+    {
+      "date": "2026-08-04",
+      "actual": 1280.0,
+      "naive": 1290.9,
+      "lstm": 1304.85,
+      "cnn_lstm": 1301.84
+    },
+    {
+      "date": "2026-08-05",
+      "actual": 1325.0,
+      "naive": 1280.0,
+      "lstm": 1295.85,
+      "cnn_lstm": 1287.72
+    },
+    {
+      "date": "2026-08-06",
+      "actual": 1334.8,
+      "naive": 1325.0,
+      "lstm": 1298.65,
+      "cnn_lstm": 1298.89
+    },
+    {
+      "date": "2026-08-07",
+      "actual": 1327.3,
+      "naive": 1334.8,
+      "lstm": 1312.13,
+      "cnn_lstm": 1313.09
+    },
+    {
+      "date": "2026-08-10",
+      "actual": 1323.9,
+      "naive": 1327.3,
+      "lstm": 1320.57,
+      "cnn_lstm": 1320.73
+    },
+    {
+      "date": "2026-08-11",
+      "actual": 1329.0,
+      "naive": 1323.9,
+      "lstm": 1322.92,
+      "cnn_lstm": 1319.62
+    },
+    {
+      "date": "2026-08-12",
+      "actual": 1317.0,
+      "naive": 1329.0,
+      "lstm": 1323.69,
+      "cnn_lstm": 1323.21
+    },
+    {
+      "date": "2026-08-13",
+      "actual": 1310.0,
+      "naive": 1317.0,
+      "lstm": 1322.38,
+      "cnn_lstm": 1321.9
+    },
+    {
+      "date": "2026-08-14",
+      "actual": 1316.0,
+      "naive": 1310.0,
+      "lstm": 1317.1,
+      "cnn_lstm": 1318.52
+    },
+    {
+      "date": "2026-08-17",
+      "actual": 1322.0,
+      "naive": 1316.0,
+      "lstm": 1313.94,
+      "cnn_lstm": 1317.03
+    },
+    {
+      "date": "2026-08-18",
+      "actual": 1311.0,
+      "naive": 1322.0,
+      "lstm": 1315.42,
+      "cnn_lstm": 1320.75
+    },
+    {
+      "date": "2026-08-19",
+      "actual": 1313.2,
+      "naive": 1311.0,
+      "lstm": 1313.95,
+      "cnn_lstm": 1319.06
+    },
+    {
+      "date": "2026-08-20",
+      "actual": 1316.0,
+      "naive": 1313.2,
+      "lstm": 1313.1,
+      "cnn_lstm": 1318.23
+    },
+    {
+      "date": "2026-08-21",
+      "actual": 1309.8,
+      "naive": 1316.0,
+      "lstm": 1313.25,
+      "cnn_lstm": 1318.4
+    },
+    {
+      "date": "2026-08-24",
+      "actual": 1317.0,
+      "naive": 1309.8,
+      "lstm": 1312.75,
+      "cnn_lstm": 1316.89
+    },
+    {
+      "date": "2026-08-25",
+      "actual": 1298.0,
+      "naive": 1317.0,
+      "lstm": 1311.44,
+      "cnn_lstm": 1315.59
+    },
+    {
+      "date": "2026-08-26",
+      "actual": 1282.2,
+      "naive": 1298.0,
+      "lstm": 1308.75,
+      "cnn_lstm": 1312.41
+    },
+    {
+      "date": "2026-08-27",
+      "actual": 1287.0,
+      "naive": 1282.2,
+      "lstm": 1301.51,
+      "cnn_lstm": 1302.72
+    },
+    {
+      "date": "2026-08-28",
+      "actual": 1277.0,
+      "naive": 1287.0,
+      "lstm": 1293.59,
+      "cnn_lstm": 1297.34
+    },
+    {
+      "date": "2026-08-31",
+      "actual": 1309.0,
+      "naive": 1277.0,
+      "lstm": 1285.23,
+      "cnn_lstm": 1281.69
+    },
+    {
+      "date": "2026-09-01",
+      "actual": 1313.1,
+      "naive": 1309.0,
+      "lstm": 1288.05,
+      "cnn_lstm": 1293.46
+    },
+    {
+      "date": "2026-09-02",
+      "actual": 1302.5,
+      "naive": 1313.1,
+      "lstm": 1295.35,
+      "cnn_lstm": 1301.3
+    },
+    {
+      "date": "2026-09-03",
+      "actual": 1322.0,
+      "naive": 1302.5,
+      "lstm": 1301.21,
+      "cnn_lstm": 1305.14
+    },
+    {
+      "date": "2026-09-04",
+      "actual": 1309.5,
+      "naive": 1322.0,
+      "lstm": 1308.25,
+      "cnn_lstm": 1309.02
+    },
+    {
+      "date": "2026-09-07",
+      "actual": 1294.9,
+      "naive": 1309.5,
+      "lstm": 1311.56,
+      "cnn_lstm": 1311.09
+    },
+    {
+      "date": "2026-09-08",
+      "actual": 1279.0,
+      "naive": 1294.9,
+      "lstm": 1305.51,
+      "cnn_lstm": 1304.68
+    },
+    {
+      "date": "2026-09-09",
+      "actual": 1274.0,
+      "naive": 1279.0,
+      "lstm": 1294.6,
+      "cnn_lstm": 1294.43
+    },
+    {
+      "date": "2026-09-10",
+      "actual": 1257.5,
+      "naive": 1274.0,
+      "lstm": 1284.62,
+      "cnn_lstm": 1287.56
+    },
+    {
+      "date": "2026-09-11",
+      "actual": 1257.5,
+      "naive": 1257.5,
+      "lstm": 1272.13,
+      "cnn_lstm": 1277.39
+    },
+    {
+      "date": "2026-09-14",
+      "actual": 1235.3,
+      "naive": 1257.5,
+      "lstm": 1264.39,
+      "cnn_lstm": 1274.62
+    },
+    {
+      "date": "2026-09-15",
+      "actual": 1240.0,
+      "naive": 1235.3,
+      "lstm": 1254.32,
+      "cnn_lstm": 1259.96
+    },
+    {
+      "date": "2026-09-16",
+      "actual": 1243.9,
+      "naive": 1240.0,
+      "lstm": 1248.57,
+      "cnn_lstm": 1256.16
+    },
+    {
+      "date": "2026-09-17",
+      "actual": 1226.4,
+      "naive": 1243.9,
+      "lstm": 1246.29,
+      "cnn_lstm": 1254.12
+    },
+    {
+      "date": "2026-09-18",
+      "actual": 1247.4,
+      "naive": 1226.4,
+      "lstm": 1240.92,
+      "cnn_lstm": 1244.89
+    },
+    {
+      "date": "2026-09-21",
+      "actual": 1240.4,
+      "naive": 1247.4,
+      "lstm": 1240.7,
+      "cnn_lstm": 1245.72
+    },
+    {
+      "date": "2026-09-22",
+      "actual": 1248.0,
+      "naive": 1240.4,
+      "lstm": 1242.69,
+      "cnn_lstm": 1245.3
+    },
+    {
+      "date": "2026-09-23",
+      "actual": 1219.2,
+      "naive": 1248.0,
+      "lstm": 1244.99,
+      "cnn_lstm": 1246.09
+    },
+    {
+      "date": "2026-09-24",
+      "actual": 1226.0,
+      "naive": 1219.2,
+      "lstm": 1238.45,
+      "cnn_lstm": 1234.92
+    },
+    {
+      "date": "2026-09-25",
+      "actual": 1197.6,
+      "naive": 1226.0,
+      "lstm": 1229.94,
+      "cnn_lstm": 1227.39
+    },
+    {
+      "date": "2026-09-28",
+      "actual": 1182.0,
+      "naive": 1197.6,
+      "lstm": 1219.73,
+      "cnn_lstm": 1218.72
+    },
+    {
+      "date": "2026-09-29",
+      "actual": 1187.0,
+      "naive": 1182.0,
+      "lstm": 1204.53,
+      "cnn_lstm": 1200.79
+    },
+    {
+      "date": "2026-09-30",
+      "actual": 1167.7,
+      "naive": 1187.0,
+      "lstm": 1194.81,
+      "cnn_lstm": 1198.27
+    },
+    {
+      "date": "2026-10-01",
+      "actual": 1167.7,
+      "naive": 1167.7,
+      "lstm": 1183.05,
+      "cnn_lstm": 1186.53
+    },
+    {
+      "date": "2026-10-02",
+      "actual": 1186.4,
+      "naive": 1167.7,
+      "lstm": 1175.56,
+      "cnn_lstm": 1185.71
+    },
+    {
+      "date": "2026-10-05",
+      "actual": 1218.0,
+      "naive": 1186.4,
+      "lstm": 1177.96,
+      "cnn_lstm": 1183.63
+    }
+  ]
+}

@@ -1,0 +1,20 @@
+{
+  "symbol": "ATHERENERG.NS",
+  "total_rows": 360,
+  "start_date": "2025-05-06",
+  "end_date": "2026-10-07",
+  "null_values_per_column": {
+    "Date": 0,
+    "Open": 0,
+    "High": 0,
+    "Low": 0,
+    "Close": 0,
+    "Volume": 0,
+    "MA20": 19,
+    "Return": 1,
+    "Rolling_Volatility": 20
+  },
+  "duplicate_dates": 0,
+  "ohlc_logical_errors": 0,
+  "data_limitations": "Listed on NSE in May 2025. Data population restricted to post-listing sessions (~360 trading days). Shorter historical horizon than mature peers; zero synthetic rows fabricated."
+}

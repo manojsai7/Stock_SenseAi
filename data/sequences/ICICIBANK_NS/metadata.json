@@ -1,0 +1,79 @@
+{
+  "symbol": "ICICIBANK.NS",
+  "clean_symbol": "ICICIBANK_NS",
+  "raw_observations": 1241,
+  "ma20_warmup_dropped": 19,
+  "unpaired_last_row_dropped": 1,
+  "usable_observations": 1221,
+  "total_sequences": 1192,
+  "train_sequences": 825,
+  "validation_sequences": 183,
+  "test_sequences": 184,
+  "window_size": 30,
+  "feature_count": 6,
+  "feature_names": [
+    "Open",
+    "High",
+    "Low",
+    "Close",
+    "Volume",
+    "MA20"
+  ],
+  "target_definition": "Next trading day Close (Close_t+1)",
+  "shapes": {
+    "X_train": [
+      825,
+      30,
+      6
+    ],
+    "y_train": [
+      825
+    ],
+    "X_val": [
+      183,
+      30,
+      6
+    ],
+    "y_val": [
+      183
+    ],
+    "X_test": [
+      184,
+      30,
+      6
+    ],
+    "y_test": [
+      184
+    ]
+  },
+  "first_target_date": "2021-12-17",
+  "last_target_date": "2026-10-06",
+  "split_ratios": {
+    "train": 0.7,
+    "validation": 0.15,
+    "test": 0.15
+  },
+  "scaler_parameters": {
+    "feature_min": [
+      643.2999877929688,
+      667.0,
+      642.1500244140625,
+      653.75,
+      0.0,
+      698.5374969482422
+    ],
+    "feature_max": [
+      1436.0,
+      1436.0,
+      1404.699951171875,
+      1416.5,
+      73257767.0,
+      1342.0800048828123
+    ],
+    "target_min": 653.75,
+    "target_max": 1424.4000244140625
+  },
+  "is_short_history": false,
+  "history_note": "Standard mature 5-year series (~1192 sequences).",
+  "created_at": "2026-10-07T11:28:56.031139+05:30"
+}

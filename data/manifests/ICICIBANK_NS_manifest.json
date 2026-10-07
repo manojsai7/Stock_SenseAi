@@ -1,0 +1,28 @@
+{
+  "symbol": "ICICIBANK.NS",
+  "clean_symbol": "ICICIBANK_NS",
+  "source": "Yahoo Finance",
+  "provider_package": "yfinance",
+  "interval": "1d",
+  "retrieval_timestamp": "2026-10-07T11:08:44.887583+05:30",
+  "start_date": "2021-10-07",
+  "end_date": "2026-10-07",
+  "row_count": 1241,
+  "columns": [
+    "Date",
+    "Open",
+    "High",
+    "Low",
+    "Close",
+    "Volume"
+  ],
+  "validation": {
+    "missing_values": 0,
+    "duplicate_rows": 0,
+    "invalid_ohlc_rows": 0,
+    "is_chronologically_sorted": true,
+    "is_valid": true,
+    "issues": []
+  },
+  "history_limitation_note": "Standard mature equity series (~5 years of trading sessions)."
+}

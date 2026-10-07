@@ -1,0 +1,27 @@
+# Git and IDE
+.git/
+.gitignore
+.github/
+.vscode/
+.idea/
+
+# Python caches and bytecode
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Node and frontend development artifacts
+node_modules/
+frontend/node_modules/
+frontend/.vite/
+frontend/dist/
+
+# Scratch, logs and temporary files
+scratch/
+*.log
+.env
+.env.*

@@ -1,0 +1,27 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.pytest_cache/
+.coverage
+htmlcov/
+.env
+.env.*
+
+# Node and Vite
+node_modules/
+frontend/node_modules/
+frontend/.vite/
+frontend/dist/
+
+# Ephemeral runtime data & logs
+data/live/
+*.log
+scratch/
+
+# IDE / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

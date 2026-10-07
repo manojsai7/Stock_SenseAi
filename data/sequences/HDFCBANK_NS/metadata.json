@@ -1,0 +1,79 @@
+{
+  "symbol": "HDFCBANK.NS",
+  "clean_symbol": "HDFCBANK_NS",
+  "raw_observations": 1241,
+  "ma20_warmup_dropped": 19,
+  "unpaired_last_row_dropped": 1,
+  "usable_observations": 1221,
+  "total_sequences": 1192,
+  "train_sequences": 825,
+  "validation_sequences": 183,
+  "test_sequences": 184,
+  "window_size": 30,
+  "feature_count": 6,
+  "feature_names": [
+    "Open",
+    "High",
+    "Low",
+    "Close",
+    "Volume",
+    "MA20"
+  ],
+  "target_definition": "Next trading day Close (Close_t+1)",
+  "shapes": {
+    "X_train": [
+      825,
+      30,
+      6
+    ],
+    "y_train": [
+      825
+    ],
+    "X_val": [
+      183,
+      30,
+      6
+    ],
+    "y_val": [
+      183
+    ],
+    "X_test": [
+      184,
+      30,
+      6
+    ],
+    "y_test": [
+      184
+    ]
+  },
+  "first_target_date": "2021-12-17",
+  "last_target_date": "2026-10-06",
+  "split_ratios": {
+    "train": 0.7,
+    "validation": 0.15,
+    "test": 0.15
+  },
+  "scaler_parameters": {
+    "feature_min": [
+      637.5,
+      648.2000122070312,
+      635.7999877929688,
+      640.6500244140625,
+      0.0,
+      666.2387451171875
+    ],
+    "feature_max": [
+      967.5,
+      985.2999877929688,
+      967.5,
+      980.8499755859376,
+      445342100.0,
+      915.4912475585936
+    ],
+    "target_min": 640.6500244140625,
+    "target_max": 980.8499755859376
+  },
+  "is_short_history": false,
+  "history_note": "Standard mature 5-year series (~1192 sequences).",
+  "created_at": "2026-10-07T11:28:55.911198+05:30"
+}

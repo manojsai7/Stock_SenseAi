@@ -1,0 +1,476 @@
+[
+  {
+    "symbol": "TCS.NS",
+    "clean_symbol": "TCS_NS",
+    "raw_observations": 1241,
+    "ma20_warmup_dropped": 19,
+    "unpaired_last_row_dropped": 1,
+    "usable_observations": 1221,
+    "total_sequences": 1192,
+    "train_sequences": 825,
+    "validation_sequences": 183,
+    "test_sequences": 184,
+    "window_size": 30,
+    "feature_count": 6,
+    "feature_names": [
+      "Open",
+      "High",
+      "Low",
+      "Close",
+      "Volume",
+      "MA20"
+    ],
+    "target_definition": "Next trading day Close (Close_t+1)",
+    "shapes": {
+      "X_train": [
+        825,
+        30,
+        6
+      ],
+      "y_train": [
+        825
+      ],
+      "X_val": [
+        183,
+        30,
+        6
+      ],
+      "y_val": [
+        183
+      ],
+      "X_test": [
+        184,
+        30,
+        6
+      ],
+      "y_test": [
+        184
+      ]
+    },
+    "first_target_date": "2021-12-17",
+    "last_target_date": "2026-10-06",
+    "split_ratios": {
+      "train": 0.7,
+      "validation": 0.15,
+      "test": 0.15
+    },
+    "scaler_parameters": {
+      "feature_min": [
+        2959.85009765625,
+        3019.699951171875,
+        2926.10009765625,
+        2982.050048828125,
+        0.0,
+        3042.602478027344
+      ],
+      "feature_max": [
+        4576.0,
+        4592.25,
+        4512.0,
+        4553.75,
+        13509164.0,
+        4502.377490234375
+      ],
+      "target_min": 2982.050048828125,
+      "target_max": 4553.75
+    },
+    "is_short_history": false,
+    "history_note": "Standard mature 5-year series (~1192 sequences).",
+    "created_at": "2026-10-07T11:29:51.994204+05:30"
+  },
+  {
+    "symbol": "INFY.NS",
+    "clean_symbol": "INFY_NS",
+    "raw_observations": 1241,
+    "ma20_warmup_dropped": 19,
+    "unpaired_last_row_dropped": 1,
+    "usable_observations": 1221,
+    "total_sequences": 1192,
+    "train_sequences": 825,
+    "validation_sequences": 183,
+    "test_sequences": 184,
+    "window_size": 30,
+    "feature_count": 6,
+    "feature_names": [
+      "Open",
+      "High",
+      "Low",
+      "Close",
+      "Volume",
+      "MA20"
+    ],
+    "target_definition": "Next trading day Close (Close_t+1)",
+    "shapes": {
+      "X_train": [
+        825,
+        30,
+        6
+      ],
+      "y_train": [
+        825
+      ],
+      "X_val": [
+        183,
+        30,
+        6
+      ],
+      "y_val": [
+        183
+      ],
+      "X_test": [
+        184,
+        30,
+        6
+      ],
+      "y_test": [
+        184
+      ]
+    },
+    "first_target_date": "2021-12-17",
+    "last_target_date": "2026-10-06",
+    "split_ratios": {
+      "train": 0.7,
+      "validation": 0.15,
+      "test": 0.15
+    },
+    "scaler_parameters": {
+      "feature_min": [
+        1225.949951171875,
+        1230.0,
+        1185.300048828125,
+        1223.4000244140625,
+        0.0,
+        1250.5174987792968
+      ],
+      "feature_max": [
+        1995.449951171875,
+        2006.449951171875,
+        1977.5999755859373,
+        1999.699951171875,
+        53171705.0,
+        1940.2425048828125
+      ],
+      "target_min": 1223.4000244140625,
+      "target_max": 1999.699951171875
+    },
+    "is_short_history": false,
+    "history_note": "Standard mature 5-year series (~1192 sequences).",
+    "created_at": "2026-10-07T11:29:52.089685+05:30"
+  },
+  {
+    "symbol": "HDFCBANK.NS",
+    "clean_symbol": "HDFCBANK_NS",
+    "raw_observations": 1241,
+    "ma20_warmup_dropped": 19,
+    "unpaired_last_row_dropped": 1,
+    "usable_observations": 1221,
+    "total_sequences": 1192,
+    "train_sequences": 825,
+    "validation_sequences": 183,
+    "test_sequences": 184,
+    "window_size": 30,
+    "feature_count": 6,
+    "feature_names": [
+      "Open",
+      "High",
+      "Low",
+      "Close",
+      "Volume",
+      "MA20"
+    ],
+    "target_definition": "Next trading day Close (Close_t+1)",
+    "shapes": {
+      "X_train": [
+        825,
+        30,
+        6
+      ],
+      "y_train": [
+        825
+      ],
+      "X_val": [
+        183,
+        30,
+        6
+      ],
+      "y_val": [
+        183
+      ],
+      "X_test": [
+        184,
+        30,
+        6
+      ],
+      "y_test": [
+        184
+      ]
+    },
+    "first_target_date": "2021-12-17",
+    "last_target_date": "2026-10-06",
+    "split_ratios": {
+      "train": 0.7,
+      "validation": 0.15,
+      "test": 0.15
+    },
+    "scaler_parameters": {
+      "feature_min": [
+        637.5,
+        648.2000122070312,
+        635.7999877929688,
+        640.6500244140625,
+        0.0,
+        666.2387451171875
+      ],
+      "feature_max": [
+        967.5,
+        985.2999877929688,
+        967.5,
+        980.8499755859376,
+        445342100.0,
+        915.4912475585936
+      ],
+      "target_min": 640.6500244140625,
+      "target_max": 980.8499755859376
+    },
+    "is_short_history": false,
+    "history_note": "Standard mature 5-year series (~1192 sequences).",
+    "created_at": "2026-10-07T11:29:52.183712+05:30"
+  },
+  {
+    "symbol": "ICICIBANK.NS",
+    "clean_symbol": "ICICIBANK_NS",
+    "raw_observations": 1241,
+    "ma20_warmup_dropped": 19,
+    "unpaired_last_row_dropped": 1,
+    "usable_observations": 1221,
+    "total_sequences": 1192,
+    "train_sequences": 825,
+    "validation_sequences": 183,
+    "test_sequences": 184,
+    "window_size": 30,
+    "feature_count": 6,
+    "feature_names": [
+      "Open",
+      "High",
+      "Low",
+      "Close",
+      "Volume",
+      "MA20"
+    ],
+    "target_definition": "Next trading day Close (Close_t+1)",
+    "shapes": {
+      "X_train": [
+        825,
+        30,
+        6
+      ],
+      "y_train": [
+        825
+      ],
+      "X_val": [
+        183,
+        30,
+        6
+      ],
+      "y_val": [
+        183
+      ],
+      "X_test": [
+        184,
+        30,
+        6
+      ],
+      "y_test": [
+        184
+      ]
+    },
+    "first_target_date": "2021-12-17",
+    "last_target_date": "2026-10-06",
+    "split_ratios": {
+      "train": 0.7,
+      "validation": 0.15,
+      "test": 0.15
+    },
+    "scaler_parameters": {
+      "feature_min": [
+        643.2999877929688,
+        667.0,
+        642.1500244140625,
+        653.75,
+        0.0,
+        698.5374969482422
+      ],
+      "feature_max": [
+        1436.0,
+        1436.0,
+        1404.699951171875,
+        1416.5,
+        73257767.0,
+        1342.0800048828123
+      ],
+      "target_min": 653.75,
+      "target_max": 1424.4000244140625
+    },
+    "is_short_history": false,
+    "history_note": "Standard mature 5-year series (~1192 sequences).",
+    "created_at": "2026-10-07T11:29:52.267644+05:30"
+  },
+  {
+    "symbol": "RELIANCE.NS",
+    "clean_symbol": "RELIANCE_NS",
+    "raw_observations": 1241,
+    "ma20_warmup_dropped": 19,
+    "unpaired_last_row_dropped": 1,
+    "usable_observations": 1221,
+    "total_sequences": 1192,
+    "train_sequences": 825,
+    "validation_sequences": 183,
+    "test_sequences": 184,
+    "window_size": 30,
+    "feature_count": 6,
+    "feature_names": [
+      "Open",
+      "High",
+      "Low",
+      "Close",
+      "Volume",
+      "MA20"
+    ],
+    "target_definition": "Next trading day Close (Close_t+1)",
+    "shapes": {
+      "X_train": [
+        825,
+        30,
+        6
+      ],
+      "y_train": [
+        825
+      ],
+      "X_val": [
+        183,
+        30,
+        6
+      ],
+      "y_val": [
+        183
+      ],
+      "X_test": [
+        184,
+        30,
+        6
+      ],
+      "y_test": [
+        184
+      ]
+    },
+    "first_target_date": "2021-12-17",
+    "last_target_date": "2026-10-06",
+    "split_ratios": {
+      "train": 0.7,
+      "validation": 0.15,
+      "test": 0.15
+    },
+    "scaler_parameters": {
+      "feature_min": [
+        1020.6068725585938,
+        1024.5296630859375,
+        1006.0696411132812,
+        1015.8765258789062,
+        0.0,
+        1049.4298522949218
+      ],
+      "feature_max": [
+        1604.449951171875,
+        1608.800048828125,
+        1585.5,
+        1600.9000244140625,
+        81997149.0,
+        1559.1362670898438
+      ],
+      "target_min": 1015.8765258789062,
+      "target_max": 1600.9000244140625
+    },
+    "is_short_history": false,
+    "history_note": "Standard mature 5-year series (~1192 sequences).",
+    "created_at": "2026-10-07T11:29:52.354053+05:30"
+  },
+  {
+    "symbol": "ATHERENERG.NS",
+    "clean_symbol": "ATHERENERG_NS",
+    "raw_observations": 360,
+    "ma20_warmup_dropped": 19,
+    "unpaired_last_row_dropped": 1,
+    "usable_observations": 340,
+    "total_sequences": 311,
+    "train_sequences": 208,
+    "validation_sequences": 52,
+    "test_sequences": 51,
+    "window_size": 30,
+    "feature_count": 6,
+    "feature_names": [
+      "Open",
+      "High",
+      "Low",
+      "Close",
+      "Volume",
+      "MA20"
+    ],
+    "target_definition": "Next trading day Close (Close_t+1)",
+    "shapes": {
+      "X_train": [
+        208,
+        30,
+        6
+      ],
+      "y_train": [
+        208
+      ],
+      "X_val": [
+        52,
+        30,
+        6
+      ],
+      "y_val": [
+        52
+      ],
+      "X_test": [
+        51,
+        30,
+        6
+      ],
+      "y_test": [
+        51
+      ]
+    },
+    "first_target_date": "2025-07-11",
+    "last_target_date": "2026-10-06",
+    "split_ratios": {
+      "train": 0.7,
+      "validation": 0.15,
+      "test": 0.15
+    },
+    "scaler_parameters": {
+      "feature_min": [
+        309.45001220703125,
+        311.95001220703125,
+        301.0,
+        307.20001220703125,
+        0.0,
+        311.6875
+      ],
+      "feature_max": [
+        974.0,
+        989.4000244140624,
+        936.0499877929688,
+        969.4500122070312,
+        28107723.0,
+        919.0725006103517
+      ],
+      "target_min": 307.20001220703125,
+      "target_max": 969.4500122070312
+    },
+    "is_short_history": true,
+    "history_note": "Ather Energy Ltd (ATHERENERG.NS) listed in May 2025. Supervised population is naturally truncated to 311 total sequences (~340 trading days). No synthetic data was fabricated.",
+    "created_at": "2026-10-07T11:29:52.418124+05:30"
+  }
+]

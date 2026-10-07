@@ -1,0 +1,79 @@
+{
+  "symbol": "ATHERENERG.NS",
+  "clean_symbol": "ATHERENERG_NS",
+  "raw_observations": 360,
+  "ma20_warmup_dropped": 19,
+  "unpaired_last_row_dropped": 1,
+  "usable_observations": 340,
+  "total_sequences": 311,
+  "train_sequences": 208,
+  "validation_sequences": 52,
+  "test_sequences": 51,
+  "window_size": 30,
+  "feature_count": 6,
+  "feature_names": [
+    "Open",
+    "High",
+    "Low",
+    "Close",
+    "Volume",
+    "MA20"
+  ],
+  "target_definition": "Next trading day Close (Close_t+1)",
+  "shapes": {
+    "X_train": [
+      208,
+      30,
+      6
+    ],
+    "y_train": [
+      208
+    ],
+    "X_val": [
+      52,
+      30,
+      6
+    ],
+    "y_val": [
+      52
+    ],
+    "X_test": [
+      51,
+      30,
+      6
+    ],
+    "y_test": [
+      51
+    ]
+  },
+  "first_target_date": "2025-07-11",
+  "last_target_date": "2026-10-06",
+  "split_ratios": {
+    "train": 0.7,
+    "validation": 0.15,
+    "test": 0.15
+  },
+  "scaler_parameters": {
+    "feature_min": [
+      309.45001220703125,
+      311.95001220703125,
+      301.0,
+      307.20001220703125,
+      0.0,
+      311.6875
+    ],
+    "feature_max": [
+      974.0,
+      989.4000244140624,
+      936.0499877929688,
+      969.4500122070312,
+      28107723.0,
+      919.0725006103517
+    ],
+    "target_min": 307.20001220703125,
+    "target_max": 969.4500122070312
+  },
+  "is_short_history": true,
+  "history_note": "Ather Energy Ltd (ATHERENERG.NS) listed in May 2025. Supervised population is naturally truncated to 311 total sequences (~340 trading days). No synthetic data was fabricated.",
+  "created_at": "2026-10-07T11:28:56.266024+05:30"
+}
