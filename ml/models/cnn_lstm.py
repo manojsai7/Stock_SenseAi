@@ -9,7 +9,8 @@ def build_cnn_lstm_model(
     lstm_units: int = 50,
     dense_units: int = 32,
     dropout: float = 0.2,
-    learning_rate: float = 0.001
+    learning_rate: float = 0.001,
+    loss: str = "mse"
 ) -> Sequential:
     """
     TensorFlow / Keras Hybrid CNN-LSTM Neural Network:
@@ -22,24 +23,25 @@ def build_cnn_lstm_model(
     7. Dense(1): Pure linear output predicting next trading day's closing price.
     """
     model = Sequential([
-        Input(shape=input_shape),
+        Input(shape=input_shape, name="input_window"),
         Conv1D(
             filters=conv_filters,
             kernel_size=kernel_size,
             activation="relu",
-            padding="same"
+            padding="same",
+            name="conv1d"
         ),
-        MaxPooling1D(pool_size=2),
-        LSTM(lstm_units, return_sequences=False),
-        Dropout(dropout),
-        Dense(dense_units),
-        LeakyReLU(negative_slope=0.1),
-        Dense(1)
+        MaxPooling1D(pool_size=2, name="maxpool1d"),
+        LSTM(lstm_units, return_sequences=False, name="lstm"),
+        Dropout(dropout, name="dropout"),
+        Dense(dense_units, name="dense_proj"),
+        LeakyReLU(negative_slope=0.1, name="leaky_relu"),
+        Dense(1, name="dense_output")
     ], name="TensorFlow_CNN_LSTM_Stock_Model")
 
     model.compile(
         optimizer=tf.keras.optimizers.Adam(learning_rate=learning_rate),
-        loss="huber",
+        loss=loss,
         metrics=["mae", "mse"]
     )
     return model

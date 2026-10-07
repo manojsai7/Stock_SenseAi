@@ -48,10 +48,6 @@ def test_deterministic_target_alignment(deterministic_df):
     the target is EXACTLY Close[t+1].
     """
     builder = SupervisedDatasetBuilder(window_size=30, train_ratio=0.70, val_ratio=0.15, test_ratio=0.15)
-    raw_df, clean_df = builder.load_and_prepare_df = lambda sym: (
-        deterministic_df,
-        deterministic_df.dropna(subset=FEATURE_COLUMNS).assign(Next_Close=deterministic_df["Close"].shift(-1)).dropna().reset_index(drop=True)
-    )
 
     clean_df = deterministic_df.dropna(subset=FEATURE_COLUMNS).copy()
     clean_df[TARGET_COLUMN] = clean_df["Close"].shift(-1)
@@ -60,7 +56,7 @@ def test_deterministic_target_alignment(deterministic_df):
     # For any row k in clean_df:
     # Row k's features end at day k with Close = clean_df['Close'].iloc[k]
     # Row k's target is clean_df['Close'].iloc[k + 1]
-    for k in range(len(clean_df)):
+    for k in range(len(clean_df) - 1):
         assert clean_df.loc[k, TARGET_COLUMN] == clean_df.loc[k + 1, "Close"]
 
     # Verify through SequenceGenerator
