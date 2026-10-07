@@ -28,7 +28,7 @@ def test_model_parameter_existence_and_count():
     """Verifies that trainable parameters exist and parameter counts are positive."""
     model = build_cnn_lstm_model(input_shape=(30, 6))
     total_params = model.count_params()
-    trainable_params = sum(np.prod(v.get_shape()) for v in model.trainable_weights)
+    trainable_params = sum(int(np.prod(v.shape)) for v in model.trainable_weights)
 
     assert total_params > 20000
     assert trainable_params == total_params  # All layers trainable by default

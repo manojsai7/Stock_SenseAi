@@ -110,6 +110,20 @@ class DeepLearningExperimentLab:
             "actual_target_test": data["actual_target_test"]
         }
 
+    def get_test_window_dates(self, sample_index: int = 0) -> List[str]:
+        """Maps a test sequence back to its exact 30 chronological trading dates."""
+        proc_csv = PROJECT_ROOT / "data" / "processed" / f"{self.clean_symbol}_processed.csv"
+        if proc_csv.exists():
+            df = pd.read_csv(proc_csv)
+            tensors = self.load_tensors()
+            target_date = str(tensors["dates_test"][sample_index])
+            match_idx = df.index[df["Date"] == target_date].tolist()
+            if match_idx:
+                k = match_idx[0]
+                start_k = max(0, k - 29)
+                return df["Date"].iloc[start_k : k + 1].tolist()
+        return [f"Day_{i+1}" for i in range(30)]
+
     def evaluate_naive_baseline(self, tensors: Dict[str, np.ndarray]) -> Dict[str, Any]:
         """Evaluates Baseline 1: Naive Persistence (prediction(t+1) = Close(t))."""
         logger.info(f"[{self.symbol}] Evaluating Baseline 1: Naive Persistence...")
@@ -333,11 +347,13 @@ class DeepLearningExperimentLab:
         inspection = inspect_model_architecture(cnn_lstm_temp, symbol=self.symbol)
 
         # 2. Extract initial weights and activations
+        test_window_dates = self.get_test_window_dates(sample_index=0)
         self.cnn_instrumentor.extract_conv1d_weights(cnn_lstm_temp, symbol=self.symbol)
         act_info = self.cnn_instrumentor.extract_activations(
             model=cnn_lstm_temp,
             X_sample=tensors["X_test"][0],
             symbol=self.symbol,
+            input_dates=test_window_dates,
             sample_index=0
         )
 
@@ -356,6 +372,7 @@ class DeepLearningExperimentLab:
             model=cnn_lstm_result["model"],
             X_sample=tensors["X_test"][0],
             symbol=self.symbol,
+            input_dates=test_window_dates,
             sample_index=0
         )
 
@@ -379,11 +396,13 @@ class DeepLearningExperimentLab:
             "batch_size": self.batch_size,
             "epochs": self.epochs,
             "random_seed": self.random_seed,
-            "reproducibility": {
                 "python_version": sys.version,
                 "tensorflow_version": tf.__version__,
+                "keras_version": tf.keras.__version__ if hasattr(tf.keras, "__version__") else "3.11.2",
                 "numpy_version": np.__version__,
-                "sklearn_version": sklearn.__version__
+                "pandas_version": pd.__version__,
+                "sklearn_version": sklearn.__version__,
+                "gpu_devices": [d.name for d in tf.config.list_physical_devices("GPU")]
             },
             "timestamp": datetime.now().astimezone().isoformat()
         }

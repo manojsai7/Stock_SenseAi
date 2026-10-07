@@ -41,6 +41,17 @@ def inspect_model_architecture(model: Model, symbol: str = "RELIANCE_NS", save_d
 
     detailed_layer_params = {}
 
+    # Dynamically compute layer output shapes
+    dummy = tf.zeros((1, 30, 6))
+    current_tensor = dummy
+    layer_output_shapes = {}
+    for layer in model.layers:
+        try:
+            current_tensor = layer(current_tensor)
+            layer_output_shapes[layer.name] = tuple(current_tensor.shape)
+        except Exception:
+            layer_output_shapes[layer.name] = "Dynamic"
+
     for idx, layer in enumerate(model.layers):
         p_count = layer.count_params()
         total_params += p_count
@@ -49,7 +60,7 @@ def inspect_model_architecture(model: Model, symbol: str = "RELIANCE_NS", save_d
         else:
             non_trainable_params += p_count
 
-        out_shape = str(layer.output_shape)
+        out_shape = str(layer_output_shapes.get(layer.name, "N/A"))
         summary_lines.append(
             f"    {idx:<6} {layer.name:<20} {layer.__class__.__name__:<18} {out_shape:<24} {p_count:<10}"
         )

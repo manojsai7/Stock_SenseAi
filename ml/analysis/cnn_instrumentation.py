@@ -124,12 +124,23 @@ class CNNInstrumentation:
             mean_act = float(np.mean(filter_series))
 
             date_str = input_dates[strongest_step] if input_dates and strongest_step < len(input_dates) else f"Step_{strongest_step}"
+            
+            # Receptive field for kernel_size=3 with same padding: [t-1, t, t+1]
+            rf_start = max(0, strongest_step - 1)
+            rf_end = min(num_timesteps - 1, strongest_step + 1)
+            if input_dates and rf_end < len(input_dates):
+                rf_window = f"{input_dates[rf_start]} to {input_dates[rf_end]}"
+            else:
+                rf_window = f"Step_{rf_start} to Step_{rf_end}"
 
             records.append({
                 "filter_index": f_idx,
                 "max_activation": round(max_act, 5),
-                "strongest_timestep": strongest_step,
+                "peak_timestep": strongest_step,
+                "peak_center_date": date_str,
                 "correlated_date": date_str,
+                "receptive_field_window": rf_window,
+                "receptive_field_steps": f"[{rf_start}, {strongest_step}, {rf_end}]",
                 "mean_activation": round(mean_act, 5)
             })
 

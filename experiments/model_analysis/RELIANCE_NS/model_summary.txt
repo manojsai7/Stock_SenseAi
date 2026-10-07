@@ -1,0 +1,40 @@
+================================================================================
+  STOCKSENSE AI — NEURAL NETWORK ARCHITECTURE INSPECTION REPORT
+  Target Equity: RELIANCE.NS
+================================================================================
+
+[1] Input Tensor Specification:
+    - Input Shape: (None, 30, 6) (Batch Size x 30 Timesteps x 6 Features)
+    - Feature Channels: [Open, High, Low, Close, Volume, MA20]
+
+[2] Layer-by-Layer Mathematical Breakdown:
+    Index  Layer Name           Layer Type         Output Shape             Param #   
+    ----------------------------------------------------------------------------
+    0      conv1d               Conv1D             (1, 30, 64)              1216      
+    1      maxpool1d            MaxPooling1D       (1, 15, 64)              0         
+    2      lstm                 LSTM               (1, 50)                  23000     
+    3      dropout              Dropout            (1, 50)                  0         
+    4      dense_proj           Dense              (1, 32)                  1632      
+    5      leaky_relu           LeakyReLU          (1, 32)                  0         
+    6      dense_output         Dense              (1, 1)                   33        
+
+[3] Kernel & Parameter Tensor Geometry:
+    Layer: 'conv1d' (Conv1D) — Params: 1216
+      - Component 0 (Weight/Kernel): shape = (3, 6, 64)
+      - Component 1 (Bias): shape = (64,)
+    Layer: 'lstm' (LSTM) — Params: 23000
+      - Component 0 (Weight/Kernel): shape = (64, 200)
+      - Component 1 (Recurrent Kernel): shape = (50, 200)
+      - Component 2 (Bias): shape = (200,)
+    Layer: 'dense_proj' (Dense) — Params: 1632
+      - Component 0 (Weight/Kernel): shape = (50, 32)
+      - Component 1 (Bias): shape = (32,)
+    Layer: 'dense_output' (Dense) — Params: 33
+      - Component 0 (Weight/Kernel): shape = (32, 1)
+      - Component 1 (Bias): shape = (1,)
+
+[4] Parameter Count Totals:
+    - Total Parameters:         25,881
+    - Trainable Parameters:     25,881
+    - Non-Trainable Parameters: 0
+================================================================================
