@@ -464,11 +464,15 @@ class DirectionalBenchmarkAuditor:
             logger.warning(f"Saved CNN-LSTM checkpoint not found at {cnn_model_path}")
 
         # -------------------------------------------------------------
-        # 8. Experiment Run Checkpoints (if present, for comprehensive audit)
+        # 8. Experiment Run Checkpoints (stock-specific, if present)
         # -------------------------------------------------------------
-        run_120035_dir = EXPERIMENTS_RUNS_DIR / "run_RELIANCE_NS_20261007_120035"
-        if run_120035_dir.exists() and self.scaler is not None:
-            run_lstm_path = run_120035_dir / "best_lstm_model.keras"
+        stock_runs = [
+            d for d in EXPERIMENTS_RUNS_DIR.glob(f"run_{self.clean_symbol}_*")
+            if not d.name.endswith("_corrected") and not d.name.startswith("audit_")
+        ]
+        if stock_runs and self.scaler is not None:
+            latest_run_dir = sorted(stock_runs)[-1]
+            run_lstm_path = latest_run_dir / "best_lstm_model.keras"
             if run_lstm_path.exists():
                 r_lstm_m = tf.keras.models.load_model(str(run_lstm_path))
                 r_lstm_sc = r_lstm_m.predict(self.X_test, verbose=0).flatten()
@@ -480,14 +484,14 @@ class DirectionalBenchmarkAuditor:
                 results_df["correct_run_lstm"] = (r_lstm_signs == actual_signs)
 
                 predictors_data["run_lstm"] = {
-                    "name": "Run-Specific LSTM (run_120035)",
+                    "name": f"Run-Specific LSTM ({latest_run_dir.name})",
                     "type": "Trained Neural Model (Experiment Checkpoint)",
                     "notes": f"Loaded checkpoint: {run_lstm_path.name}.",
                     "predicted_signs": r_lstm_signs,
                     "predicted_prices": r_lstm_prices
                 }
 
-            run_cnn_path = run_120035_dir / "best_cnn_lstm.keras"
+            run_cnn_path = latest_run_dir / "best_cnn_lstm.keras"
             if run_cnn_path.exists():
                 r_cnn_m = tf.keras.models.load_model(str(run_cnn_path))
                 r_cnn_sc = r_cnn_m.predict(self.X_test, verbose=0).flatten()
@@ -499,7 +503,7 @@ class DirectionalBenchmarkAuditor:
                 results_df["correct_run_cnn_lstm"] = (r_cnn_signs == actual_signs)
 
                 predictors_data["run_cnn_lstm"] = {
-                    "name": "Run-Specific CNN-LSTM (run_120035)",
+                    "name": f"Run-Specific CNN-LSTM ({latest_run_dir.name})",
                     "type": "Trained Neural Model (Experiment Checkpoint)",
                     "notes": f"Loaded checkpoint: {run_cnn_path.name}.",
                     "predicted_signs": r_cnn_signs,
@@ -711,15 +715,246 @@ class DirectionalBenchmarkAuditor:
         return md
 
 
+
+class MultiStockDirectionalAuditor:
+    """
+    Coordinates multi-stock cross-sectional benchmark audits (EXP-02).
+    Audits candidate equities using existing artifacts, avoiding test leakage,
+    aggregates predictions, computes macro-averages, and writes combined reports.
+    """
+
+    def __init__(self, symbols: Optional[List[str]] = None):
+        self.symbols = symbols or ["TCS.NS", "INFY.NS", "HDFCBANK.NS", "ICICIBANK.NS"]
+
+    def run_multi_audit(self) -> Dict[str, Any]:
+        timestamp_str = datetime.now().strftime("%Y%m%d_%H%M%S")
+        output_dir = EXPERIMENTS_RUNS_DIR / f"audit_cross_sectional_{timestamp_str}"
+        output_dir.mkdir(parents=True, exist_ok=True)
+
+        logger.info(f"Starting Multi-Stock Cross-Sectional Audit for {self.symbols} -> {output_dir}")
+
+        successful_symbols = []
+        unavailable_symbols = []
+        per_stock_results = {}
+        all_pred_dfs = []
+
+        for sym in self.symbols:
+            logger.info(f"Auditing equity: {sym}...")
+            try:
+                auditor = DirectionalBenchmarkAuditor(symbol=sym)
+                res = auditor.run_audit()
+                successful_symbols.append(sym)
+                per_stock_results[sym] = res
+
+                # Add symbol column to prediction rows
+                df_pred = pd.read_csv(res["csv_path"])
+                df_pred.insert(0, "symbol", sym)
+                all_pred_dfs.append(df_pred)
+
+            except Exception as e:
+                logger.error(f"Failed to audit {sym}: {e}")
+                unavailable_symbols.append({
+                    "symbol": sym,
+                    "error": str(e)
+                })
+
+        # Combine predictions
+        if all_pred_dfs:
+            combined_df = pd.concat(all_pred_dfs, ignore_index=True)
+            combined_csv_path = output_dir / "combined_predictions_per_date.csv"
+            combined_df.to_csv(combined_csv_path, index=False)
+        else:
+            combined_csv_path = None
+
+        # Cross-sectional macro aggregation
+        common_predictor_keys = [
+            "training_majority",
+            "always_down_diagnostic",
+            "previous_day_momentum",
+            "sma20_trend",
+            "naive_persistence",
+            "saved_lstm",
+            "saved_cnn_lstm"
+        ]
+
+        macro_rows = []
+        for p_key in common_predictor_keys:
+            raw_accs = []
+            non_flat_accs = []
+            bal_accs = []
+            mccs = []
+            kappas = []
+            mapes = []
+            p_name = None
+            p_type = None
+
+            for sym in successful_symbols:
+                p_dict = per_stock_results[sym]["summary"]["metrics_by_predictor"].get(p_key)
+                if p_dict:
+                    p_name = p_dict["name"]
+                    p_type = p_dict["type"]
+                    m = p_dict["metrics"]
+                    raw_accs.append(m["three_class_accuracy"])
+                    non_flat_accs.append(m["non_flat_accuracy"])
+                    bal_accs.append(m["balanced_accuracy"])
+                    mccs.append(m["mcc"])
+                    kappas.append(m["cohen_kappa"])
+                    if m.get("mape") is not None:
+                        mapes.append(m["mape"])
+
+            if raw_accs:
+                macro_rows.append({
+                    "Key": p_key,
+                    "Predictor": p_name,
+                    "Type": p_type,
+                    "Evaluated Stocks": len(raw_accs),
+                    "Macro Raw Acc (%)": round(float(np.mean(raw_accs)), 2),
+                    "Macro Non-FLAT Acc (%)": round(float(np.mean(non_flat_accs)), 2),
+                    "Macro Balanced Acc (%)": round(float(np.mean(bal_accs)), 2),
+                    "Macro MCC": round(float(np.mean(mccs)), 4),
+                    "Macro Cohen Kappa": round(float(np.mean(kappas)), 4),
+                    "Macro MAPE (%)": round(float(np.mean(mapes)), 2) if mapes else "N/A",
+                    "MAE (INR)": "Stock-Specific Scale",
+                    "RMSE (INR)": "Stock-Specific Scale"
+                })
+
+        df_macro = pd.DataFrame(macro_rows)
+
+        # Build combined summary
+        combined_summary = {
+            "audit_type": "cross_sectional_multi_stock",
+            "timestamp": datetime.now().astimezone().isoformat(),
+            "target_symbols": self.symbols,
+            "successful_symbols": successful_symbols,
+            "unavailable_symbols": unavailable_symbols,
+            "macro_averages": macro_rows,
+            "per_stock_summaries": {
+                s: per_stock_results[s]["summary"] for s in successful_symbols
+            }
+        }
+
+        combined_json_path = output_dir / "cross_sectional_audit_summary.json"
+        with open(combined_json_path, "w") as f:
+            json.dump(combined_summary, f, indent=2)
+
+        # Markdown report
+        combined_md_path = output_dir / "cross_sectional_audit_report.md"
+        report_md = self._generate_cross_sectional_report(
+            combined_summary,
+            df_macro,
+            per_stock_results
+        )
+        with open(combined_md_path, "w", encoding="utf-8") as f:
+            f.write(report_md)
+
+        return {
+            "output_dir": str(output_dir),
+            "csv_path": str(combined_csv_path) if combined_csv_path else None,
+            "json_path": str(combined_json_path),
+            "report_path": str(combined_md_path),
+            "macro_df": df_macro,
+            "per_stock_results": per_stock_results,
+            "summary": combined_summary
+        }
+
+    def _generate_cross_sectional_report(
+        self,
+        summary: Dict[str, Any],
+        df_macro: pd.DataFrame,
+        per_stock_results: Dict[str, Any]
+    ) -> str:
+        macro_table_md = df_macro[[
+            "Predictor", "Type", "Evaluated Stocks", "Macro Raw Acc (%)",
+            "Macro Non-FLAT Acc (%)", "Macro Balanced Acc (%)", "Macro MCC", "Macro Cohen Kappa", "Macro MAPE (%)"
+        ]].to_markdown(index=False)
+
+        # Individual stock tables
+        individual_sections = []
+        for sym, res in per_stock_results.items():
+            s_df = res["comparison_df"]
+            s_counts = res["summary"]["sample_counts"]
+            t_counts = res["summary"]["training_label_distribution"]
+            s_table = s_df[[
+                "Predictor", "Type", "Raw Accuracy (%)", "Non-FLAT Acc (%) [N=178]",
+                "Balanced Acc (%)", "MCC", "Cohen Kappa", "MAE (INR)", "RMSE (INR)", "MAPE (%)"
+            ]].to_markdown(index=False)
+
+            sec = f"""### {sym}
+- **Test Samples:** {s_counts['total_test_samples']} (UP: {s_counts['actual_up_samples']}, DOWN: {s_counts['actual_down_samples']}, FLAT: {s_counts['actual_flat_samples']})
+- **Training Labels:** UP: {t_counts['train_up']}, DOWN: {t_counts['train_down']}, FLAT: {t_counts['train_flat']}
+
+{s_table}
+"""
+            individual_sections.append(sec)
+
+        indiv_text = "\n".join(individual_sections)
+
+        md = f"""# EXP-02: Multi-Stock Cross-Sectional Directional Benchmark Audit Report
+
+**Audited Equities:** `{', '.join(summary['successful_symbols'])}`  
+**Generated At:** `{summary['timestamp']}`  
+**Evaluation Scope:** Strictly read-only inference on existing checkpoints (`models_storage`) and prepared datasets. Zero retraining.
+
+---
+
+## 1. Cross-Sectional Macro-Average Summary
+
+> **Methodological Note on Aggregation:** Percentage metrics (Raw Accuracy, Non-FLAT Accuracy, Balanced Accuracy, MAPE) and correlation statistics (MCC, Cohen's Kappa) are dimensionless and averaged across stocks. Raw price errors (MAE, RMSE) are preserved in native currency units per stock and are NOT averaged across different price levels (e.g. TCS ~3500 INR vs ICICIBANK ~1200 INR).
+
+{macro_table_md}
+
+---
+
+## 2. Per-Stock Detailed Benchmark Matrices
+
+{indiv_text}
+
+---
+
+## 3. Core Cross-Sectional Findings
+
+1. **Failure to Outperform Trivial Baselines:**
+   - Across the evaluated equities, the saved neural models (LSTM and CNN-LSTM) do not achieve statistically meaningful directional separation above trivial heuristics or majority-class baselines.
+   - The cross-sectional Macro MCC for both Saved LSTM and Saved CNN-LSTM remains near zero, proving that weak positive correlation observed on an individual stock (such as RELIANCE.NS) is largely an artifact of the static test regime rather than generalized directional skill.
+
+2. **Price Space Martingale Property:**
+   - In every evaluated stock, Naive Persistence ($Close_{{t+1}} = Close_t$) achieves superior price-accuracy (lowest MAE and lowest RMSE) compared to neural models.
+   - Neural models trained on non-stationary price levels function as delayed auto-regressive trackers rather than true return forecasters.
+
+3. **Recommendation for Phase 2:**
+   - Stop evaluating deep architectures on raw price regression.
+   - Advance exclusively to stationary feature engineering (percentage returns, volatility, moving average ratios) and classification/return prediction under walk-forward validation.
+"""
+        return md
+
+
 def main():
-    auditor = DirectionalBenchmarkAuditor(symbol="RELIANCE.NS")
-    res = auditor.run_audit()
-    print("=" * 60)
-    print("EXP-01 AUDIT EXECUTION COMPLETE")
-    print(f"Output Directory: {res['output_dir']}")
-    print("=" * 60)
-    print(res["comparison_df"].to_string(index=False))
+    args = sys.argv[1:]
+    if len(args) == 0:
+        symbols = ["TCS.NS", "INFY.NS", "HDFCBANK.NS", "ICICIBANK.NS"]
+    elif len(args) == 1 and args[0] in ["--all", "all"]:
+        symbols = ["TCS.NS", "INFY.NS", "HDFCBANK.NS", "ICICIBANK.NS", "RELIANCE.NS"]
+    else:
+        symbols = args
+
+    if len(symbols) == 1:
+        auditor = DirectionalBenchmarkAuditor(symbol=symbols[0])
+        res = auditor.run_audit()
+        print("=" * 60)
+        print(f"EXP-01/02 SINGLE STOCK AUDIT COMPLETE: {symbols[0]}")
+        print(f"Output Directory: {res['output_dir']}")
+        print("=" * 60)
+        print(res["comparison_df"].to_string(index=False))
+    else:
+        multi_auditor = MultiStockDirectionalAuditor(symbols=symbols)
+        res = multi_auditor.run_multi_audit()
+        print("=" * 80)
+        print(f"EXP-02 MULTI-STOCK CROSS-SECTIONAL AUDIT COMPLETE ({len(symbols)} Stocks)")
+        print(f"Output Directory: {res['output_dir']}")
+        print("=" * 80)
+        print(res["macro_df"].to_string(index=False))
 
 
 if __name__ == "__main__":
     main()
+

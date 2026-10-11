@@ -184,3 +184,28 @@ def test_audit_end_to_end_execution(tmp_path):
     assert metrics["always_down_diagnostic"]["metrics"]["three_class_accuracy"] == 51.63
     # Naive is 6 / 184 = 3.26%
     assert metrics["naive_persistence"]["metrics"]["three_class_accuracy"] == 3.26
+
+
+def test_multi_stock_auditor_execution():
+    """Verify MultiStockDirectionalAuditor runs and generates cross-sectional outputs."""
+    from ml.analysis.directional_benchmark_audit import MultiStockDirectionalAuditor
+
+    # Test with 2 stocks for speed in unit test
+    multi_auditor = MultiStockDirectionalAuditor(symbols=["INFY.NS", "HDFCBANK.NS"])
+    res = multi_auditor.run_multi_audit()
+
+    assert Path(res["output_dir"]).exists()
+    assert Path(res["csv_path"]).exists()
+    assert Path(res["json_path"]).exists()
+    assert Path(res["report_path"]).exists()
+
+    df_comb = pd.read_csv(res["csv_path"])
+    assert "symbol" in df_comb.columns
+    assert set(df_comb["symbol"].unique()) == {"INFY.NS", "HDFCBANK.NS"}
+
+    macro_df = res["macro_df"]
+    assert len(macro_df) > 0
+    assert "Macro Raw Acc (%)" in macro_df.columns
+    assert "Macro Balanced Acc (%)" in macro_df.columns
+    assert "Macro MCC" in macro_df.columns
+

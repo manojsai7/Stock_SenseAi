@@ -1,0 +1,481 @@
+{
+  "symbol": "TCS.NS",
+  "clean_symbol": "TCS_NS",
+  "audit_run_id": "audit_TCS_NS_20261011_172208",
+  "audit_timestamp": "2026-10-11T17:22:19.786968+05:30",
+  "sample_counts": {
+    "total_test_samples": 184,
+    "actual_up_samples": 75,
+    "actual_down_samples": 102,
+    "actual_flat_samples": 7,
+    "non_flat_denominator": 177
+  },
+  "alignment_verification": {
+    "is_valid": true,
+    "sample_count": 184,
+    "mismatch_count": 0
+  },
+  "training_label_distribution": {
+    "total_train_samples": 825,
+    "train_up": 405,
+    "train_down": 419,
+    "train_flat": 1
+  },
+  "metrics_by_predictor": {
+    "training_majority": {
+      "name": "Training Majority Baseline (DOWN)",
+      "type": "Directional Baseline",
+      "notes": "Fitted exclusively on training labels (UP: 405, DOWN: 419, FLAT: 1). Zero test leakage.",
+      "metrics": {
+        "sample_count": 184,
+        "three_class_accuracy": 55.43,
+        "non_flat_accuracy": 57.63,
+        "non_flat_denominator": 177,
+        "flat_sample_count": 7,
+        "balanced_accuracy": 33.33,
+        "mcc": 0.0,
+        "cohen_kappa": 0.0,
+        "per_class": {
+          "UP": {
+            "sign": 1,
+            "support": 75,
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0
+          },
+          "DOWN": {
+            "sign": -1,
+            "support": 102,
+            "precision": 55.43,
+            "recall": 100.0,
+            "f1": 71.33
+          },
+          "FLAT": {
+            "sign": 0,
+            "support": 7,
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0
+          }
+        },
+        "confusion_matrix": {
+          "labels": [
+            "UP",
+            "DOWN",
+            "FLAT"
+          ],
+          "matrix": [
+            [
+              0,
+              75,
+              0
+            ],
+            [
+              0,
+              102,
+              0
+            ],
+            [
+              0,
+              7,
+              0
+            ]
+          ]
+        },
+        "mae": null,
+        "rmse": null,
+        "mape": null
+      }
+    },
+    "always_down_diagnostic": {
+      "name": "Always-DOWN (Ex-Post Diagnostic)",
+      "type": "Diagnostic Baseline",
+      "notes": "Selects DOWN based on test-set post-hoc majority. Serves as a reference benchmark to expose false positive skill.",
+      "metrics": {
+        "sample_count": 184,
+        "three_class_accuracy": 55.43,
+        "non_flat_accuracy": 57.63,
+        "non_flat_denominator": 177,
+        "flat_sample_count": 7,
+        "balanced_accuracy": 33.33,
+        "mcc": 0.0,
+        "cohen_kappa": 0.0,
+        "per_class": {
+          "UP": {
+            "sign": 1,
+            "support": 75,
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0
+          },
+          "DOWN": {
+            "sign": -1,
+            "support": 102,
+            "precision": 55.43,
+            "recall": 100.0,
+            "f1": 71.33
+          },
+          "FLAT": {
+            "sign": 0,
+            "support": 7,
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0
+          }
+        },
+        "confusion_matrix": {
+          "labels": [
+            "UP",
+            "DOWN",
+            "FLAT"
+          ],
+          "matrix": [
+            [
+              0,
+              75,
+              0
+            ],
+            [
+              0,
+              102,
+              0
+            ],
+            [
+              0,
+              7,
+              0
+            ]
+          ]
+        },
+        "mae": null,
+        "rmse": null,
+        "mape": null
+      }
+    },
+    "previous_day_momentum": {
+      "name": "Previous-Day Momentum",
+      "type": "Heuristic Directional Baseline",
+      "notes": "Predicts sign(Close[t] - Close[t-1]). Strictly aligned to input session t. Zero lookahead.",
+      "metrics": {
+        "sample_count": 184,
+        "three_class_accuracy": 49.46,
+        "non_flat_accuracy": 51.41,
+        "non_flat_denominator": 177,
+        "flat_sample_count": 7,
+        "balanced_accuracy": 33.5,
+        "mcc": 0.0323,
+        "cohen_kappa": 0.0323,
+        "per_class": {
+          "UP": {
+            "sign": 1,
+            "support": 75,
+            "precision": 42.67,
+            "recall": 42.67,
+            "f1": 42.67
+          },
+          "DOWN": {
+            "sign": -1,
+            "support": 102,
+            "precision": 57.28,
+            "recall": 57.84,
+            "f1": 57.56
+          },
+          "FLAT": {
+            "sign": 0,
+            "support": 7,
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0
+          }
+        },
+        "confusion_matrix": {
+          "labels": [
+            "UP",
+            "DOWN",
+            "FLAT"
+          ],
+          "matrix": [
+            [
+              32,
+              39,
+              4
+            ],
+            [
+              41,
+              59,
+              2
+            ],
+            [
+              2,
+              5,
+              0
+            ]
+          ]
+        },
+        "mae": null,
+        "rmse": null,
+        "mape": null
+      }
+    },
+    "sma20_trend": {
+      "name": "SMA20 Trend Baseline",
+      "type": "Heuristic Directional Baseline",
+      "notes": "Predicts sign(Close[t] - MA20[t]). Strictly aligned to completed input session t. Zero lookahead.",
+      "metrics": {
+        "sample_count": 184,
+        "three_class_accuracy": 53.8,
+        "non_flat_accuracy": 55.93,
+        "non_flat_denominator": 177,
+        "flat_sample_count": 7,
+        "balanced_accuracy": 34.71,
+        "mcc": 0.0415,
+        "cohen_kappa": 0.0375,
+        "per_class": {
+          "UP": {
+            "sign": 1,
+            "support": 75,
+            "precision": 46.51,
+            "recall": 26.67,
+            "f1": 33.9
+          },
+          "DOWN": {
+            "sign": -1,
+            "support": 102,
+            "precision": 56.03,
+            "recall": 77.45,
+            "f1": 65.02
+          },
+          "FLAT": {
+            "sign": 0,
+            "support": 7,
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0
+          }
+        },
+        "confusion_matrix": {
+          "labels": [
+            "UP",
+            "DOWN",
+            "FLAT"
+          ],
+          "matrix": [
+            [
+              20,
+              55,
+              0
+            ],
+            [
+              23,
+              79,
+              0
+            ],
+            [
+              0,
+              7,
+              0
+            ]
+          ]
+        },
+        "mae": null,
+        "rmse": null,
+        "mape": null
+      }
+    },
+    "naive_persistence": {
+      "name": "Naive Persistence (Price Baseline)",
+      "type": "Price & Direction Baseline",
+      "notes": "Predicts Close[t+1] = Close[t]. Implies 0 drift, hence directionally predicts FLAT (0) on all sessions.",
+      "metrics": {
+        "sample_count": 184,
+        "three_class_accuracy": 3.8,
+        "non_flat_accuracy": 0.0,
+        "non_flat_denominator": 177,
+        "flat_sample_count": 7,
+        "balanced_accuracy": 33.33,
+        "mcc": 0.0,
+        "cohen_kappa": 0.0,
+        "per_class": {
+          "UP": {
+            "sign": 1,
+            "support": 75,
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0
+          },
+          "DOWN": {
+            "sign": -1,
+            "support": 102,
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0
+          },
+          "FLAT": {
+            "sign": 0,
+            "support": 7,
+            "precision": 3.8,
+            "recall": 100.0,
+            "f1": 7.33
+          }
+        },
+        "confusion_matrix": {
+          "labels": [
+            "UP",
+            "DOWN",
+            "FLAT"
+          ],
+          "matrix": [
+            [
+              0,
+              0,
+              75
+            ],
+            [
+              0,
+              0,
+              102
+            ],
+            [
+              0,
+              0,
+              7
+            ]
+          ]
+        },
+        "mae": 33.71,
+        "rmse": 48.44,
+        "mape": 1.4
+      }
+    },
+    "saved_lstm": {
+      "name": "Saved LSTM (models_storage)",
+      "type": "Trained Neural Model",
+      "notes": "Loaded checkpoint: model_lstm.keras. Scaler inverse transform applied.",
+      "metrics": {
+        "sample_count": 184,
+        "three_class_accuracy": 41.3,
+        "non_flat_accuracy": 42.94,
+        "non_flat_denominator": 177,
+        "flat_sample_count": 7,
+        "balanced_accuracy": 33.31,
+        "mcc": -0.0008,
+        "cohen_kappa": -0.0003,
+        "per_class": {
+          "UP": {
+            "sign": 1,
+            "support": 75,
+            "precision": 40.68,
+            "recall": 96.0,
+            "f1": 57.14
+          },
+          "DOWN": {
+            "sign": -1,
+            "support": 102,
+            "precision": 57.14,
+            "recall": 3.92,
+            "f1": 7.34
+          },
+          "FLAT": {
+            "sign": 0,
+            "support": 7,
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0
+          }
+        },
+        "confusion_matrix": {
+          "labels": [
+            "UP",
+            "DOWN",
+            "FLAT"
+          ],
+          "matrix": [
+            [
+              72,
+              3,
+              0
+            ],
+            [
+              98,
+              4,
+              0
+            ],
+            [
+              7,
+              0,
+              0
+            ]
+          ]
+        },
+        "mae": 237.13,
+        "rmse": 254.62,
+        "mape": 10.34
+      }
+    },
+    "saved_cnn_lstm": {
+      "name": "Saved CNN-LSTM (models_storage)",
+      "type": "Trained Neural Model",
+      "notes": "Loaded checkpoint: model_cnn_lstm.keras. Scaler inverse transform applied.",
+      "metrics": {
+        "sample_count": 184,
+        "three_class_accuracy": 39.67,
+        "non_flat_accuracy": 41.24,
+        "non_flat_denominator": 177,
+        "flat_sample_count": 7,
+        "balanced_accuracy": 32.21,
+        "mcc": -0.086,
+        "cohen_kappa": -0.0266,
+        "per_class": {
+          "UP": {
+            "sign": 1,
+            "support": 75,
+            "precision": 39.89,
+            "recall": 94.67,
+            "f1": 56.13
+          },
+          "DOWN": {
+            "sign": -1,
+            "support": 102,
+            "precision": 33.33,
+            "recall": 1.96,
+            "f1": 3.7
+          },
+          "FLAT": {
+            "sign": 0,
+            "support": 7,
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0
+          }
+        },
+        "confusion_matrix": {
+          "labels": [
+            "UP",
+            "DOWN",
+            "FLAT"
+          ],
+          "matrix": [
+            [
+              71,
+              4,
+              0
+            ],
+            [
+              100,
+              2,
+              0
+            ],
+            [
+              7,
+              0,
+              0
+            ]
+          ]
+        },
+        "mae": 435.79,
+        "rmse": 478.09,
+        "mape": 19.18
+      }
+    }
+  }
+}
