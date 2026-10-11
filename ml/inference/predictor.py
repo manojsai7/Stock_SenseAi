@@ -108,9 +108,13 @@ class StockPredictor:
         raw_pred = model.predict(input_tensor, verbose=0)
         predicted_close = float(scaler.inverse_transform_target(raw_pred)[0])
 
-        expected_change = round(predicted_close - last_close, 2)
-        expected_change_pct = round(((predicted_close - last_close) / last_close) * 100, 2)
-        direction = "UP" if predicted_close >= last_close else "DOWN"
+        diff = predicted_close - last_close
+        if abs(diff) <= 1e-5:
+            direction = "FLAT"
+        elif diff > 0:
+            direction = "UP"
+        else:
+            direction = "DOWN"
 
         # Recent 30 input candles summary for explainability
         recent_candles = []
@@ -177,9 +181,13 @@ class StockPredictor:
         raw_pred = model.predict(input_tensor, verbose=0)
         predicted_close = float(temp_scaler.inverse_transform_target(raw_pred)[0])
 
-        expected_change = round(predicted_close - last_close, 2)
-        expected_change_pct = round(((predicted_close - last_close) / last_close) * 100, 2)
-        direction = "UP" if predicted_close >= last_close else "DOWN"
+        diff = predicted_close - last_close
+        if abs(diff) <= 1e-5:
+            direction = "FLAT"
+        elif diff > 0:
+            direction = "UP"
+        else:
+            direction = "DOWN"
 
         return {
             "symbol": symbol,

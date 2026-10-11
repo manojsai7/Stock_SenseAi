@@ -1,0 +1,24 @@
+{
+  "symbol": "RELIANCE.NS",
+  "run_id": "run_RELIANCE_NS_20261007_120035_corrected",
+  "source_run_id": "run_RELIANCE_NS_20261007_120035",
+  "correction_status": "audited_three_class_directional_accuracy",
+  "naive_persistence": {
+    "mae": 14.16,
+    "rmse": 18.52,
+    "mape": 1.06,
+    "directional_accuracy": 3.26
+  },
+  "pure_lstm": {
+    "mae": 26.39,
+    "rmse": 33.32,
+    "mape": 1.95,
+    "directional_accuracy": 48.37
+  },
+  "cnn_lstm": {
+    "mae": 30.87,
+    "rmse": 38.31,
+    "mape": 2.33,
+    "directional_accuracy": 48.37
+  }
+}

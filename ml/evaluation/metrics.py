@@ -2,21 +2,58 @@ from typing import Dict, Any, Optional
 import numpy as np
 from sklearn.metrics import mean_absolute_error, mean_squared_error
 
+def compute_direction_signs(
+    prices: np.ndarray,
+    reference_prices: np.ndarray,
+    atol: float = 1e-5
+) -> np.ndarray:
+    """
+    Computes directional movement signs with three discrete classes:
+      +1: UP   (prices - reference_prices > atol)
+      -1: DOWN (prices - reference_prices < -atol)
+       0: FLAT (|prices - reference_prices| <= atol)
+    Equal or near-equal prices are strictly mapped to 0 (FLAT) and NEVER +1 (UP).
+    """
+    prices = np.asarray(prices, dtype=np.float64).flatten()
+    reference_prices = np.asarray(reference_prices, dtype=np.float64).flatten()
+    diff = prices - reference_prices
+    if atol > 0:
+        diff = np.where(np.abs(diff) <= atol, 0.0, diff)
+    return np.sign(diff).astype(int)
+
+def compute_direction_labels(
+    prices: np.ndarray,
+    reference_prices: np.ndarray,
+    atol: float = 1e-5
+) -> np.ndarray:
+    """
+    Computes three-class string direction labels: "UP", "DOWN", "FLAT".
+    Equal and unchanged prices are never classified as "UP".
+    """
+    signs = compute_direction_signs(prices, reference_prices, atol=atol)
+    labels = np.full(signs.shape, "FLAT", dtype=object)
+    labels[signs == 1] = "UP"
+    labels[signs == -1] = "DOWN"
+    return labels
+
 def calculate_metrics(
     y_true: np.ndarray,
     y_pred: np.ndarray,
     previous_close: np.ndarray,
-    prior_trend: Optional[np.ndarray] = None
+    prior_trend: Optional[np.ndarray] = None,
+    atol: float = 1e-5
 ) -> Dict[str, float]:
     """
     Computes rigorous academic and financial evaluation metrics:
     - MAE: Mean Absolute Error (in native currency, INR)
     - RMSE: Root Mean Squared Error (in native currency)
     - MAPE: Mean Absolute Percentage Error (%)
-    - Directional Accuracy: Percentage of correctly predicted price movement directions:
-        actual_dir = +1 if y_true >= previous_close else -1
-        pred_dir   = +1 if y_pred >= previous_close else -1
+    - Directional Accuracy: Percentage of correctly predicted price movement directions
+      using three classes (UP, DOWN, FLAT):
+        actual_dir = sign(Close[t+1] - Close[t])
+        pred_dir   = sign(PredictedClose[t+1] - Close[t])
         DA = count(actual_dir == pred_dir) / total * 100
+      Equal prices must never be classified as UP.
     """
     y_true = np.asarray(y_true, dtype=np.float64).flatten()
     y_pred = np.asarray(y_pred, dtype=np.float64).flatten()
@@ -32,28 +69,12 @@ def calculate_metrics(
     else:
         mape = 0.0
 
-    # Binary Directional Accuracy (Hit Ratio)
-    actual_dir = np.where(y_true >= previous_close, 1, -1)
+    # Three-Class Directional Accuracy: UP, DOWN, FLAT
+    actual_dir = compute_direction_signs(y_true, previous_close, atol=atol)
+    pred_dir = compute_direction_signs(y_pred, previous_close, atol=atol)
 
-    # Check if model is pure naive persistence where y_pred == previous_close everywhere
-    diff = y_pred - previous_close
-    is_pure_persistence = np.allclose(diff, 0, atol=1e-5)
-
-    if is_pure_persistence:
-        if prior_trend is not None and len(prior_trend) == len(actual_dir):
-            # Evaluate using standard momentum direction baseline: sign(P_t - P_{t-1})
-            naive_dir = np.where(prior_trend >= 0, 1, -1)
-            correct_directions = np.sum(actual_dir == naive_dir)
-            directional_accuracy = float((correct_directions / len(actual_dir)) * 100)
-        else:
-            # Random Walk / Flat forecast against binary UP/DOWN market
-            # In a binary market without 0-change, flat prediction receives 0 binary hits
-            # or 50% under unbiased tie-breaker
-            directional_accuracy = 50.0  # Statistical Random Walk expectation
-    else:
-        pred_dir = np.where(y_pred >= previous_close, 1, -1)
-        correct_directions = np.sum(actual_dir == pred_dir)
-        directional_accuracy = float((correct_directions / len(actual_dir)) * 100) if len(actual_dir) > 0 else 0.0
+    correct_directions = np.sum(actual_dir == pred_dir)
+    directional_accuracy = float((correct_directions / len(actual_dir)) * 100) if len(actual_dir) > 0 else 0.0
 
     return {
         "mae": round(mae, 2),
@@ -61,3 +82,4 @@ def calculate_metrics(
         "mape": round(mape, 2),
         "directional_accuracy": round(directional_accuracy, 2)
     }
+

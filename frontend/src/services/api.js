@@ -1,4 +1,4 @@
-const API_BASE = '/api';
+const API_BASE = (import.meta.env.VITE_API_BASE_URL || '').replace(/\/$/, '') + '/api';
 
 export async function searchStocks(query = '') {
   const res = await fetch(`${API_BASE}/stocks/search?q=${encodeURIComponent(query)}`);

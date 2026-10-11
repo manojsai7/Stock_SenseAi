@@ -9,7 +9,7 @@ from ml.models.lstm import build_lstm_model
 from ml.models.baseline import NaivePersistenceModel
 from ml.analysis.model_inspector import inspect_model_architecture
 from ml.analysis.cnn_instrumentation import CNNInstrumentation
-from ml.evaluation.metrics import calculate_metrics
+from ml.evaluation.metrics import calculate_metrics, compute_direction_signs, compute_direction_labels
 
 
 def test_model_input_and_output_shapes():
@@ -99,24 +99,71 @@ def test_cnn_activation_extraction(tmp_path):
 
 
 def test_directional_accuracy_calculation():
-    """Verifies directional accuracy calculation matches exact hit rate formula."""
-    actual = np.array([105.0, 102.0, 110.0, 95.0])
-    previous = np.array([100.0, 104.0, 105.0, 100.0])
+    """Verifies directional accuracy calculation matches 3-class exact hit rate formula."""
+    actual = np.array([105.0, 102.0, 110.0, 95.0, 100.0])
+    previous = np.array([100.0, 104.0, 105.0, 100.0, 100.0])
     # Directions:
-    # 1: 105 >= 100 -> UP (+1)
+    # 1: 105 > 100  -> UP (+1)
     # 2: 102 < 104  -> DOWN (-1)
-    # 3: 110 >= 105 -> UP (+1)
+    # 3: 110 > 105  -> UP (+1)
     # 4: 95 < 100   -> DOWN (-1)
+    # 5: 100 == 100 -> FLAT (0)
 
     # Perfect prediction
-    pred_perfect = np.array([108.0, 101.0, 112.0, 90.0])
+    pred_perfect = np.array([108.0, 101.0, 112.0, 90.0, 100.0])
     m_perfect = calculate_metrics(actual, pred_perfect, previous)
     assert m_perfect["directional_accuracy"] == 100.0
 
-    # Half correct
-    pred_half = np.array([108.0, 106.0, 112.0, 102.0])  # UP, UP(wrong), UP, UP(wrong) -> 2 of 4 = 50%
-    m_half = calculate_metrics(actual, pred_half, previous)
-    assert m_half["directional_accuracy"] == 50.0
+    # 3 of 5 correct (60%)
+    pred_partial = np.array([108.0, 106.0, 112.0, 102.0, 100.0])  # UP(hit), UP(miss), UP(hit), UP(miss), FLAT(hit) -> 3/5 = 60%
+    m_partial = calculate_metrics(actual, pred_partial, previous)
+    assert m_partial["directional_accuracy"] == 60.0
+
+
+def test_directional_classes_rising_falling_unchanged_near_equal():
+    """
+    Verifies that directional labeling satisfies:
+    1. Rising prices -> UP (+1)
+    2. Falling prices -> DOWN (-1)
+    3. Exactly unchanged prices -> FLAT (0), NEVER UP
+    4. Near-equal prices within tolerance -> FLAT (0), NEVER UP
+    """
+    previous = np.array([100.0, 100.0, 100.0, 100.0, 100.0, 100.0])
+    # Case 1: Rising (105.0, 100.5)
+    # Case 2: Falling (95.0, 99.0)
+    # Case 3: Exactly unchanged (100.0)
+    # Case 4: Near-equal within atol=1e-5 (100.000005, 99.999995)
+    prices = np.array([105.0, 95.0, 100.0, 100.000005, 99.999995, 100.5])
+
+    signs = compute_direction_signs(prices, previous, atol=1e-5)
+    labels = compute_direction_labels(prices, previous, atol=1e-5)
+
+    assert signs[0] == 1 and labels[0] == "UP"         # Rising
+    assert signs[1] == -1 and labels[1] == "DOWN"      # Falling
+    assert signs[2] == 0 and labels[2] == "FLAT"       # Exactly unchanged -> FLAT, never UP
+    assert signs[3] == 0 and labels[3] == "FLAT"       # Near-equal (+5e-6) -> FLAT, never UP
+    assert signs[4] == 0 and labels[4] == "FLAT"       # Near-equal (-5e-6) -> FLAT, never UP
+    assert signs[5] == 1 and labels[5] == "UP"         # Rising (+0.5) -> UP
+
+    # Explicit assertion: Equal price must never be classified as UP
+    equal_price = np.array([100.0])
+    assert compute_direction_signs(equal_price, np.array([100.0]))[0] != 1
+    assert compute_direction_labels(equal_price, np.array([100.0]))[0] != "UP"
+    assert compute_direction_labels(equal_price, np.array([100.0]))[0] == "FLAT"
+
+
+def test_naive_persistence_directional_predictions():
+    """
+    Verifies NaivePersistenceModel forecasts FLAT direction for all timesteps
+    since PredictedClose[t+1] == Close[t] identically.
+    """
+    model = NaivePersistenceModel(close_col_index=3)
+    X = np.random.uniform(100.0, 200.0, size=(10, 30, 6)).astype(np.float32)
+
+    dirs = model.predict_direction(X)
+    assert len(dirs) == 10
+    assert np.all(dirs == "FLAT")
+    assert "UP" not in dirs
 
 
 def test_checkpoint_callback_creation(tmp_path):

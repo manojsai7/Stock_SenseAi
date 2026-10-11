@@ -246,7 +246,7 @@ class SupervisedDatasetBuilder:
                 "last_input_close": prev_val,
                 "target_close_t_plus_1": target_val,
                 "target_delta_inr": round(float(target_val - prev_val), 2),
-                "actual_direction": "UP" if target_val >= prev_val else "DOWN"
+                "actual_direction": "FLAT" if abs(target_val - prev_val) <= 1e-5 else ("UP" if target_val > prev_val else "DOWN")
             })
 
         example_df = pd.DataFrame(example_records)

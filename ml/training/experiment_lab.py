@@ -21,7 +21,7 @@ from tensorflow.keras.callbacks import ModelCheckpoint, EarlyStopping, CSVLogger
 from ml.models.baseline import NaivePersistenceModel
 from ml.models.lstm import build_lstm_model
 from ml.models.cnn_lstm import build_cnn_lstm_model
-from ml.evaluation.metrics import calculate_metrics
+from ml.evaluation.metrics import calculate_metrics, compute_direction_labels
 from ml.preprocessing.scaler import StockDataScaler
 from ml.analysis.model_inspector import inspect_model_architecture
 from ml.analysis.cnn_instrumentation import CNNInstrumentation
@@ -124,6 +124,27 @@ class DeepLearningExperimentLab:
                 return df["Date"].iloc[start_k : k + 1].tolist()
         return [f"Day_{i+1}" for i in range(30)]
 
+    def get_test_target_dates(self) -> List[str]:
+        """
+        Maps each test sequence sample to its recorded target date (Date[t+1]).
+        Verifies that actual_close corresponds to the price observed on this target date.
+        """
+        proc_csv = PROJECT_ROOT / "data" / "processed" / f"{self.clean_symbol}_processed.csv"
+        if proc_csv.exists():
+            df = pd.read_csv(proc_csv)
+            tensors = self.load_tensors()
+            input_dates = [str(d) for d in tensors["dates_test"]]
+            target_dates = []
+            for d in input_dates:
+                match = df.index[df["Date"] == d].tolist()
+                if match and match[0] + 1 < len(df):
+                    target_dates.append(str(df["Date"].iloc[match[0] + 1]))
+                else:
+                    target_dates.append(d)
+            return target_dates
+        tensors = self.load_tensors()
+        return [str(d) for d in tensors["dates_test"]]
+
     def evaluate_naive_baseline(self, tensors: Dict[str, np.ndarray]) -> Dict[str, Any]:
         """Evaluates Baseline 1: Naive Persistence (prediction(t+1) = Close(t))."""
         logger.info(f"[{self.symbol}] Evaluating Baseline 1: Naive Persistence...")
@@ -131,10 +152,9 @@ class DeepLearningExperimentLab:
         actual_test_prices = tensors["actual_target_test"]
         prev_close_prices = tensors["prev_close_test"]
 
-        # Close column index in [Open, High, Low, Close, Volume, MA20] is 3
         naive = NaivePersistenceModel(close_col_index=3)
-        naive_pred_sc = naive.predict(X_test)
-        naive_pred_prices = self.scaler.target_scaler.inverse_transform(naive_pred_sc.reshape(-1, 1)).flatten()
+        # Naive persistence strictly predicts next day's price equals previous close
+        naive_pred_prices = prev_close_prices.copy()
 
         metrics = calculate_metrics(
             y_true=actual_test_prices,
@@ -274,12 +294,15 @@ class DeepLearningExperimentLab:
         errors = pred_prices - actual_prices
         abs_errors = np.abs(errors)
 
-        actual_dirs = np.where(actual_prices >= prev_closes, "UP", "DOWN")
-        pred_dirs = np.where(pred_prices >= prev_closes, "UP", "DOWN")
+        actual_dirs = compute_direction_labels(actual_prices, prev_closes)
+        pred_dirs = compute_direction_labels(pred_prices, prev_closes)
         dir_corrects = (actual_dirs == pred_dirs)
 
+        target_dates = self.get_test_target_dates()
         df_eval = pd.DataFrame({
-            "date": dates_test,
+            "date": target_dates,
+            "target_date": target_dates,
+            "input_date": dates_test,
             "actual_close": actual_prices,
             "predicted_close": np.round(pred_prices, 2),
             "previous_close": prev_closes,
@@ -396,14 +419,13 @@ class DeepLearningExperimentLab:
             "batch_size": self.batch_size,
             "epochs": self.epochs,
             "random_seed": self.random_seed,
-                "python_version": sys.version,
-                "tensorflow_version": tf.__version__,
-                "keras_version": tf.keras.__version__ if hasattr(tf.keras, "__version__") else "3.11.2",
-                "numpy_version": np.__version__,
-                "pandas_version": pd.__version__,
-                "sklearn_version": sklearn.__version__,
-                "gpu_devices": [d.name for d in tf.config.list_physical_devices("GPU")]
-            },
+            "python_version": sys.version,
+            "tensorflow_version": tf.__version__,
+            "keras_version": tf.keras.__version__ if hasattr(tf.keras, "__version__") else "3.11.2",
+            "numpy_version": np.__version__,
+            "pandas_version": pd.__version__,
+            "sklearn_version": sklearn.__version__,
+            "gpu_devices": [d.name for d in tf.config.list_physical_devices("GPU")],
             "timestamp": datetime.now().astimezone().isoformat()
         }
 
@@ -423,7 +445,9 @@ class DeepLearningExperimentLab:
         with open(self.run_dir / "metrics.json", "w") as f:
             json.dump(metrics_comparison, f, indent=2)
 
-        with open(RESULTS_DIR / f"{self.clean_symbol}_sanity_metrics.json", "w") as f:
+        # Write versioned corrected metrics preserving original historical baseline
+        corrected_metrics_file = RESULTS_DIR / f"{self.clean_symbol}_sanity_metrics_corrected.json"
+        with open(corrected_metrics_file, "w") as f:
             json.dump(metrics_comparison, f, indent=2)
 
         logger.info(f"[{self.symbol}] Sanity Experiment Complete. Metrics: {metrics_comparison}")
@@ -437,4 +461,130 @@ class DeepLearningExperimentLab:
             "metrics": metrics_comparison,
             "activations": trained_act_info,
             "run_dir": str(self.run_dir)
+        }
+
+    @classmethod
+    def recompute_from_existing_run(
+        cls,
+        symbol: str = "RELIANCE.NS",
+        source_run_id: str = "run_RELIANCE_NS_20261007_120035",
+        target_run_id: Optional[str] = None
+    ) -> Dict[str, Any]:
+        """
+        Recomputes directional accuracy and evaluation metrics using the corrected
+        three-class sign-based logic from existing trained model artifacts.
+        Preserves original historical run files and writes results to a new versioned run.
+        Does NOT reuse stale direction_correct values.
+        """
+        clean_symbol = symbol.replace(".", "_")
+        source_run_dir = RUNS_DIR / source_run_id
+        if not source_run_dir.exists():
+            raise FileNotFoundError(f"Source run directory not found: {source_run_dir}")
+
+        dest_run_id = target_run_id or f"{source_run_id}_corrected"
+        dest_run_dir = RUNS_DIR / dest_run_id
+        dest_run_dir.mkdir(parents=True, exist_ok=True)
+
+        seq_dir = SEQUENCES_DIR / clean_symbol
+        scaler = StockDataScaler.load(seq_dir / "scaler.pkl")
+
+        npz_file = seq_dir / "sequences.npz"
+        data = np.load(npz_file, allow_pickle=True)
+        X_test = data["X_test"]
+        actual_prices = data["actual_target_test"]
+        prev_closes = data["prev_close_test"]
+        dates_test = data["dates_test"]
+
+        # 1. Baseline 1: Naive Persistence (PredictedClose[t+1] = Close[t])
+        naive_preds = prev_closes.copy()
+        naive_metrics = calculate_metrics(
+            y_true=actual_prices,
+            y_pred=naive_preds,
+            previous_close=prev_closes
+        )
+
+        # 2. Baseline 2: Pure LSTM
+        lstm_model_path = source_run_dir / "best_lstm_model.keras"
+        lstm_model = tf.keras.models.load_model(str(lstm_model_path))
+        lstm_pred_sc = lstm_model.predict(X_test, verbose=0).flatten()
+        lstm_preds = scaler.inverse_transform_target(lstm_pred_sc)
+        lstm_metrics = calculate_metrics(
+            y_true=actual_prices,
+            y_pred=lstm_preds,
+            previous_close=prev_closes
+        )
+
+        # 3. Hybrid CNN-LSTM
+        cnn_model_path = source_run_dir / "best_cnn_lstm.keras"
+        cnn_model = tf.keras.models.load_model(str(cnn_model_path))
+        cnn_pred_sc = cnn_model.predict(X_test, verbose=0).flatten()
+        cnn_preds = scaler.inverse_transform_target(cnn_pred_sc)
+        cnn_metrics = calculate_metrics(
+            y_true=actual_prices,
+            y_pred=cnn_preds,
+            previous_close=prev_closes
+        )
+
+        # 4. Fresh error analysis & actual_vs_predicted with three-class direction
+        errors = cnn_preds - actual_prices
+        abs_errors = np.abs(errors)
+        actual_dirs = compute_direction_labels(actual_prices, prev_closes)
+        pred_dirs = compute_direction_labels(cnn_preds, prev_closes)
+        dir_corrects = (actual_dirs == pred_dirs)
+
+        target_dates = []
+        proc_csv = PROJECT_ROOT / "data" / "processed" / f"{clean_symbol}_processed.csv"
+        if proc_csv.exists():
+            df_proc = pd.read_csv(proc_csv)
+            for d in [str(x) for x in dates_test]:
+                m = df_proc.index[df_proc["Date"] == d].tolist()
+                if m and m[0] + 1 < len(df_proc):
+                    target_dates.append(str(df_proc["Date"].iloc[m[0] + 1]))
+                else:
+                    target_dates.append(d)
+        else:
+            target_dates = [str(x) for x in dates_test]
+
+        df_eval = pd.DataFrame({
+            "date": target_dates,
+            "target_date": target_dates,
+            "input_date": dates_test,
+            "actual_close": actual_prices,
+            "predicted_close": np.round(cnn_preds, 2),
+            "previous_close": prev_closes,
+            "error": np.round(errors, 2),
+            "absolute_error": np.round(abs_errors, 2),
+            "direction_actual": actual_dirs,
+            "direction_predicted": pred_dirs,
+            "direction_correct": dir_corrects
+        })
+        df_eval.to_csv(dest_run_dir / "actual_vs_predicted.csv", index=False)
+
+        df_error = df_eval.sort_values("absolute_error", ascending=False).reset_index(drop=True)
+        df_error.to_csv(dest_run_dir / "error_analysis.csv", index=False)
+
+        # Comparative Metrics
+        metrics_comparison = {
+            "symbol": symbol,
+            "run_id": dest_run_id,
+            "source_run_id": source_run_id,
+            "correction_status": "audited_three_class_directional_accuracy",
+            "naive_persistence": naive_metrics,
+            "pure_lstm": lstm_metrics,
+            "cnn_lstm": cnn_metrics
+        }
+
+        with open(dest_run_dir / "metrics.json", "w") as f:
+            json.dump(metrics_comparison, f, indent=2)
+
+        # Write corrected versioned output
+        corrected_out = RESULTS_DIR / f"{clean_symbol}_sanity_metrics_corrected.json"
+        with open(corrected_out, "w") as f:
+            json.dump(metrics_comparison, f, indent=2)
+
+        logger.info(f"Recomputed metrics written to {dest_run_dir} and {corrected_out}")
+        return {
+            "metrics": metrics_comparison,
+            "dest_run_dir": str(dest_run_dir),
+            "eval_df": df_eval
         }
