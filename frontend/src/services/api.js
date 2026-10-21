@@ -45,8 +45,9 @@ export async function getStockHistory(symbol, period = '1y') {
   return res.json();
 }
 
-export async function getPrediction(symbol) {
-  const res = await fetch(`${API_BASE}/predictions/${encodeURIComponent(symbol)}/latest`);
+export async function getPrediction(symbol, pipelineVersion = 'stationary-return-v1') {
+  const queryParam = pipelineVersion ? `?pipeline_version=${encodeURIComponent(pipelineVersion)}` : '';
+  const res = await fetch(`${API_BASE}/predictions/${encodeURIComponent(symbol)}/latest${queryParam}`);
   if (!res.ok) {
     const errorMsg = await parseError(res, `Inference not available for ${symbol}`);
     throw new Error(errorMsg);

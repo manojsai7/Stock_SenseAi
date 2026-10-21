@@ -252,6 +252,16 @@ export default function ArchitectureModal({ isOpen, onClose }) {
 
             <div style={{ backgroundColor: 'var(--surface-subtle)', border: '1px solid var(--border-subtle)', borderRadius: '8px', padding: '10px 14px' }}>
               <strong style={{ color: 'var(--text-primary)', fontSize: '0.8125rem' }}>
+                Q: What is the difference between the Legacy and Stationary pipelines?
+              </strong>
+              <p style={{ color: 'var(--text-secondary)', fontSize: '0.75rem', marginTop: '3px', lineHeight: 1.4 }}>
+                <strong>Legacy Pipeline:</strong> Uses 6 raw OHLCV+MA20 price features with MinMax normalization to predict tomorrow's closing price level directly. Can suffer from price-level drift when stock prices move outside historical ranges.<br />
+                <strong>Stationary Pipeline (v1):</strong> Uses 7 relative, strictly stationary features (1d, 5d, 20d returns, intraday return, high-low range ratio, close-to-MA20, volume ratio) to forecast the next-session return (r̂). The closing price is reconstructed mathematically via Closeₜ × (1 + r̂), guaranteeing structural boundedness and eliminating non-stationary drift.
+              </p>
+            </div>
+
+            <div style={{ backgroundColor: 'var(--surface-subtle)', border: '1px solid var(--border-subtle)', borderRadius: '8px', padding: '10px 14px' }}>
+              <strong style={{ color: 'var(--text-primary)', fontSize: '0.8125rem' }}>
                 Q: Why is Naive Persistence competitive in price MAE?
               </strong>
               <p style={{ color: 'var(--text-secondary)', fontSize: '0.75rem', marginTop: '3px', lineHeight: 1.4 }}>
@@ -264,7 +274,7 @@ export default function ArchitectureModal({ isOpen, onClose }) {
                 Q: How is zero Data Leakage guaranteed?
               </strong>
               <p style={{ color: 'var(--text-secondary)', fontSize: '0.75rem', marginTop: '3px', lineHeight: 1.4 }}>
-                Data splits are strictly chronological (70% Train, 15% Val, 15% Test). All preprocessing parameters (MinMax scaler) are fitted strictly on the Train set. Validation and Test splits are transformed without refitting.
+                Data splits are strictly chronological. All preprocessing parameters (scalers) are fitted strictly on the Train set. Validation and Test splits are transformed without refitting. Features at session t strictly use data at or before session t.
               </p>
             </div>
           </div>

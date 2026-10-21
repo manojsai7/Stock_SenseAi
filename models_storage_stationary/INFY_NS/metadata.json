@@ -1,0 +1,58 @@
+{
+  "pipeline_version": "stationary-return-v1",
+  "model_version": "cnn_lstm_stationary_v1",
+  "symbol": "INFY.NS",
+  "architecture": "CNN-LSTM (Conv1D + LSTM)",
+  "window_size": 30,
+  "target": "next_day_return",
+  "features": [
+    "return_1d",
+    "return_5d",
+    "return_20d",
+    "intraday_return",
+    "hl_range_ratio",
+    "close_to_ma20",
+    "volume_ratio"
+  ],
+  "model_file": "model_cnn_lstm_stationary.keras",
+  "feature_scaler": "stationary_feature_scaler.pkl",
+  "target_scaler": "return_target_scaler.pkl",
+  "trained_at": "2026-10-21T17:11:45.233193",
+  "source_data_range": {
+    "start_date": "2021-10-07",
+    "last_completed_session": "2026-10-07",
+    "last_target_date": "2026-10-07"
+  },
+  "stage_a_training_duration_selection": {
+    "best_epoch": 1,
+    "best_val_loss": 1.804302,
+    "train_samples": 1012,
+    "validation_samples": 179,
+    "validation_data_end": "2026-10-06",
+    "validation_metrics": {
+      "mae": 18.45,
+      "rmse": 25.73,
+      "mape": 1.55,
+      "directional_accuracy": 39.11,
+      "balanced_accuracy": 32.99,
+      "mcc": -0.0206,
+      "sample_count": 179
+    },
+    "naive_persistence_metrics": {
+      "mae": 18.02,
+      "rmse": 25.25,
+      "mape": 1.52,
+      "directional_accuracy": 2.79,
+      "balanced_accuracy": 33.33,
+      "mcc": 0.0,
+      "sample_count": 179
+    }
+  },
+  "stage_b_final_deployment_refit": {
+    "fixed_epochs": 1,
+    "total_training_samples": 1191,
+    "training_data_end": "2026-10-07",
+    "note": "Refit on 100% eligible labelled sequences. No validation callback used during Stage B."
+  },
+  "disclaimer": "Validation metrics reflect Stage A early-stopping selection on the chronological validation fold. They are documented for model selection evidence, not as an untouched future test. Statistical estimate for academic research; not financial advice."
+}

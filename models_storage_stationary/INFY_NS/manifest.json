@@ -1,0 +1,27 @@
+{
+  "symbol": "INFY.NS",
+  "pipeline_version": "stationary-return-v1",
+  "created_at": "2026-10-21T17:11:45.234718",
+  "artifacts": {
+    "model": {
+      "file": "model_cnn_lstm_stationary.keras",
+      "sha256": "f0cfcd289331902ad80a8fbdda867219f6828e4303f120129837d6d199126870",
+      "size_bytes": 353860
+    },
+    "feature_scaler": {
+      "file": "stationary_feature_scaler.pkl",
+      "sha256": "8e82baaa01571228fd59f628260e6377de511cbe00f9dd395549815bed8bb978",
+      "size_bytes": 838
+    },
+    "target_scaler": {
+      "file": "return_target_scaler.pkl",
+      "sha256": "c3fef90b62992edb8c1cb16e487d2312c07d0ea30ab1679edce5885194a99cd7",
+      "size_bytes": 126
+    },
+    "metadata": {
+      "file": "metadata.json",
+      "sha256": "d99e82b2c43875def55acc0946225d0b60dd741c4a7f5393f831c25651b4bed5",
+      "size_bytes": 1907
+    }
+  }
+}

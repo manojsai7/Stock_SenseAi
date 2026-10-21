@@ -100,7 +100,7 @@ export default function App() {
     setPredicting(true);
     setForecastError(null);
     try {
-      const pred = await getPrediction(symbol);
+      const pred = await getPrediction(symbol, 'stationary-return-v1');
       setPrediction(pred);
     } catch (err) {
       console.warn('Prediction notice:', err.message);
@@ -127,7 +127,7 @@ export default function App() {
     // Auto-fetch latest prediction on stock change
     (async () => {
       try {
-        const pred = await getPrediction(selectedSymbol);
+        const pred = await getPrediction(selectedSymbol, 'stationary-return-v1');
         if (!isCancelled) {
           setPrediction(pred);
         }

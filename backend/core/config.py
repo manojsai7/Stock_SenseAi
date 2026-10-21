@@ -28,6 +28,12 @@ class Settings:
     MARKET_TIMEZONE: str = os.getenv("MARKET_TIMEZONE", "Asia/Kolkata")
     PROVIDER_NAME: str = "Yahoo Finance"
 
+    # Pipeline versioning
+    PIPELINE_LEGACY: str = "legacy"
+    PIPELINE_STATIONARY_V1: str = "stationary-return-v1"
+    VALID_PIPELINE_VERSIONS: List[str] = ["legacy", "stationary-return-v1"]
+    PREDICTION_PIPELINE_VERSION: str = os.getenv("PREDICTION_PIPELINE_VERSION", "legacy").lower()
+
     SUPPORTED_STOCKS: List[str] = [
         "TCS.NS",
         "RELIANCE.NS",

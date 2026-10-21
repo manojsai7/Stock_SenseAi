@@ -53,68 +53,16 @@ from ml.models.cnn_lstm import build_cnn_lstm_model
 logger = logging.getLogger("EXP-04")
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
 
-FEATURE_COLUMNS = [
-    "return_1d",
-    "return_5d",
-    "return_20d",
-    "intraday_return",
-    "hl_range_ratio",
-    "close_to_ma20",
-    "volume_ratio"
-]
+from ml.features.stationary import (
+    FEATURE_COLUMNS,
+    compute_stationary_features as canonical_compute_stationary_features,
+)
+
+compute_stationary_features = canonical_compute_stationary_features
 
 DIRECTION_CLASSES = [1, -1, 0]  # UP, DOWN, FLAT
 DIRECTION_NAMES = ["UP", "DOWN", "FLAT"]
 SIGN_TO_NAME = {1: "UP", -1: "DOWN", 0: "FLAT"}
-
-
-def compute_stationary_features(df_input: pd.DataFrame) -> Tuple[pd.DataFrame, List[str]]:
-    """
-    Computes strictly causal, relative stationary features from raw/processed bar data:
-    1. return_1d: Close[t] / Close[t-1] - 1
-    2. return_5d: Close[t] / Close[t-5] - 1
-    3. return_20d: Close[t] / Close[t-20] - 1
-    4. intraday_return: (Close[t] - Open[t]) / Open[t]
-    5. hl_range_ratio: (High[t] - Low[t]) / Close[t-1]
-    6. close_to_ma20: Close[t] / MA20[t] - 1
-    7. volume_ratio: Volume[t] / Mean(Volume[t-19...t]) (causal rolling volume ratio)
-    Target:
-    target_return: Close[t+1] / Close[t] - 1
-    """
-    df = df_input.copy()
-    df["Date"] = pd.to_datetime(df["Date"])
-    df = df.sort_values("Date").reset_index(drop=True)
-
-    # 1. Close returns
-    df["return_1d"] = df["Close"].pct_change(1)
-    df["return_5d"] = df["Close"].pct_change(5)
-    df["return_20d"] = df["Close"].pct_change(20)
-
-    # 2. Intraday return
-    df["intraday_return"] = (df["Close"] - df["Open"]) / df["Open"]
-
-    # 3. High-Low range divided by previous close
-    df["hl_range_ratio"] = (df["High"] - df["Low"]) / df["Close"].shift(1)
-
-    # 4. Moving Average 20 ratio
-    if "MA20" not in df.columns or df["MA20"].isna().all():
-        ma20 = df["Close"].rolling(20, min_periods=20).mean()
-    else:
-        ma20 = df["MA20"]
-    df["close_to_ma20"] = (df["Close"] / ma20) - 1.0
-
-    # 5. Causal rolling volume ratio
-    vol_ma20 = df["Volume"].rolling(20, min_periods=20).mean()
-    df["volume_ratio"] = df["Volume"] / (vol_ma20 + 1e-8)
-
-    # 6. Target: next-day simple return, target close, target date
-    df["target_return"] = (df["Close"].shift(-1) / df["Close"]) - 1.0
-    df["target_close"] = df["Close"].shift(-1)
-    df["target_date"] = df["Date"].shift(-1).dt.strftime("%Y-%m-%d")
-
-    # Clean rows with complete features and valid next-day target
-    clean_df = df.dropna(subset=FEATURE_COLUMNS + ["target_return", "target_close", "target_date"]).reset_index(drop=True)
-    return clean_df, FEATURE_COLUMNS
 
 
 def sign_from_difference(diff: np.ndarray, atol: float = 1e-5) -> np.ndarray:
@@ -198,38 +146,7 @@ def compute_metrics(
     return metrics
 
 
-class ReturnTargetScaler:
-    """Standardizes target returns using training mean and std only."""
-
-    def __init__(self):
-        self.mean_: Optional[float] = None
-        self.std_: Optional[float] = None
-        self.is_fitted: bool = False
-
-    def fit(self, returns: np.ndarray) -> "ReturnTargetScaler":
-        arr = np.asarray(returns, dtype=np.float64).flatten()
-        self.mean_ = float(np.mean(arr))
-        std = float(np.std(arr))
-        self.std_ = std if std > 1e-12 else 1.0
-        self.is_fitted = True
-        return self
-
-    def transform(self, returns: np.ndarray) -> np.ndarray:
-        if not self.is_fitted:
-            raise ValueError("ReturnTargetScaler is not fitted yet.")
-        arr = np.asarray(returns, dtype=np.float64).flatten()
-        return ((arr - self.mean_) / self.std_).astype(np.float32)
-
-    def inverse_transform(self, scaled_returns: np.ndarray) -> np.ndarray:
-        if not self.is_fitted:
-            raise ValueError("ReturnTargetScaler is not fitted yet.")
-        arr = np.asarray(scaled_returns, dtype=np.float64).flatten()
-        return (arr * self.std_ + self.mean_).astype(np.float64)
-
-    def save(self, file_path: Path):
-        file_path.parent.mkdir(parents=True, exist_ok=True)
-        with open(file_path, "wb") as f:
-            pickle.dump(self, f)
+from ml.preprocessing.stationary_scaler import ReturnTargetScaler
 
 
 class StationaryFeaturesExperiment:

@@ -23,10 +23,14 @@ logger = logging.getLogger("stocksense")
 async def lifespan(app: FastAPI):
     logger.info("[STARTUP] Initializing StockSense AI Production Backend...")
     logger.info(f"[STARTUP] Supported Stocks: {settings.SUPPORTED_STOCKS}")
+    logger.info(f"[STARTUP] Prediction Pipeline Version: {settings.PREDICTION_PIPELINE_VERSION}")
     # Warm up models in the background/startup so inference is instantaneous
     try:
         warmed = model_registry.warm_all()
-        logger.info(f"[STARTUP] Pre-warmed model artifacts: {warmed}")
+        logger.info(f"[STARTUP] Pre-warmed legacy model artifacts: {warmed}")
+        if settings.PREDICTION_PIPELINE_VERSION == settings.PIPELINE_STATIONARY_V1:
+            warmed_stationary = model_registry.warm_stationary()
+            logger.info(f"[STARTUP] Pre-warmed stationary model artifacts: {warmed_stationary}")
     except Exception as e:
         logger.warning(f"[STARTUP] Model warming notice: {e}")
     yield

@@ -1,0 +1,342 @@
+{
+  "TCS.NS": {
+    "training": {
+      "symbol": "TCS.NS",
+      "output_dir": "D:\\Downloads\\Stock_SenseAi\\models_storage_stationary\\TCS_NS",
+      "stage_a_best_epoch": 1,
+      "stage_a_val_metrics": {
+        "mae": 34.7,
+        "rmse": 49.29,
+        "mape": 1.45,
+        "directional_accuracy": 41.9,
+        "balanced_accuracy": 32.27,
+        "mcc": -0.037,
+        "sample_count": 179
+      },
+      "stage_a_naive_metrics": {
+        "mae": 33.88,
+        "rmse": 48.75,
+        "mape": 1.42,
+        "directional_accuracy": 3.35,
+        "balanced_accuracy": 33.33,
+        "mcc": 0.0,
+        "sample_count": 179
+      },
+      "stage_b_samples": 1191,
+      "manifest": {
+        "symbol": "TCS.NS",
+        "pipeline_version": "stationary-return-v1",
+        "created_at": "2026-10-21T17:11:14.603967",
+        "artifacts": {
+          "model": {
+            "file": "model_cnn_lstm_stationary.keras",
+            "sha256": "b6e2d285e0ac115502983be7780bd2bc7882da5bf7a9c011897148352dd0963f",
+            "size_bytes": 353860
+          },
+          "feature_scaler": {
+            "file": "stationary_feature_scaler.pkl",
+            "sha256": "709f17d7944a559425308ae915c5998202c191a3d52016ab11d09716d03a6573",
+            "size_bytes": 838
+          },
+          "target_scaler": {
+            "file": "return_target_scaler.pkl",
+            "sha256": "643e309c36e261586052f061486f36dcc236cc4a04dd3f466ddbec56feda49c3",
+            "size_bytes": 126
+          },
+          "metadata": {
+            "file": "metadata.json",
+            "sha256": "163702022cb73109ce9fa39418da321afb5aab071fe6441c0976c95fd9b4f0f0",
+            "size_bytes": 1903
+          }
+        }
+      }
+    },
+    "smoke_test": {
+      "symbol": "TCS.NS",
+      "last_completed_date": "2026-10-07",
+      "last_close": 2100.0,
+      "input_tensor_shape": [
+        1,
+        30,
+        7
+      ],
+      "predicted_standardized_output": 0.050176,
+      "predicted_return": 0.000374,
+      "predicted_close": 2100.79,
+      "manifest_sha256_verified": true,
+      "model_file_size": 353860
+    }
+  },
+  "RELIANCE.NS": {
+    "training": {
+      "symbol": "RELIANCE.NS",
+      "output_dir": "D:\\Downloads\\Stock_SenseAi\\models_storage_stationary\\RELIANCE_NS",
+      "stage_a_best_epoch": 1,
+      "stage_a_val_metrics": {
+        "mae": 14.12,
+        "rmse": 18.34,
+        "mape": 1.06,
+        "directional_accuracy": 51.4,
+        "balanced_accuracy": 35.94,
+        "mcc": 0.0797,
+        "sample_count": 179
+      },
+      "stage_a_naive_metrics": {
+        "mae": 14.13,
+        "rmse": 18.41,
+        "mape": 1.06,
+        "directional_accuracy": 2.79,
+        "balanced_accuracy": 33.33,
+        "mcc": 0.0,
+        "sample_count": 179
+      },
+      "stage_b_samples": 1191,
+      "manifest": {
+        "symbol": "RELIANCE.NS",
+        "pipeline_version": "stationary-return-v1",
+        "created_at": "2026-10-21T17:11:30.520790",
+        "artifacts": {
+          "model": {
+            "file": "model_cnn_lstm_stationary.keras",
+            "sha256": "a4715e84cdd7a16d1b334936c9a39b35249bb594aec5c987a4f6ee62d50d4f11",
+            "size_bytes": 353860
+          },
+          "feature_scaler": {
+            "file": "stationary_feature_scaler.pkl",
+            "sha256": "3319c1f886804c0ab75cab2deda5cfb24e911272322187622d2872a5851f7750",
+            "size_bytes": 838
+          },
+          "target_scaler": {
+            "file": "return_target_scaler.pkl",
+            "sha256": "98e9f854d900796e5e1b486e5a0abbc49223dc21ce21f7621280cb2d8b2b82dd",
+            "size_bytes": 126
+          },
+          "metadata": {
+            "file": "metadata.json",
+            "sha256": "714c7fbcb8d365d2a7a01e59c0e2ae5e588526e3eedec48125acddf50dad3fbe",
+            "size_bytes": 1909
+          }
+        }
+      }
+    },
+    "smoke_test": {
+      "symbol": "RELIANCE.NS",
+      "last_completed_date": "2026-10-07",
+      "last_close": 1214.9,
+      "input_tensor_shape": [
+        1,
+        30,
+        7
+      ],
+      "predicted_standardized_output": 0.025984,
+      "predicted_return": 0.000576,
+      "predicted_close": 1215.6,
+      "manifest_sha256_verified": true,
+      "model_file_size": 353860
+    }
+  },
+  "INFY.NS": {
+    "training": {
+      "symbol": "INFY.NS",
+      "output_dir": "D:\\Downloads\\Stock_SenseAi\\models_storage_stationary\\INFY_NS",
+      "stage_a_best_epoch": 1,
+      "stage_a_val_metrics": {
+        "mae": 18.45,
+        "rmse": 25.73,
+        "mape": 1.55,
+        "directional_accuracy": 39.11,
+        "balanced_accuracy": 32.99,
+        "mcc": -0.0206,
+        "sample_count": 179
+      },
+      "stage_a_naive_metrics": {
+        "mae": 18.02,
+        "rmse": 25.25,
+        "mape": 1.52,
+        "directional_accuracy": 2.79,
+        "balanced_accuracy": 33.33,
+        "mcc": 0.0,
+        "sample_count": 179
+      },
+      "stage_b_samples": 1191,
+      "manifest": {
+        "symbol": "INFY.NS",
+        "pipeline_version": "stationary-return-v1",
+        "created_at": "2026-10-21T17:11:45.234718",
+        "artifacts": {
+          "model": {
+            "file": "model_cnn_lstm_stationary.keras",
+            "sha256": "f0cfcd289331902ad80a8fbdda867219f6828e4303f120129837d6d199126870",
+            "size_bytes": 353860
+          },
+          "feature_scaler": {
+            "file": "stationary_feature_scaler.pkl",
+            "sha256": "8e82baaa01571228fd59f628260e6377de511cbe00f9dd395549815bed8bb978",
+            "size_bytes": 838
+          },
+          "target_scaler": {
+            "file": "return_target_scaler.pkl",
+            "sha256": "c3fef90b62992edb8c1cb16e487d2312c07d0ea30ab1679edce5885194a99cd7",
+            "size_bytes": 126
+          },
+          "metadata": {
+            "file": "metadata.json",
+            "sha256": "d99e82b2c43875def55acc0946225d0b60dd741c4a7f5393f831c25651b4bed5",
+            "size_bytes": 1907
+          }
+        }
+      }
+    },
+    "smoke_test": {
+      "symbol": "INFY.NS",
+      "last_completed_date": "2026-10-07",
+      "last_close": 1004.8,
+      "input_tensor_shape": [
+        1,
+        30,
+        7
+      ],
+      "predicted_standardized_output": 0.076632,
+      "predicted_return": 0.000911,
+      "predicted_close": 1005.72,
+      "manifest_sha256_verified": true,
+      "model_file_size": 353860
+    }
+  },
+  "HDFCBANK.NS": {
+    "training": {
+      "symbol": "HDFCBANK.NS",
+      "output_dir": "D:\\Downloads\\Stock_SenseAi\\models_storage_stationary\\HDFCBANK_NS",
+      "stage_a_best_epoch": 1,
+      "stage_a_val_metrics": {
+        "mae": 9.22,
+        "rmse": 12.42,
+        "mape": 1.17,
+        "directional_accuracy": 44.13,
+        "balanced_accuracy": 33.88,
+        "mcc": 0.0194,
+        "sample_count": 179
+      },
+      "stage_a_naive_metrics": {
+        "mae": 9.04,
+        "rmse": 12.28,
+        "mape": 1.15,
+        "directional_accuracy": 3.91,
+        "balanced_accuracy": 33.33,
+        "mcc": 0.0,
+        "sample_count": 179
+      },
+      "stage_b_samples": 1191,
+      "manifest": {
+        "symbol": "HDFCBANK.NS",
+        "pipeline_version": "stationary-return-v1",
+        "created_at": "2026-10-21T17:12:00.533080",
+        "artifacts": {
+          "model": {
+            "file": "model_cnn_lstm_stationary.keras",
+            "sha256": "feb2ec5a16db7123efc4d20126459cafce68ee136172abcbbd1f217ee8c10a5a",
+            "size_bytes": 353860
+          },
+          "feature_scaler": {
+            "file": "stationary_feature_scaler.pkl",
+            "sha256": "dec2784949b0093532eaae52a5800dbd1312c847c1f71d120ed890d433035732",
+            "size_bytes": 838
+          },
+          "target_scaler": {
+            "file": "return_target_scaler.pkl",
+            "sha256": "3998eabfcb93b2a88f0571ac1f098c94d82f104f12328ef8e0fabf2f62b5c3cc",
+            "size_bytes": 126
+          },
+          "metadata": {
+            "file": "metadata.json",
+            "sha256": "b719a8f5fb9d2840fe838139b6c73439054f7de82e8543f5008943298adebd54",
+            "size_bytes": 1908
+          }
+        }
+      }
+    },
+    "smoke_test": {
+      "symbol": "HDFCBANK.NS",
+      "last_completed_date": "2026-10-07",
+      "last_close": 708.05,
+      "input_tensor_shape": [
+        1,
+        30,
+        7
+      ],
+      "predicted_standardized_output": -0.040424,
+      "predicted_return": -0.000455,
+      "predicted_close": 707.73,
+      "manifest_sha256_verified": true,
+      "model_file_size": 353860
+    }
+  },
+  "ICICIBANK.NS": {
+    "training": {
+      "symbol": "ICICIBANK.NS",
+      "output_dir": "D:\\Downloads\\Stock_SenseAi\\models_storage_stationary\\ICICIBANK_NS",
+      "stage_a_best_epoch": 6,
+      "stage_a_val_metrics": {
+        "mae": 13.31,
+        "rmse": 16.91,
+        "mape": 0.99,
+        "directional_accuracy": 47.49,
+        "balanced_accuracy": 32.57,
+        "mcc": -0.0233,
+        "sample_count": 179
+      },
+      "stage_a_naive_metrics": {
+        "mae": 13.2,
+        "rmse": 17.02,
+        "mape": 0.99,
+        "directional_accuracy": 2.79,
+        "balanced_accuracy": 33.33,
+        "mcc": 0.0,
+        "sample_count": 179
+      },
+      "stage_b_samples": 1191,
+      "manifest": {
+        "symbol": "ICICIBANK.NS",
+        "pipeline_version": "stationary-return-v1",
+        "created_at": "2026-10-21T17:12:24.264992",
+        "artifacts": {
+          "model": {
+            "file": "model_cnn_lstm_stationary.keras",
+            "sha256": "a983dd4afa240a041e1aadc64d96907f3d1757a82b605584cd7fb03e214e1435",
+            "size_bytes": 353860
+          },
+          "feature_scaler": {
+            "file": "stationary_feature_scaler.pkl",
+            "sha256": "a63360f7335b4c836106e981bfd237c6e351bf1abffcd65f9328210fe0a78b56",
+            "size_bytes": 838
+          },
+          "target_scaler": {
+            "file": "return_target_scaler.pkl",
+            "sha256": "653b37672f14fe8586ce6268ad8838d83be9346578845d5394bb6d1218b82d07",
+            "size_bytes": 126
+          },
+          "metadata": {
+            "file": "metadata.json",
+            "sha256": "880eb107843be45ee2cdeceaad143861a6848e4a5da0c66c5ed7a3d378e0da76",
+            "size_bytes": 1911
+          }
+        }
+      }
+    },
+    "smoke_test": {
+      "symbol": "ICICIBANK.NS",
+      "last_completed_date": "2026-10-07",
+      "last_close": 1349.2,
+      "input_tensor_shape": [
+        1,
+        30,
+        7
+      ],
+      "predicted_standardized_output": 0.189959,
+      "predicted_return": 0.00293,
+      "predicted_close": 1353.15,
+      "manifest_sha256_verified": true,
+      "model_file_size": 353860
+    }
+  }
+}

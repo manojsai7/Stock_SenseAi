@@ -1,5 +1,5 @@
 from fastapi import APIRouter, HTTPException
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Optional
 from pathlib import Path
 import pandas as pd
 from backend.services.prediction_service import PredictionService
@@ -15,13 +15,14 @@ if not RESULTS_CSV.exists():
 @router.get("/predict/{symbol}", response_model=PredictionResponse, summary="Predict Next Trading Day Close")
 @router.get("/predictions/{symbol}/latest", response_model=PredictionResponse, summary="Latest Prediction")
 @router.post("/predictions/{symbol}", response_model=PredictionResponse, summary="Execute Prediction")
-def get_prediction(symbol: str):
+def get_prediction(symbol: str, pipeline_version: Optional[str] = None):
     """
     Executes CNN-LSTM inference on the latest 30 COMPLETED trading days to forecast
     the next trading day's closing price.
+    Supports versioned inference via pipeline_version parameter ('legacy' or 'stationary-return-v1').
     """
     try:
-        return pred_service.get_prediction(symbol)
+        return pred_service.get_prediction(symbol, pipeline_version=pipeline_version)
     except ValueError as ve:
         raise HTTPException(status_code=400, detail=str(ve))
     except FileNotFoundError as fe:

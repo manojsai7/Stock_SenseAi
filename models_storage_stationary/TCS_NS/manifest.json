@@ -1,0 +1,27 @@
+{
+  "symbol": "TCS.NS",
+  "pipeline_version": "stationary-return-v1",
+  "created_at": "2026-10-21T17:11:14.603967",
+  "artifacts": {
+    "model": {
+      "file": "model_cnn_lstm_stationary.keras",
+      "sha256": "b6e2d285e0ac115502983be7780bd2bc7882da5bf7a9c011897148352dd0963f",
+      "size_bytes": 353860
+    },
+    "feature_scaler": {
+      "file": "stationary_feature_scaler.pkl",
+      "sha256": "709f17d7944a559425308ae915c5998202c191a3d52016ab11d09716d03a6573",
+      "size_bytes": 838
+    },
+    "target_scaler": {
+      "file": "return_target_scaler.pkl",
+      "sha256": "643e309c36e261586052f061486f36dcc236cc4a04dd3f466ddbec56feda49c3",
+      "size_bytes": 126
+    },
+    "metadata": {
+      "file": "metadata.json",
+      "sha256": "163702022cb73109ce9fa39418da321afb5aab071fe6441c0976c95fd9b4f0f0",
+      "size_bytes": 1903
+    }
+  }
+}

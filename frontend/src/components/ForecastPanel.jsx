@@ -235,14 +235,20 @@ export default function ForecastPanel({
                 Historical Directional Accuracy
               </div>
               <div className="tabular-num" style={{
-                fontSize: '1.625rem',
+                fontSize: prediction.historical_directional_accuracy != null ? '1.625rem' : '1.25rem',
                 fontWeight: 800,
-                color: 'var(--primary-green)'
+                color: prediction.historical_directional_accuracy != null ? 'var(--primary-green)' : 'var(--text-muted)'
               }}>
-                {prediction.historical_directional_accuracy || prediction.directional_accuracy_benchmark || 52.7}%
+                {prediction.historical_directional_accuracy != null
+                  ? `${prediction.historical_directional_accuracy}%`
+                  : prediction.directional_accuracy_benchmark != null
+                  ? `${prediction.directional_accuracy_benchmark}%`
+                  : 'N/A'}
               </div>
               <div style={{ fontSize: '0.6875rem', color: 'var(--text-muted)', marginTop: '4px' }}>
-                Held-Out Chronological Test Set
+                {prediction.historical_directional_accuracy != null
+                  ? 'Held-Out Chronological Test Set'
+                  : 'Not evaluated on an untouched test set'}
               </div>
             </div>
           </div>
@@ -252,32 +258,61 @@ export default function ForecastPanel({
             backgroundColor: 'var(--surface-subtle)',
             borderRadius: '6px',
             padding: '10px 14px',
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
             fontSize: '0.75rem',
             color: 'var(--text-secondary)',
             marginBottom: '12px',
-            flexWrap: 'wrap',
+            display: 'flex',
+            flexDirection: 'column',
             gap: '8px'
           }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
-              <span>Architecture: <strong>CNN-LSTM (Conv1D + LSTM)</strong></span>
-              <span>Input: <strong>30 Daily Candles</strong></span>
-              <span>Features: <strong>OHLCV + MA20</strong></span>
+            <div style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              flexWrap: 'wrap',
+              gap: '8px'
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
+                <span>Model: <strong>{prediction.model_version || 'v1.0'}</strong></span>
+                <span>Architecture: <strong>{prediction.architecture || 'CNN-LSTM (Conv1D + LSTM)'}</strong></span>
+                <span>Input: <strong>{prediction.input_window_size || 30} Completed Sessions</strong></span>
+                <span>Features: <strong>{prediction.features_used?.length || 7} Features</strong></span>
+              </div>
+
+              {prediction.recent_input_candles?.length > 0 && (
+                <button
+                  type="button"
+                  onClick={() => setShowCandles(!showCandles)}
+                  className="btn-secondary"
+                  style={{ padding: '3px 8px', fontSize: '0.71875rem' }}
+                >
+                  <Table size={12} />
+                  <span>{showCandles ? 'Hide 30-Day Window' : 'Inspect 30-Day Window'}</span>
+                </button>
+              )}
             </div>
 
-            {prediction.recent_input_candles?.length > 0 && (
-              <button
-                type="button"
-                onClick={() => setShowCandles(!showCandles)}
-                className="btn-secondary"
-                style={{ padding: '3px 8px', fontSize: '0.71875rem' }}
-              >
-                <Table size={12} />
-                <span>{showCandles ? 'Hide 30-Day Window' : 'Inspect 30-Day Window'}</span>
-              </button>
-            )}
+            {/* Pipeline Methodology Disclosure */}
+            <div style={{
+              fontSize: '0.6875rem',
+              color: 'var(--text-muted)',
+              borderTop: '1px solid var(--border-subtle)',
+              paddingTop: '6px',
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              flexWrap: 'wrap',
+              gap: '4px'
+            }}>
+              <span>
+                {prediction.model_version === 'cnn_lstm_stationary_v1'
+                  ? 'Methodology: Estimates next-session return (r̂) from 7 stationary relative features, then reconstructs price: Close × (1 + r̂).'
+                  : 'Methodology: Direct price-target regression over 6 normalized OHLCV+MA20 features.'}
+              </span>
+              <span>
+                Cutoff: <strong>{prediction.latest_completed_session || prediction.last_observed_date}</strong> → Target: <strong>{prediction.target_date}</strong>
+              </span>
+            </div>
           </div>
 
           {/* Collapsible 30-Day Input Sequence Table */}

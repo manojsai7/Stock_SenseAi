@@ -1,0 +1,27 @@
+{
+  "symbol": "HDFCBANK.NS",
+  "pipeline_version": "stationary-return-v1",
+  "created_at": "2026-10-21T17:12:00.533080",
+  "artifacts": {
+    "model": {
+      "file": "model_cnn_lstm_stationary.keras",
+      "sha256": "feb2ec5a16db7123efc4d20126459cafce68ee136172abcbbd1f217ee8c10a5a",
+      "size_bytes": 353860
+    },
+    "feature_scaler": {
+      "file": "stationary_feature_scaler.pkl",
+      "sha256": "dec2784949b0093532eaae52a5800dbd1312c847c1f71d120ed890d433035732",
+      "size_bytes": 838
+    },
+    "target_scaler": {
+      "file": "return_target_scaler.pkl",
+      "sha256": "3998eabfcb93b2a88f0571ac1f098c94d82f104f12328ef8e0fabf2f62b5c3cc",
+      "size_bytes": 126
+    },
+    "metadata": {
+      "file": "metadata.json",
+      "sha256": "b719a8f5fb9d2840fe838139b6c73439054f7de82e8543f5008943298adebd54",
+      "size_bytes": 1908
+    }
+  }
+}

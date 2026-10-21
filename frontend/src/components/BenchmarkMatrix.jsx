@@ -76,6 +76,25 @@ export default function BenchmarkMatrix({ metricsData, symbol, currency = '₹' 
         </div>
       </div>
 
+      {/* Research Context & Pipeline Distinction Banner */}
+      <div style={{
+        backgroundColor: 'var(--surface-subtle)',
+        borderRadius: '6px',
+        border: '1px solid var(--border-subtle)',
+        padding: '8px 12px',
+        marginBottom: '16px',
+        fontSize: '0.75rem',
+        color: 'var(--text-secondary)',
+        display: 'flex',
+        alignItems: 'center',
+        gap: '8px'
+      }}>
+        <Info size={15} color="var(--accent-blue)" style={{ flexShrink: 0 }} />
+        <span>
+          <strong>Research Benchmark Reference:</strong> The table below documents historical offline evaluation of the 6-feature Legacy Price-Target Model on a held-out test split. The active live forecasting pipeline uses the 7-feature Stationary-Return Model (Stage A validation selection; not presented as an untouched future test set).
+        </span>
+      </div>
+
       {/* Comparison Metrics Table */}
       <div style={{ overflowX: 'auto', marginBottom: '18px' }}>
         <table style={{
