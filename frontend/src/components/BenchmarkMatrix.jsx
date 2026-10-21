@@ -9,7 +9,7 @@ import {
   Legend,
   CartesianGrid
 } from 'recharts';
-import { Award, CheckCircle, BarChart3, TrendingUp, AlertCircle, Info, ArrowDown, ArrowUp } from 'lucide-react';
+import { Award, CheckCircle, Info, TrendingUp } from 'lucide-react';
 
 export default function BenchmarkMatrix({ metricsData, symbol, currency = '₹' }) {
   if (!metricsData) return null;
@@ -22,148 +22,163 @@ export default function BenchmarkMatrix({ metricsData, symbol, currency = '₹' 
   const cnnLstm = comparison.cnn_lstm || {};
 
   return (
-    <div className="glass-panel" style={{ padding: '28px', marginBottom: '28px' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '20px', flexWrap: 'wrap', gap: '14px' }}>
+    <div className="fintech-card" style={{ padding: '24px', marginBottom: '20px' }}>
+      {/* Header */}
+      <div style={{
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'flex-start',
+        marginBottom: '18px',
+        flexWrap: 'wrap',
+        gap: '12px'
+      }}>
         <div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
             <h2 style={{
-              fontFamily: 'var(--font-heading)',
-              fontSize: '1.35rem',
+              fontSize: '1rem',
               fontWeight: 700,
               color: 'var(--text-primary)',
+              letterSpacing: '-0.01em',
+              margin: 0
             }}>
-              Experimental Benchmark & Comparative Evaluation
+              Model Benchmark & Comparative Evaluation
             </h2>
             <span style={{
-              background: 'rgba(16, 185, 129, 0.15)',
-              color: '#34D399',
-              fontSize: '0.75rem',
+              backgroundColor: 'var(--green-tint)',
+              color: 'var(--primary-green)',
+              border: '1px solid var(--green-border)',
+              fontSize: '0.6875rem',
               fontWeight: 600,
-              padding: '2px 8px',
-              borderRadius: '6px',
+              padding: '1px 6px',
+              borderRadius: '4px'
             }}>
-              Test Set — Unseen Chronological Data (15%)
+              Held-Out Test Set (15%)
             </span>
           </div>
-          <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginTop: '4px' }}>
-            Rigorous empirical comparison of proposed TensorFlow/Keras CNN-LSTM against Standard LSTM and Naive Persistence baselines.
+          <p style={{ fontSize: '0.8125rem', color: 'var(--text-secondary)' }}>
+            Empirical evaluation of CNN-LSTM against Standard LSTM and Naive Persistence baselines on unseen chronological test observations.
           </p>
         </div>
 
         <div style={{
           display: 'flex',
           alignItems: 'center',
-          gap: '8px',
-          background: 'rgba(139, 92, 246, 0.1)',
-          border: '1px solid rgba(139, 92, 246, 0.3)',
-          borderRadius: '8px',
-          padding: '6px 14px',
-          color: '#C4B5FD',
-          fontSize: '0.78rem',
+          gap: '6px',
+          backgroundColor: 'var(--surface-subtle)',
+          border: '1px solid var(--border-subtle)',
+          borderRadius: '6px',
+          padding: '4px 10px',
+          fontSize: '0.75rem',
+          color: 'var(--text-secondary)'
         }}>
-          <CheckCircle size={15} color="#A78BFA" />
-          <span>Strict Zero Data Leakage: Scaler fitted exclusively on 70% Train</span>
+          <CheckCircle size={14} color="var(--primary-green)" />
+          <span>Strict Zero Data Leakage (Scaler fitted on Train only)</span>
         </div>
       </div>
 
-      {/* Benchmark Metric Comparison Table */}
-      <div style={{ overflowX: 'auto', marginBottom: '20px' }}>
+      {/* Comparison Metrics Table */}
+      <div style={{ overflowX: 'auto', marginBottom: '18px' }}>
         <table style={{
           width: '100%',
           borderCollapse: 'collapse',
-          fontSize: '0.88rem',
-          textAlign: 'left',
+          fontSize: '0.8125rem',
+          textAlign: 'left'
         }}>
           <thead>
             <tr style={{
-              borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
+              borderBottom: '1px solid var(--border-subtle)',
+              backgroundColor: 'var(--surface-subtle)',
               color: 'var(--text-secondary)',
-              fontSize: '0.75rem',
+              fontSize: '0.6875rem',
               textTransform: 'uppercase',
-              letterSpacing: '0.04em',
+              letterSpacing: '0.04em'
             }}>
-              <th style={{ padding: '12px 14px' }}>Model Architecture</th>
-              <th style={{ padding: '12px 14px' }}>Implementation</th>
-              <th style={{ padding: '12px 14px', fontFamily: 'var(--font-mono)' }}>
-                MAE ({currency}) <span style={{ color: 'var(--text-muted)', fontSize: '0.7rem' }}>↓ lower</span>
-              </th>
-              <th style={{ padding: '12px 14px', fontFamily: 'var(--font-mono)' }}>
-                RMSE ({currency}) <span style={{ color: 'var(--text-muted)', fontSize: '0.7rem' }}>↓ lower</span>
-              </th>
-              <th style={{ padding: '12px 14px', fontFamily: 'var(--font-mono)' }}>
-                MAPE (%) <span style={{ color: 'var(--text-muted)', fontSize: '0.7rem' }}>↓ lower</span>
-              </th>
-              <th style={{ padding: '12px 14px', fontFamily: 'var(--font-mono)' }}>
-                Directional Acc (%) <span style={{ color: 'var(--text-muted)', fontSize: '0.7rem' }}>↑ higher</span>
-              </th>
-              <th style={{ padding: '12px 14px' }}>Evaluation Role</th>
+              <th style={{ padding: '8px 12px' }}>Model</th>
+              <th style={{ padding: '8px 12px' }}>Implementation</th>
+              <th style={{ padding: '8px 12px', textAlign: 'right' }}>MAE ({currency}) ↓</th>
+              <th style={{ padding: '8px 12px', textAlign: 'right' }}>RMSE ({currency}) ↓</th>
+              <th style={{ padding: '8px 12px', textAlign: 'right' }}>MAPE (%) ↓</th>
+              <th style={{ padding: '8px 12px', textAlign: 'right' }}>Directional Acc (%) ↑</th>
+              <th style={{ padding: '8px 12px' }}>Role</th>
             </tr>
           </thead>
           <tbody>
-            {/* Naive Row */}
-            <tr style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.04)' }}>
-              <td style={{ padding: '14px', fontWeight: 600 }}>Naive Persistence</td>
-              <td style={{ padding: '14px', color: 'var(--text-secondary)', fontSize: '0.78rem' }}>
-                Python / NumPy (ŷₜ₊₁ = Closeₜ)
+            {/* Naive Persistence Baseline */}
+            <tr style={{ borderBottom: '1px solid var(--border-subtle)' }}>
+              <td style={{ padding: '10px 12px', fontWeight: 600 }}>Naive Persistence</td>
+              <td style={{ padding: '10px 12px', color: 'var(--text-secondary)', fontSize: '0.75rem' }}>
+                ŷₜ₊₁ = Closeₜ
               </td>
-              <td style={{ padding: '14px', fontFamily: 'var(--font-mono)' }}>{naive.mae?.toFixed(2) || '--'}</td>
-              <td style={{ padding: '14px', fontFamily: 'var(--font-mono)' }}>{naive.rmse?.toFixed(2) || '--'}</td>
-              <td style={{ padding: '14px', fontFamily: 'var(--font-mono)' }}>{naive.mape?.toFixed(2) || '--'}%</td>
-              <td style={{ padding: '14px', fontFamily: 'var(--font-mono)', color: 'var(--text-secondary)', fontWeight: 600 }}>
-                {naive.directional_accuracy?.toFixed(1) || '--'}%
+              <td className="tabular-num" style={{ padding: '10px 12px', textAlign: 'right' }}>
+                {naive.mae ? Number(naive.mae).toFixed(2) : '—'}
               </td>
-              <td style={{ padding: '14px' }}>
-                <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)', background: 'rgba(255,255,255,0.05)', padding: '2px 8px', borderRadius: '4px' }}>
+              <td className="tabular-num" style={{ padding: '10px 12px', textAlign: 'right' }}>
+                {naive.rmse ? Number(naive.rmse).toFixed(2) : '—'}
+              </td>
+              <td className="tabular-num" style={{ padding: '10px 12px', textAlign: 'right' }}>
+                {naive.mape ? `${Number(naive.mape).toFixed(2)}%` : '—'}
+              </td>
+              <td className="tabular-num" style={{ padding: '10px 12px', textAlign: 'right', fontWeight: 600 }}>
+                {naive.directional_accuracy ? `${Number(naive.directional_accuracy).toFixed(1)}%` : '—'}
+              </td>
+              <td style={{ padding: '10px 12px' }}>
+                <span style={{ fontSize: '0.6875rem', backgroundColor: 'var(--surface-subtle)', color: 'var(--text-secondary)', padding: '2px 6px', borderRadius: '4px' }}>
                   Econometric Baseline
                 </span>
               </td>
             </tr>
 
-            {/* Standard LSTM Row */}
-            <tr style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.04)' }}>
-              <td style={{ padding: '14px', fontWeight: 600, color: '#38BDF8' }}>Standard LSTM</td>
-              <td style={{ padding: '14px', color: 'var(--text-secondary)', fontSize: '0.78rem' }}>
-                TensorFlow / Keras (50 units)
+            {/* Standard LSTM */}
+            <tr style={{ borderBottom: '1px solid var(--border-subtle)' }}>
+              <td style={{ padding: '10px 12px', fontWeight: 600, color: 'var(--accent-blue)' }}>Standard LSTM</td>
+              <td style={{ padding: '10px 12px', color: 'var(--text-secondary)', fontSize: '0.75rem' }}>
+                TensorFlow (50 units)
               </td>
-              <td style={{ padding: '14px', fontFamily: 'var(--font-mono)' }}>{lstm.mae?.toFixed(2) || '--'}</td>
-              <td style={{ padding: '14px', fontFamily: 'var(--font-mono)' }}>{lstm.rmse?.toFixed(2) || '--'}</td>
-              <td style={{ padding: '14px', fontFamily: 'var(--font-mono)' }}>{lstm.mape?.toFixed(2) || '--'}%</td>
-              <td style={{ padding: '14px', fontFamily: 'var(--font-mono)', color: '#38BDF8', fontWeight: 600 }}>
-                {lstm.directional_accuracy?.toFixed(1) || '--'}%
+              <td className="tabular-num" style={{ padding: '10px 12px', textAlign: 'right' }}>
+                {lstm.mae ? Number(lstm.mae).toFixed(2) : '—'}
               </td>
-              <td style={{ padding: '14px' }}>
-                <span style={{ fontSize: '0.72rem', color: '#38BDF8', background: 'rgba(56, 189, 248, 0.1)', padding: '2px 8px', borderRadius: '4px' }}>
-                  Comparative Recurrent
+              <td className="tabular-num" style={{ padding: '10px 12px', textAlign: 'right' }}>
+                {lstm.rmse ? Number(lstm.rmse).toFixed(2) : '—'}
+              </td>
+              <td className="tabular-num" style={{ padding: '10px 12px', textAlign: 'right' }}>
+                {lstm.mape ? `${Number(lstm.mape).toFixed(2)}%` : '—'}
+              </td>
+              <td className="tabular-num" style={{ padding: '10px 12px', textAlign: 'right', fontWeight: 600, color: 'var(--accent-blue)' }}>
+                {lstm.directional_accuracy ? `${Number(lstm.directional_accuracy).toFixed(1)}%` : '—'}
+              </td>
+              <td style={{ padding: '10px 12px' }}>
+                <span style={{ fontSize: '0.6875rem', backgroundColor: 'var(--blue-tint)', color: 'var(--accent-blue)', padding: '2px 6px', borderRadius: '4px' }}>
+                  Recurrent Baseline
                 </span>
               </td>
             </tr>
 
-            {/* CNN-LSTM Row (Target Model) */}
+            {/* Proposed CNN-LSTM */}
             <tr style={{
-              background: 'rgba(16, 185, 129, 0.06)',
-              borderBottom: '1px solid rgba(16, 185, 129, 0.2)',
+              backgroundColor: 'var(--green-tint)',
+              borderBottom: '1px solid var(--green-border)'
             }}>
-              <td style={{ padding: '14px', fontWeight: 700, color: '#34D399', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                <Award size={16} color="#34D399" />
+              <td style={{ padding: '10px 12px', fontWeight: 700, color: 'var(--primary-green)', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <Award size={15} color="var(--primary-green)" />
                 <span>CNN-LSTM Hybrid</span>
               </td>
-              <td style={{ padding: '14px', color: '#E2E8F0', fontSize: '0.78rem' }}>
-                TensorFlow / Keras (Conv1D + LSTM)
+              <td style={{ padding: '10px 12px', color: 'var(--text-secondary)', fontSize: '0.75rem' }}>
+                Conv1D(64) + LSTM(50)
               </td>
-              <td style={{ padding: '14px', fontFamily: 'var(--font-mono)', fontWeight: 700, color: '#34D399' }}>
-                {cnnLstm.mae?.toFixed(2) || '--'}
+              <td className="tabular-num" style={{ padding: '10px 12px', textAlign: 'right', fontWeight: 700, color: 'var(--primary-green)' }}>
+                {cnnLstm.mae ? Number(cnnLstm.mae).toFixed(2) : '—'}
               </td>
-              <td style={{ padding: '14px', fontFamily: 'var(--font-mono)', fontWeight: 700, color: '#34D399' }}>
-                {cnnLstm.rmse?.toFixed(2) || '--'}
+              <td className="tabular-num" style={{ padding: '10px 12px', textAlign: 'right', fontWeight: 700, color: 'var(--primary-green)' }}>
+                {cnnLstm.rmse ? Number(cnnLstm.rmse).toFixed(2) : '—'}
               </td>
-              <td style={{ padding: '14px', fontFamily: 'var(--font-mono)', fontWeight: 700, color: '#34D399' }}>
-                {cnnLstm.mape?.toFixed(2) || '--'}%
+              <td className="tabular-num" style={{ padding: '10px 12px', textAlign: 'right', fontWeight: 700, color: 'var(--primary-green)' }}>
+                {cnnLstm.mape ? `${Number(cnnLstm.mape).toFixed(2)}%` : '—'}
               </td>
-              <td style={{ padding: '14px', fontFamily: 'var(--font-mono)', fontWeight: 800, color: '#34D399', fontSize: '1rem' }}>
-                {cnnLstm.directional_accuracy?.toFixed(1) || '--'}%
+              <td className="tabular-num" style={{ padding: '10px 12px', textAlign: 'right', fontWeight: 800, color: 'var(--primary-green)', fontSize: '0.875rem' }}>
+                {cnnLstm.directional_accuracy ? `${Number(cnnLstm.directional_accuracy).toFixed(1)}%` : '—'}
               </td>
-              <td style={{ padding: '14px' }}>
-                <span className="badge-up" style={{ fontSize: '0.72rem' }}>
+              <td style={{ padding: '10px 12px' }}>
+                <span className="badge-up" style={{ fontSize: '0.6875rem' }}>
                   Proposed Model
                 </span>
               </td>
@@ -172,55 +187,56 @@ export default function BenchmarkMatrix({ metricsData, symbol, currency = '₹' 
         </table>
       </div>
 
-      {/* Honest Scientific Finding Box */}
+      {/* Academic Findings Box */}
       <div style={{
-        background: 'rgba(255, 255, 255, 0.02)',
+        backgroundColor: 'var(--surface-subtle)',
         border: '1px solid var(--border-subtle)',
-        borderRadius: '10px',
-        padding: '14px 18px',
-        marginBottom: '24px',
+        borderRadius: '8px',
+        padding: '12px 16px',
+        marginBottom: '20px',
         display: 'flex',
         alignItems: 'flex-start',
-        gap: '12px',
+        gap: '10px'
       }}>
-        <Info size={18} color="#06B6D4" style={{ flexShrink: 0, marginTop: '2px' }} />
-        <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', lineHeight: 1.5 }}>
-          <strong style={{ color: '#F8FAFC' }}>Academic Finding:</strong> Consistent with financial time-series literature, stock price series exhibit high persistence where the Naive model is a competitive point-forecast baseline. The proposed <strong>CNN-LSTM architecture</strong> captures non-linear local waveforms via 1D convolutions, providing valuable directional guidance (Hit Rate up to <strong>75.48%</strong> on liquid equities like HDFC Bank), with performance naturally modulating according to stock volatility regimes.
+        <Info size={16} color="var(--accent-blue)" style={{ flexShrink: 0, marginTop: '2px' }} />
+        <div style={{ fontSize: '0.78125rem', color: 'var(--text-secondary)', lineHeight: 1.5 }}>
+          <strong style={{ color: 'var(--text-primary)' }}>Empirical Finding:</strong> Stock price levels exhibit strong econometric persistence, making Naive Persistence a competitive point-estimate baseline for next-day close. The proposed <strong>CNN-LSTM architecture</strong> extracts localized temporal features via 1D convolutions before sequential recurrence, delivering strong directional classification guidance across major NSE equities while preserving leakage-safe train/test splits.
         </div>
       </div>
 
-      {/* Actual vs Predicted Visual Trajectory */}
+      {/* Test Trajectory Visualization */}
       {trajectory.length > 0 && (
         <div>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
-            <h3 style={{ fontSize: '1rem', fontWeight: 600, color: 'var(--text-primary)', display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <TrendingUp size={16} color="#06B6D4" />
-              <span>Unseen Test Horizon: Actual vs. Model Predictions</span>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+            <h3 style={{ fontSize: '0.875rem', fontWeight: 600, color: 'var(--text-primary)', display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <TrendingUp size={15} color="var(--primary-green)" />
+              <span>Unseen Test Horizon: Actual vs Model Trajectory</span>
             </h3>
-            <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>
-              Sample: Last {trajectory.length} Test Trading Days
+            <span style={{ fontSize: '0.71875rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>
+              Sample: {trajectory.length} Test Sessions
             </span>
           </div>
 
-          <div style={{ width: '100%', height: '320px', background: 'rgba(0, 0, 0, 0.25)', borderRadius: '12px', padding: '12px' }}>
+          <div style={{ width: '100%', height: '280px', backgroundColor: '#FFFFFF', borderRadius: '8px', border: '1px solid var(--border-subtle)', padding: '12px' }}>
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={trajectory} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="rgba(255, 255, 255, 0.05)" />
+                <CartesianGrid strokeDasharray="3 3" stroke="#E4EAE6" />
                 <XAxis dataKey="date" stroke="var(--text-muted)" fontSize={10} fontFamily="var(--font-mono)" minTickGap={30} />
-                <YAxis stroke="var(--text-muted)" fontSize={10} fontFamily="var(--font-mono)" domain={['auto', 'auto']} orientation="right" />
+                <YAxis stroke="var(--text-muted)" fontSize={10} fontFamily="var(--font-mono)" domain={['auto', 'auto']} orientation="right" width={65} tickFormatter={(v) => `${currency}${v}`} />
                 <Tooltip
                   contentStyle={{
-                    background: 'rgba(14, 19, 31, 0.95)',
-                    border: '1px solid rgba(255, 255, 255, 0.15)',
-                    borderRadius: '8px',
-                    fontSize: '0.78rem',
-                    fontFamily: 'var(--font-mono)'
+                    backgroundColor: '#FFFFFF',
+                    border: '1px solid var(--border-default)',
+                    borderRadius: '6px',
+                    fontSize: '0.75rem',
+                    fontFamily: 'var(--font-mono)',
+                    boxShadow: 'var(--shadow-md)'
                   }}
                 />
-                <Legend verticalAlign="top" height={36} wrapperStyle={{ fontSize: '0.78rem' }} />
-                <Line type="monotone" dataKey="actual" name="Actual Price" stroke="#F8FAFC" strokeWidth={2.5} dot={false} />
-                <Line type="monotone" dataKey="cnn_lstm" name="CNN-LSTM (TensorFlow)" stroke="#10B981" strokeWidth={2} dot={false} />
-                <Line type="monotone" dataKey="lstm" name="Standard LSTM" stroke="#38BDF8" strokeWidth={1.5} strokeDasharray="3 3" dot={false} />
+                <Legend verticalAlign="top" height={32} wrapperStyle={{ fontSize: '0.75rem' }} />
+                <Line type="monotone" dataKey="actual" name="Actual Price" stroke="#17211C" strokeWidth={2} dot={false} isAnimationActive={false} />
+                <Line type="monotone" dataKey="cnn_lstm" name="CNN-LSTM" stroke="#159B62" strokeWidth={2} dot={false} isAnimationActive={false} />
+                <Line type="monotone" dataKey="lstm" name="Standard LSTM" stroke="#0284C7" strokeWidth={1.5} strokeDasharray="3 3" dot={false} isAnimationActive={false} />
               </LineChart>
             </ResponsiveContainer>
           </div>

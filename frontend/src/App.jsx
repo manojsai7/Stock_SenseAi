@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import Navbar from './components/Navbar';
 import StockHeader from './components/StockHeader';
 import StockChart from './components/StockChart';
@@ -10,10 +10,8 @@ import {
   getStockQuote,
   getStockHistory,
   getPrediction,
-  getModelMetrics,
-  searchStocks
+  getModelMetrics
 } from './services/api';
-import { AlertTriangle, CheckCircle2 } from 'lucide-react';
 
 export default function App() {
   const [selectedSymbol, setSelectedSymbol] = useState('TCS.NS');
@@ -24,12 +22,14 @@ export default function App() {
   const [prediction, setPrediction] = useState(null);
   const [metricsData, setMetricsData] = useState(null);
 
+  // Granular loading & error states
   const [loadingInfo, setLoadingInfo] = useState(true);
   const [loadingHistory, setLoadingHistory] = useState(true);
   const [predicting, setPredicting] = useState(false);
-  const [errorMessage, setErrorMessage] = useState(null);
+  const [chartError, setChartError] = useState(null);
+  const [forecastError, setForecastError] = useState(null);
+
   const [isArchitectureOpen, setIsArchitectureOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
 
   // Controlled live quote polling (every 20s)
   useEffect(() => {
@@ -42,7 +42,7 @@ export default function App() {
           setStockQuote(q);
         }
       } catch (err) {
-        console.warn('Quote polling notice:', err);
+        console.warn('Quote polling notice:', err.message);
       }
     }
 
@@ -55,157 +55,164 @@ export default function App() {
     };
   }, [selectedSymbol]);
 
+  // Load stock profile & fundamentals
+  const loadStockInfo = useCallback(async (symbol) => {
+    setLoadingInfo(true);
+    try {
+      const info = await getStockInfo(symbol);
+      setStockInfo(info);
+    } catch (err) {
+      console.warn('Info load notice:', err.message);
+    } finally {
+      setLoadingInfo(false);
+    }
+  }, []);
 
-  // Load stock info & history whenever symbol or period changes
+  // Load historical price data
+  const loadStockHistory = useCallback(async (symbol, p) => {
+    setLoadingHistory(true);
+    setChartError(null);
+    try {
+      const res = await getStockHistory(symbol, p);
+      setHistoryData(res.data || []);
+    } catch (err) {
+      console.error('History load failed:', err.message);
+      setChartError(err.message || 'Failed to load historical price series');
+      setHistoryData([]);
+    } finally {
+      setLoadingHistory(false);
+    }
+  }, []);
+
+  // Load benchmark metrics
+  const loadModelMetrics = useCallback(async (symbol) => {
+    try {
+      const metrics = await getModelMetrics(symbol);
+      setMetricsData(metrics);
+    } catch (err) {
+      console.warn('Metrics load notice:', err.message);
+      setMetricsData(null);
+    }
+  }, []);
+
+  // Load or run prediction
+  const runPrediction = useCallback(async (symbol) => {
+    setPredicting(true);
+    setForecastError(null);
+    try {
+      const pred = await getPrediction(symbol);
+      setPrediction(pred);
+    } catch (err) {
+      console.warn('Prediction notice:', err.message);
+      setForecastError(err.message || 'Prediction unavailable');
+      setPrediction(null);
+    } finally {
+      setPredicting(false);
+    }
+  }, []);
+
+  // Orchestrate data fetching on symbol change
   useEffect(() => {
     let isCancelled = false;
 
-    async function loadData() {
-      setErrorMessage(null);
-      setLoadingInfo(true);
-      setLoadingHistory(true);
+    // Reset localized states to prevent stale flashes
+    setPrediction(null);
+    setForecastError(null);
+    setChartError(null);
 
-      try {
-        const info = await getStockInfo(selectedSymbol);
-        if (!isCancelled) {
-          setStockInfo(info);
-          setLoadingInfo(false);
-        }
-      } catch (err) {
-        if (!isCancelled) {
-          console.error('Info error:', err);
-          setErrorMessage(`Unable to fetch profile for ${selectedSymbol}.`);
-          setLoadingInfo(false);
-        }
-      }
+    loadStockInfo(selectedSymbol);
+    loadStockHistory(selectedSymbol, period);
+    loadModelMetrics(selectedSymbol);
 
-      try {
-        const historyRes = await getStockHistory(selectedSymbol, period);
-        if (!isCancelled) {
-          setHistoryData(historyRes.data || []);
-          setLoadingHistory(false);
-        }
-      } catch (err) {
-        if (!isCancelled) {
-          console.error('History error:', err);
-          setLoadingHistory(false);
-        }
-      }
-
-      // Fetch model metrics for the symbol
-      try {
-        const metrics = await getModelMetrics(selectedSymbol);
-        if (!isCancelled) {
-          setMetricsData(metrics);
-        }
-      } catch (err) {
-        console.warn('Metrics notice:', err);
-      }
-
-      // Auto-fetch latest prediction
+    // Auto-fetch latest prediction on stock change
+    (async () => {
       try {
         const pred = await getPrediction(selectedSymbol);
         if (!isCancelled) {
           setPrediction(pred);
         }
       } catch (err) {
-        console.warn('Prediction auto-load notice:', err);
+        if (!isCancelled) {
+          console.warn('Auto-prediction notice:', err.message);
+          setForecastError(err.message);
+        }
       }
-    }
-
-    loadData();
+    })();
 
     return () => {
       isCancelled = true;
     };
-  }, [selectedSymbol, period]);
+  }, [selectedSymbol, loadStockInfo, loadModelMetrics]);
 
-  const handleRunPrediction = async () => {
-    setPredicting(true);
-    setErrorMessage(null);
-    try {
-      const res = await getPrediction(selectedSymbol);
-      setPrediction(res);
-    } catch (err) {
-      console.error('Prediction failed:', err);
-      setErrorMessage(`Prediction failed for ${selectedSymbol}: ${err.message}`);
-    } finally {
-      setPredicting(false);
+  // Handle period change for historical chart
+  const handlePeriodChange = (newPeriod) => {
+    setPeriod(newPeriod);
+    loadStockHistory(selectedSymbol, newPeriod);
+  };
+
+  // Stock selection handler
+  const handleSelectSymbol = (newSymbol) => {
+    if (newSymbol !== selectedSymbol) {
+      setSelectedSymbol(newSymbol);
     }
   };
 
-  const handleSelectSymbol = (sym) => {
-    if (sym !== selectedSymbol) {
-      setSelectedSymbol(sym);
-      setPrediction(null);
-    }
-  };
-
-  const handleSearchSubmit = (e) => {
-    e.preventDefault();
-    const query = searchQuery.trim().toUpperCase();
-    if (query) {
-      const formatted = query.includes('.') ? query : (['AAPL', 'NVDA', 'MSFT', 'GOOGL', 'AMZN'].includes(query) ? query : `${query}.NS`);
-      handleSelectSymbol(formatted);
-      setSearchQuery('');
-    }
-  };
-
-  const currencySymbol = stockInfo?.currency === 'INR' ? '₹' : '$';
+  const currencySymbol = '₹';
 
   return (
-    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+    <div style={{
+      minHeight: '100vh',
+      display: 'flex',
+      flexDirection: 'column',
+      backgroundColor: 'var(--canvas-bg)',
+      color: 'var(--text-primary)'
+    }}>
+      {/* Navbar with Watchlist & Search */}
       <Navbar
         currentSymbol={selectedSymbol}
         onSelectSymbol={handleSelectSymbol}
         onOpenArchitecture={() => setIsArchitectureOpen(true)}
-        searchQuery={searchQuery}
-        setSearchQuery={setSearchQuery}
-        onSearchSubmit={handleSearchSubmit}
+        marketStatus={stockQuote?.market_status}
       />
 
-      <main style={{ maxWidth: '1440px', width: '100%', margin: '0 auto', padding: '24px', flex: 1 }}>
-        {/* Error notification banner if any */}
-        {errorMessage && (
-          <div style={{
-            background: 'rgba(244, 63, 94, 0.15)',
-            border: '1px solid rgba(244, 63, 94, 0.3)',
-            borderRadius: '10px',
-            padding: '12px 18px',
-            marginBottom: '20px',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '10px',
-            color: '#FB7185',
-            fontSize: '0.85rem',
-          }}>
-            <AlertTriangle size={16} />
-            <span>{errorMessage}</span>
-          </div>
-        )}
-
-        {/* Stock Overview Header */}
-        <StockHeader info={stockInfo} quote={stockQuote} loading={loadingInfo && !stockQuote} />
+      {/* Main Financial Dashboard */}
+      <main style={{
+        maxWidth: '1360px',
+        width: '100%',
+        margin: '0 auto',
+        padding: '24px 20px',
+        flex: 1
+      }}>
+        {/* Stock Overview & Quote Header */}
+        <StockHeader
+          info={stockInfo}
+          quote={stockQuote}
+          loading={loadingInfo && !stockQuote}
+        />
 
         {/* Historical Candlestick / Line Chart */}
         <StockChart
           historyData={historyData}
           period={period}
-          onPeriodChange={setPeriod}
+          onPeriodChange={handlePeriodChange}
           loading={loadingHistory}
+          error={chartError}
+          onRetry={() => loadStockHistory(selectedSymbol, period)}
           currency={currencySymbol}
         />
 
-        {/* CNN-LSTM AI Forecast Panel */}
+        {/* Next-Trading-Day Forecast */}
         <ForecastPanel
           prediction={prediction}
-          onRunPrediction={handleRunPrediction}
+          onRunPrediction={() => runPrediction(selectedSymbol)}
           predicting={predicting}
+          error={forecastError}
+          onRetry={() => runPrediction(selectedSymbol)}
           symbol={selectedSymbol}
           currency={currencySymbol}
         />
 
-        {/* Experimental Benchmark Comparison Matrix */}
+        {/* Benchmark Evaluation Matrix */}
         <BenchmarkMatrix
           metricsData={metricsData}
           symbol={selectedSymbol}
@@ -216,27 +223,34 @@ export default function App() {
       {/* Footer */}
       <footer style={{
         borderTop: '1px solid var(--border-subtle)',
-        background: 'rgba(7, 9, 14, 0.95)',
-        padding: '24px',
-        textAlign: 'center',
-        color: 'var(--text-muted)',
-        fontSize: '0.8rem',
+        backgroundColor: '#FFFFFF',
+        padding: '20px 24px',
+        fontSize: '0.75rem',
+        color: 'var(--text-secondary)'
       }}>
-        <div style={{ maxWidth: '1440px', margin: '0 auto', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
+        <div style={{
+          maxWidth: '1360px',
+          margin: '0 auto',
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          flexWrap: 'wrap',
+          gap: '12px'
+        }}>
           <div>
-            <strong>StockSense AI</strong> — Academic Final Year Deep Learning Implementation &copy; 2026.
+            <strong style={{ color: 'var(--text-primary)' }}>StockSense AI</strong> — Academic Deep Learning Time-Series Research © 2026.
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '16px', fontSize: '0.75rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '14px', flexWrap: 'wrap' }}>
             <span>Architecture: CNN-LSTM Hybrid</span>
             <span>•</span>
-            <span>Data Feed: Yahoo Finance (NSE/BSE)</span>
+            <span>Feed: Yahoo Finance (NSE Equities)</span>
             <span>•</span>
-            <span>Backend: FastAPI RESTful Monolith</span>
+            <span>Backend: FastAPI Monolith</span>
           </div>
         </div>
       </footer>
 
-      {/* Architecture / Viva Modal */}
+      {/* Architecture & Viva Defense Modal */}
       <ArchitectureModal
         isOpen={isArchitectureOpen}
         onClose={() => setIsArchitectureOpen(false)}

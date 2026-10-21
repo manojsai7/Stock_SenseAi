@@ -1,185 +1,270 @@
-import React from 'react';
-import { X, Cpu, Layers, GitBranch, Database, ShieldAlert, CheckCircle, Zap, BookOpen, BarChart2, ShieldCheck } from 'lucide-react';
+import React, { useEffect } from 'react';
+import { X, Cpu, Layers, GitBranch, ShieldCheck } from 'lucide-react';
 
 export default function ArchitectureModal({ isOpen, onClose }) {
+  // Close on Escape key
+  useEffect(() => {
+    function handleKeyDown(e) {
+      if (e.key === 'Escape') onClose();
+    }
+    if (isOpen) {
+      document.addEventListener('keydown', handleKeyDown);
+      document.body.style.overflow = 'hidden';
+    }
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+      document.body.style.overflow = 'auto';
+    };
+  }, [isOpen, onClose]);
+
   if (!isOpen) return null;
 
   return (
-    <div style={{
-      position: 'fixed',
-      top: 0,
-      left: 0,
-      width: '100vw',
-      height: '100vh',
-      background: 'rgba(0, 0, 0, 0.8)',
-      backdropFilter: 'blur(8px)',
-      zIndex: 100,
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      padding: '20px',
-    }}>
-      <div className="glass-panel" style={{
-        maxWidth: '920px',
-        width: '100%',
-        maxHeight: '90vh',
-        overflowY: 'auto',
-        padding: '32px',
-        position: 'relative',
-        background: 'rgba(14, 19, 31, 0.98)',
-        border: '1px solid rgba(139, 92, 246, 0.4)',
-      }}>
+    <div
+      onClick={onClose}
+      style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        width: '100vw',
+        height: '100vh',
+        backgroundColor: 'rgba(16, 24, 20, 0.45)',
+        backdropFilter: 'blur(4px)',
+        zIndex: 100,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: '20px',
+      }}
+    >
+      <div
+        onClick={(e) => e.stopPropagation()}
+        style={{
+          maxWidth: '880px',
+          width: '100%',
+          maxHeight: '90vh',
+          overflowY: 'auto',
+          backgroundColor: '#FFFFFF',
+          borderRadius: '12px',
+          border: '1px solid var(--border-default)',
+          boxShadow: 'var(--shadow-lg)',
+          padding: '28px',
+          position: 'relative',
+        }}
+      >
         {/* Close Button */}
         <button
+          type="button"
           onClick={onClose}
           style={{
             position: 'absolute',
-            top: '20px',
-            right: '20px',
-            background: 'rgba(255, 255, 255, 0.08)',
-            border: 'none',
-            borderRadius: '50%',
-            width: '36px',
-            height: '36px',
+            top: '18px',
+            right: '18px',
+            backgroundColor: 'var(--surface-subtle)',
+            border: '1px solid var(--border-subtle)',
+            borderRadius: '6px',
+            width: '32px',
+            height: '32px',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            color: 'var(--text-primary)',
+            color: 'var(--text-secondary)',
             cursor: 'pointer',
           }}
+          aria-label="Close architecture guide"
         >
-          <X size={18} />
+          <X size={16} />
         </button>
 
         {/* Modal Header */}
-        <div style={{ marginBottom: '24px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}>
-            <Cpu size={24} color="#FF9E40" />
-            <h2 style={{ fontFamily: 'var(--font-heading)', fontSize: '1.5rem', fontWeight: 700, color: '#F8FAFC' }}>
-              StockSense AI — System Design & Viva Defense Architecture
+        <div style={{ marginBottom: '20px', paddingRight: '40px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
+            <Cpu size={20} color="var(--primary-green)" />
+            <h2 style={{
+              fontSize: '1.25rem',
+              fontWeight: 800,
+              color: 'var(--text-primary)',
+              letterSpacing: '-0.02em',
+              margin: 0
+            }}>
+              System Architecture & Viva Defense Reference
             </h2>
           </div>
-          <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
-            Defensible technical methodology: Deep Learning Framework, Leakage-Free Data Pipeline, and Experimental Protocol.
+          <p style={{ color: 'var(--text-secondary)', fontSize: '0.8125rem' }}>
+            Academic deep-learning specification: time-series sequence preprocessing, CNN-LSTM hybrid topology, and leakage-safe validation.
           </p>
         </div>
 
-        {/* Deep Learning Framework Banner */}
+        {/* Model Framework Summary Banner */}
         <div style={{
-          background: 'linear-gradient(90deg, rgba(255, 111, 0, 0.12) 0%, rgba(139, 92, 246, 0.12) 100%)',
-          border: '1px solid rgba(255, 111, 0, 0.3)',
-          borderRadius: '12px',
-          padding: '16px 20px',
-          marginBottom: '24px',
+          backgroundColor: 'var(--surface-subtle)',
+          border: '1px solid var(--border-subtle)',
+          borderRadius: '8px',
+          padding: '12px 16px',
+          marginBottom: '20px',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
           flexWrap: 'wrap',
-          gap: '12px',
+          gap: '8px',
         }}>
           <div>
-            <div style={{ fontSize: '0.75rem', textTransform: 'uppercase', color: '#FF9E40', fontWeight: 700, letterSpacing: '0.05em' }}>
-              Deep Learning Engine
+            <div style={{ fontSize: '0.6875rem', textTransform: 'uppercase', color: 'var(--text-muted)', fontWeight: 700, letterSpacing: '0.04em' }}>
+              Engine
             </div>
-            <div style={{ fontSize: '1.1rem', fontWeight: 700, color: '#FFFFFF', marginTop: '2px' }}>
-              TensorFlow 2.17+ with Keras Neural Network API
+            <div style={{ fontSize: '0.9375rem', fontWeight: 700, color: 'var(--text-primary)' }}>
+              TensorFlow / Keras Neural Network Pipeline
             </div>
           </div>
-          <div style={{ fontFamily: 'var(--font-mono)', fontSize: '0.78rem', color: '#C4B5FD', background: 'rgba(0,0,0,0.3)', padding: '6px 12px', borderRadius: '6px' }}>
-            Conv1D → MaxPooling1D → LSTM → Dropout → Dense
+          <div style={{
+            fontFamily: 'var(--font-mono)',
+            fontSize: '0.75rem',
+            color: 'var(--primary-green)',
+            backgroundColor: 'var(--green-tint)',
+            border: '1px solid var(--green-border)',
+            padding: '4px 8px',
+            borderRadius: '4px',
+            fontWeight: 600
+          }}>
+            Conv1D(64) → MaxPool1D → LSTM(50) → Dense(1)
           </div>
         </div>
 
         {/* Section 1: End-to-End Pipeline */}
-        <div style={{ marginBottom: '26px', background: 'rgba(255,255,255,0.02)', padding: '18px', borderRadius: '12px', border: '1px solid var(--border-subtle)' }}>
-          <h3 style={{ fontSize: '1.05rem', fontWeight: 600, color: 'var(--accent-cyan)', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <GitBranch size={18} />
-            <span>1. End-to-End Execution Pipeline (Zero Leakage)</span>
+        <div style={{ marginBottom: '22px' }}>
+          <h3 style={{
+            fontSize: '0.9375rem',
+            fontWeight: 700,
+            color: 'var(--text-primary)',
+            marginBottom: '10px',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '6px'
+          }}>
+            <GitBranch size={16} color="var(--primary-green)" />
+            <span>1. End-to-End Pipeline (Zero Data Leakage)</span>
           </h3>
 
           <div style={{
             display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))',
             gap: '8px',
             textAlign: 'center',
-            fontFamily: 'var(--font-mono)',
             fontSize: '0.75rem',
           }}>
-            <div style={{ background: 'rgba(255,255,255,0.05)', padding: '10px', borderRadius: '8px' }}>
-              <div style={{ color: 'var(--accent-green)', fontWeight: 700 }}>1. Ingestion</div>
-              <div style={{ color: 'var(--text-muted)', marginTop: '4px' }}>Yahoo Finance (5Y NSE OHLCV)</div>
+            <div style={{ backgroundColor: 'var(--surface-subtle)', padding: '10px', borderRadius: '6px', border: '1px solid var(--border-subtle)' }}>
+              <div style={{ color: 'var(--primary-green)', fontWeight: 700 }}>1. Ingestion</div>
+              <div style={{ color: 'var(--text-secondary)', marginTop: '2px', fontSize: '0.6875rem' }}>NSE OHLCV (Daily)</div>
             </div>
-            <div style={{ background: 'rgba(255,255,255,0.05)', padding: '10px', borderRadius: '8px' }}>
-              <div style={{ color: 'var(--accent-cyan)', fontWeight: 700 }}>2. Features</div>
-              <div style={{ color: 'var(--text-muted)', marginTop: '4px' }}>OHLCV + 20-Day SMA</div>
+            <div style={{ backgroundColor: 'var(--surface-subtle)', padding: '10px', borderRadius: '6px', border: '1px solid var(--border-subtle)' }}>
+              <div style={{ color: 'var(--accent-blue)', fontWeight: 700 }}>2. Features</div>
+              <div style={{ color: 'var(--text-secondary)', marginTop: '2px', fontSize: '0.6875rem' }}>OHLCV + 20-Day SMA</div>
             </div>
-            <div style={{ background: 'rgba(255,255,255,0.05)', padding: '10px', borderRadius: '8px' }}>
-              <div style={{ color: '#FF9E40', fontWeight: 700 }}>3. Split (70/15/15)</div>
-              <div style={{ color: 'var(--text-muted)', marginTop: '4px' }}>Strict Chronological Split</div>
+            <div style={{ backgroundColor: 'var(--surface-subtle)', padding: '10px', borderRadius: '6px', border: '1px solid var(--border-subtle)' }}>
+              <div style={{ color: 'var(--accent-amber)', fontWeight: 700 }}>3. Split (70/15/15)</div>
+              <div style={{ color: 'var(--text-secondary)', marginTop: '2px', fontSize: '0.6875rem' }}>Strict Chronological</div>
             </div>
-            <div style={{ background: 'rgba(255,255,255,0.05)', padding: '10px', borderRadius: '8px' }}>
-              <div style={{ color: 'var(--accent-violet)', fontWeight: 700 }}>4. Scaling</div>
-              <div style={{ color: 'var(--text-muted)', marginTop: '4px' }}>MinMax (Train Fit ONLY)</div>
+            <div style={{ backgroundColor: 'var(--surface-subtle)', padding: '10px', borderRadius: '6px', border: '1px solid var(--border-subtle)' }}>
+              <div style={{ color: 'var(--primary-green)', fontWeight: 700 }}>4. Scaling</div>
+              <div style={{ color: 'var(--text-secondary)', marginTop: '2px', fontSize: '0.6875rem' }}>Train Partition ONLY</div>
             </div>
-            <div style={{ background: 'rgba(255,255,255,0.05)', padding: '10px', borderRadius: '8px' }}>
-              <div style={{ color: '#38BDF8', fontWeight: 700 }}>5. CNN-LSTM</div>
-              <div style={{ color: 'var(--text-muted)', marginTop: '4px' }}>TensorFlow / Keras</div>
+            <div style={{ backgroundColor: 'var(--surface-subtle)', padding: '10px', borderRadius: '6px', border: '1px solid var(--border-subtle)' }}>
+              <div style={{ color: 'var(--text-primary)', fontWeight: 700 }}>5. CNN-LSTM</div>
+              <div style={{ color: 'var(--text-secondary)', marginTop: '2px', fontSize: '0.6875rem' }}>30-Day Window</div>
             </div>
-            <div style={{ background: 'rgba(255,255,255,0.05)', padding: '10px', borderRadius: '8px' }}>
-              <div style={{ color: '#34D399', fontWeight: 700 }}>6. Evaluation</div>
-              <div style={{ color: 'var(--text-muted)', marginTop: '4px' }}>Unseen Test Set Horizon</div>
+            <div style={{ backgroundColor: 'var(--surface-subtle)', padding: '10px', borderRadius: '6px', border: '1px solid var(--border-subtle)' }}>
+              <div style={{ color: 'var(--primary-green)', fontWeight: 700 }}>6. Benchmark</div>
+              <div style={{ color: 'var(--text-secondary)', marginTop: '2px', fontSize: '0.6875rem' }}>Unseen Test Horizon</div>
             </div>
           </div>
         </div>
 
         {/* Section 2: Why CNN-LSTM? */}
-        <div style={{ marginBottom: '26px' }}>
-          <h3 style={{ fontSize: '1.05rem', fontWeight: 600, color: '#A78BFA', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <Layers size={18} />
-            <span>2. Architectural Rationale: Conv1D + LSTM Synergy</span>
+        <div style={{ marginBottom: '22px' }}>
+          <h3 style={{
+            fontSize: '0.9375rem',
+            fontWeight: 700,
+            color: 'var(--text-primary)',
+            marginBottom: '10px',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '6px'
+          }}>
+            <Layers size={16} color="var(--primary-green)" />
+            <span>2. Architectural Synergy: Conv1D + LSTM</span>
           </h3>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px' }}>
-            <div style={{ background: 'rgba(139, 92, 246, 0.08)', border: '1px solid rgba(139, 92, 246, 0.25)', borderRadius: '10px', padding: '16px' }}>
-              <h4 style={{ color: '#C4B5FD', fontSize: '0.9rem', marginBottom: '6px' }}>1D Convolution (Conv1D + MaxPool)</h4>
-              <p style={{ color: 'var(--text-secondary)', fontSize: '0.82rem', lineHeight: 1.5 }}>
-                Local financial waveform patterns (e.g. abrupt candlestick reversals, volume surges, moving average crossovers) occur over 3- to 5-day intervals. 1D convolutions act as learned feature filters to extract translation-invariant localized representations.
+
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '12px' }}>
+            <div style={{
+              backgroundColor: 'var(--surface-subtle)',
+              border: '1px solid var(--border-subtle)',
+              borderRadius: '8px',
+              padding: '14px'
+            }}>
+              <h4 style={{ fontSize: '0.8125rem', fontWeight: 700, color: 'var(--text-primary)', marginBottom: '4px' }}>
+                1D Convolutions (Feature Extraction)
+              </h4>
+              <p style={{ color: 'var(--text-secondary)', fontSize: '0.75rem', lineHeight: 1.5 }}>
+                Local candlestick waveforms, momentum breakouts, and volume anomalies occur over short 3–5 day windows. 1D convolutions act as learned filters to isolate translation-invariant technical patterns.
               </p>
             </div>
-            <div style={{ background: 'rgba(6, 182, 212, 0.08)', border: '1px solid rgba(6, 182, 212, 0.25)', borderRadius: '10px', padding: '16px' }}>
-              <h4 style={{ color: '#67E8F9', fontSize: '0.9rem', marginBottom: '6px' }}>Recurrent LSTM Layer</h4>
-              <p style={{ color: 'var(--text-secondary)', fontSize: '0.82rem', lineHeight: 1.5 }}>
-                Standard feedforward networks cannot model chronological dependencies. The LSTM maintains a cell state with Input, Forget, and Output gating mechanisms that retain macroeconomic trend momentum across the 30-day temporal window.
+
+            <div style={{
+              backgroundColor: 'var(--surface-subtle)',
+              border: '1px solid var(--border-subtle)',
+              borderRadius: '8px',
+              padding: '14px'
+            }}>
+              <h4 style={{ fontSize: '0.8125rem', fontWeight: 700, color: 'var(--text-primary)', marginBottom: '4px' }}>
+                Recurrent LSTM (Sequential Memory)
+              </h4>
+              <p style={{ color: 'var(--text-secondary)', fontSize: '0.75rem', lineHeight: 1.5 }}>
+                Standard feedforward networks lack memory of previous steps. The LSTM maintains cell state and gated transitions (Input, Forget, Output) to capture multi-week trend momentum across the 30-day sequence.
               </p>
             </div>
           </div>
         </div>
 
-        {/* Section 3: Viva Questions & Scientific Defenses */}
-        <div style={{ marginBottom: '20px' }}>
-          <h3 style={{ fontSize: '1.05rem', fontWeight: 600, color: '#34D399', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <ShieldCheck size={18} />
+        {/* Section 3: Viva Questions & Defenses */}
+        <div>
+          <h3 style={{
+            fontSize: '0.9375rem',
+            fontWeight: 700,
+            color: 'var(--text-primary)',
+            marginBottom: '10px',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '6px'
+          }}>
+            <ShieldCheck size={16} color="var(--primary-green)" />
             <span>3. Viva Defense Guide & Academic Justifications</span>
           </h3>
 
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '10px' }}>
-            <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid var(--border-subtle)', borderRadius: '10px', padding: '12px 16px' }}>
-              <strong style={{ color: '#F8FAFC', fontSize: '0.85rem' }}>Q: Why did you not use Intraday (hourly/minute) data?</strong>
-              <p style={{ color: 'var(--text-secondary)', fontSize: '0.8rem', marginTop: '4px', lineHeight: 1.4 }}>
-                Intraday market data contains severe microstructure noise (bid-ask bounces, order routing delays) and free APIs restrict intraday history to 60 days. Daily data provides 5 years of stable macroeconomic history, enabling deep learning models to learn generalizable market cycles without overfitting.
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '8px' }}>
+            <div style={{ backgroundColor: 'var(--surface-subtle)', border: '1px solid var(--border-subtle)', borderRadius: '8px', padding: '10px 14px' }}>
+              <strong style={{ color: 'var(--text-primary)', fontSize: '0.8125rem' }}>
+                Q: Why not use Intraday (1-minute / 5-minute) bars?
+              </strong>
+              <p style={{ color: 'var(--text-secondary)', fontSize: '0.75rem', marginTop: '3px', lineHeight: 1.4 }}>
+                Intraday market microstructure is dominated by transient order routing and bid-ask bounces. Free public APIs provide at most 60 days of intraday data. Daily candles offer 5 years of macroeconomic cycles, preventing severe overfitting.
               </p>
             </div>
 
-            <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid var(--border-subtle)', borderRadius: '10px', padding: '12px 16px' }}>
-              <strong style={{ color: '#F8FAFC', fontSize: '0.85rem' }}>Q: Why is the Naive Persistence Baseline competitive in MAE?</strong>
-              <p style={{ color: 'var(--text-secondary)', fontSize: '0.8rem', marginTop: '4px', lineHeight: 1.4 }}>
-                Under the Efficient Market Hypothesis (EMH), stock price levels approximate a martingale where tomorrow's expected price equals today's price. Consequently, Naive Persistence yields low MAE in calm regimes. The proposed CNN-LSTM adds value primarily in <strong>Directional Accuracy (Hit Rate)</strong> by anticipating turns rather than merely repeating yesterday's price.
+            <div style={{ backgroundColor: 'var(--surface-subtle)', border: '1px solid var(--border-subtle)', borderRadius: '8px', padding: '10px 14px' }}>
+              <strong style={{ color: 'var(--text-primary)', fontSize: '0.8125rem' }}>
+                Q: Why is Naive Persistence competitive in price MAE?
+              </strong>
+              <p style={{ color: 'var(--text-secondary)', fontSize: '0.75rem', marginTop: '3px', lineHeight: 1.4 }}>
+                Under the Efficient Market Hypothesis, stock price levels resemble martingales where tomorrow's price is close to today's price. Naive persistence achieves low MAE in low-volatility regimes. CNN-LSTM adds distinct value in <strong>Directional Accuracy</strong> by forecasting inflection points.
               </p>
             </div>
 
-            <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid var(--border-subtle)', borderRadius: '10px', padding: '12px 16px' }}>
-              <strong style={{ color: '#F8FAFC', fontSize: '0.85rem' }}>Q: How do you guarantee zero Data Leakage?</strong>
-              <p style={{ color: 'var(--text-secondary)', fontSize: '0.8rem', marginTop: '4px', lineHeight: 1.4 }}>
-                Splitting is strictly chronological (70% Train, 15% Validation, 15% Test). All preprocessing parameters (MinMaxScaler min/max) are fitted exclusively on the 70% Train partition. Validation and Test sets are transformed without fitting. No future timestamps or targets ever enter model training.
+            <div style={{ backgroundColor: 'var(--surface-subtle)', border: '1px solid var(--border-subtle)', borderRadius: '8px', padding: '10px 14px' }}>
+              <strong style={{ color: 'var(--text-primary)', fontSize: '0.8125rem' }}>
+                Q: How is zero Data Leakage guaranteed?
+              </strong>
+              <p style={{ color: 'var(--text-secondary)', fontSize: '0.75rem', marginTop: '3px', lineHeight: 1.4 }}>
+                Data splits are strictly chronological (70% Train, 15% Val, 15% Test). All preprocessing parameters (MinMax scaler) are fitted strictly on the Train set. Validation and Test splits are transformed without refitting.
               </p>
             </div>
           </div>
