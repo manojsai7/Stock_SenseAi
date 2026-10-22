@@ -158,12 +158,25 @@ def run_smoke_test(base_url: str):
             total += 1
             t0 = time.time()
             try:
-                r = client.get(f"{base_url}/api/predict/{sym}")
+                r = client.get(
+                    f"{base_url}/api/predictions/{sym}/latest"
+                    "?pipeline_version=stationary-return-v1"
+                )
                 duration = round((time.time() - t0) * 1000, 1)
                 if r.status_code == 200:
                     pred = r.json()
                     assert pred.get("predicted_close") is not None
-                    print(f"[PASS] Prediction [{sym}] ({duration}ms) — Pred Close: {pred.get('predicted_close')} | Target: {pred.get('target_date')} | Direction: {pred.get('direction')}")
+                    assert pred.get("pipeline_version") == "stationary-return-v1"
+                    assert len(pred.get("features_used", [])) == 7
+                    assert pred.get("data_status") in {"ONLINE", "OFFLINE"}
+                    assert pred.get("data_as_of_date") == pred.get("latest_completed_session")
+                    assert pred.get("data_provider_source")
+                    print(
+                        f"[PASS] Prediction [{sym}] ({duration}ms) — "
+                        f"Data: {pred.get('data_status')} via {pred.get('data_provider_source')} "
+                        f"as of {pred.get('data_as_of_date')} | Pred Close: {pred.get('predicted_close')} | "
+                        f"Target: {pred.get('target_date')} | Direction: {pred.get('direction')}"
+                    )
                     passed += 1
                 else:
                     print(f"[FAIL] Prediction [{sym}] status={r.status_code}: {r.text}")

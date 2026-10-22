@@ -16,6 +16,7 @@ from backend.core.cache import cache
 
 def run_smoke_tests():
     client = TestClient(app)
+    configured_default = settings.PREDICTION_PIPELINE_VERSION
     cache.clear()
     print("=" * 60)
     print("STOCKSENSE AI — PHASE 3 API SMOKE TEST")
@@ -57,14 +58,15 @@ def run_smoke_tests():
     assert stat_data["predicted_close"] > 0
     print("    --> Stationary-return inference verified successfully.")
 
-    # 3. Test Default Pipeline (no param -> default 'legacy')
-    print("\n[3] Testing Default Pipeline Config (No query param -> default 'legacy')...")
+    # 3. Test configured default pipeline (no query parameter)
+    print(f"\n[3] Testing configured default pipeline ({configured_default})...")
     res_default = client.get("/api/predict/TCS.NS")
     assert res_default.status_code == 200
     def_data = res_default.json()
-    assert len(def_data["features_used"]) == 6
+    expected_default_features = 7 if configured_default == "stationary-return-v1" else 6
+    assert len(def_data["features_used"]) == expected_default_features
     print(f"    Default pipeline version: {settings.PREDICTION_PIPELINE_VERSION}")
-    print(f"    Resolved model features count: {len(def_data['features_used'])} (legacy default confirmed)")
+    print(f"    Resolved model features count: {len(def_data['features_used'])}")
 
     # 4. Test Unsupported Stock Ather Energy on stationary pipeline
     print("\n[4] Testing Unsupported Stock ATHERENERG.NS on stationary pipeline...")
@@ -93,11 +95,11 @@ def run_smoke_tests():
     assert len(res_env_stat.json()["features_used"]) == 7
     print("    --> Env switch to 'stationary-return-v1' verified.")
 
-    # Revert to safe default legacy
-    settings.PREDICTION_PIPELINE_VERSION = "legacy"
+    # Restore the configured default after the temporary override.
+    settings.PREDICTION_PIPELINE_VERSION = configured_default
     res_reverted = client.get("/api/predict/TCS.NS")
-    assert len(res_reverted.json()["features_used"]) == 6
-    print("    --> Safely reverted default to 'legacy'.")
+    assert len(res_reverted.json()["features_used"]) == expected_default_features
+    print(f"    --> Restored configured default '{configured_default}'.")
 
     # 7. Test /api/predictions/{symbol}/latest endpoint
     print("\n[7] Testing /api/predictions/{symbol}/latest with pipeline_version...")

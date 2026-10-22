@@ -96,6 +96,7 @@ class ProductionStationaryTrainer:
         patience: int = 10,
         random_seed: int = 42,
         output_dir: Optional[Union[str, Path]] = None,
+        data_file: Optional[Union[str, Path]] = None,
         dry_run: bool = False
     ):
         self.symbol = symbol.strip().upper()
@@ -117,8 +118,10 @@ class ProductionStationaryTrainer:
             self.output_dir = PROJECT_ROOT / "models_storage_stationary" / self.clean_symbol
 
         # Locate raw / processed data file
-        self.data_file = PROJECT_ROOT / "data" / "processed" / f"{self.clean_symbol}_processed.csv"
-        if not self.data_file.exists():
+        self.data_file = Path(data_file) if data_file else (
+            PROJECT_ROOT / "data" / "processed" / f"{self.clean_symbol}_processed.csv"
+        )
+        if not data_file and not self.data_file.exists():
             self.data_file = PROJECT_ROOT / "data" / "raw" / f"{self.clean_symbol}.csv"
 
         if not self.data_file.exists():

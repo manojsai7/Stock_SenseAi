@@ -166,6 +166,30 @@ export default function ForecastPanel({
       ) : prediction ? (
         /* State 3: Successful Forecast Display */
         <div>
+          <div
+            role="status"
+            style={{
+              backgroundColor: 'var(--surface-subtle)',
+              border: '1px solid var(--border-subtle)',
+              borderRadius: '6px',
+              padding: '9px 12px',
+              marginBottom: '14px',
+              color: 'var(--text-secondary)',
+              fontSize: '0.75rem',
+              lineHeight: 1.5
+            }}
+          >
+            <strong style={{ color: 'var(--text-primary)' }}>Forecast input data:</strong>{' '}
+            {prediction.data_status === 'ONLINE'
+              ? 'Retrieved online'
+              : prediction.data_status === 'OFFLINE'
+                ? 'Packaged historical snapshot'
+                : 'Source not verified'}
+            {prediction.data_as_of_date ? ` · Completed session ${prediction.data_as_of_date}` : ''}
+            {prediction.data_provider_source ? ` · ${prediction.data_provider_source}` : ''}
+            {' · This is daily prediction input data; the quote above is provided separately.'}
+          </div>
+
           {/* Financial Metrics Cards */}
           <div style={{
             display: 'grid',

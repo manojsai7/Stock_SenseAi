@@ -17,6 +17,11 @@ from backend.services.model_registry import model_registry
 
 logger = logging.getLogger(__name__)
 
+
+class StaleMarketDataError(RuntimeError):
+    """Raised when available daily bars do not reach the expected completed session."""
+
+
 class PredictionService:
     """
     Production-grade CNN-LSTM Prediction Service:
@@ -33,6 +38,33 @@ class PredictionService:
         self.provider = YahooFinanceProvider()
         self.feature_extractor = TechnicalFeatureExtractor(ma_window=20)
         self.seq_generator = SequenceGenerator(window_size=settings.MODEL_WINDOW)
+
+    @staticmethod
+    def _market_data_provenance(raw_df, completed_df, expected_session):
+        """Return honest provider provenance and reject stale daily history."""
+        if completed_df.empty:
+            raise StaleMarketDataError("No completed daily bars are available for the expected session.")
+
+        latest_bar = completed_df["Date"].max().date()
+        if latest_bar < expected_session:
+            source = raw_df.attrs.get("data_source", "unknown source")
+            raise StaleMarketDataError(
+                f"Market history is stale: latest available completed bar is {latest_bar}; "
+                f"expected at least {expected_session}. Source: {source}."
+            )
+
+        source_status = raw_df.attrs.get("source_status")
+        if source_status not in {"ONLINE", "OFFLINE"}:
+            legacy_status = raw_df.attrs.get("data_status")
+            source_status = "OFFLINE" if legacy_status in {"FALLBACK", "OFFLINE"} else (
+                "ONLINE" if legacy_status == "LIVE" else "UNKNOWN"
+            )
+
+        return {
+            "data_status": source_status,
+            "data_provider_source": raw_df.attrs.get("data_source", "Unknown market-data source"),
+            "data_as_of_date": latest_bar.strftime("%Y-%m-%d"),
+        }
 
     def get_prediction(self, symbol: str, pipeline_version: Optional[str] = None) -> Dict[str, Any]:
         """
@@ -92,6 +124,7 @@ class PredictionService:
         # 4. Strict Completed Candle Rule:
         df["SessionDate"] = df["Date"].dt.date
         completed_df = df[df["SessionDate"] <= latest_completed_date].copy()
+        provenance = self._market_data_provenance(df, completed_df, latest_completed_date)
 
         if len(completed_df) < 30:
             raise ValueError(
@@ -182,8 +215,10 @@ class PredictionService:
             "mae_benchmark": mae,
             "rmse_benchmark": rmse,
             "mape_benchmark": mape,
-            "data_status": "LIVE",
+            "data_status": provenance["data_status"],
             "data_source": settings.PROVIDER_NAME,
+            "data_provider_source": provenance["data_provider_source"],
+            "data_as_of_date": provenance["data_as_of_date"],
             "market_status": market_status,
             "recent_input_candles": recent_candles,
         }
@@ -237,6 +272,7 @@ class PredictionService:
         df["SessionDate"] = df["Date"].dt.date
         completed_df = df[df["SessionDate"] <= latest_completed_date].copy()
         completed_df = completed_df.sort_values("Date").reset_index(drop=True)
+        provenance = self._market_data_provenance(df, completed_df, latest_completed_date)
 
         if len(completed_df) < 50:
             raise ValueError(
@@ -346,8 +382,10 @@ class PredictionService:
             "mae_benchmark": None,
             "rmse_benchmark": None,
             "mape_benchmark": None,
-            "data_status": "LIVE",
+            "data_status": provenance["data_status"],
             "data_source": settings.PROVIDER_NAME,
+            "data_provider_source": provenance["data_provider_source"],
+            "data_as_of_date": provenance["data_as_of_date"],
             "market_status": market_status,
             "recent_input_candles": recent_candles,
         }

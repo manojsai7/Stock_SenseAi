@@ -2,7 +2,7 @@ from fastapi import APIRouter, HTTPException
 from typing import List, Dict, Any, Optional
 from pathlib import Path
 import pandas as pd
-from backend.services.prediction_service import PredictionService
+from backend.services.prediction_service import PredictionService, StaleMarketDataError
 from backend.schemas.prediction import PredictionResponse, ModelMetricsResponse
 
 router = APIRouter(tags=["Predictions & Models"])
@@ -27,6 +27,8 @@ def get_prediction(symbol: str, pipeline_version: Optional[str] = None):
         raise HTTPException(status_code=400, detail=str(ve))
     except FileNotFoundError as fe:
         raise HTTPException(status_code=404, detail=str(fe))
+    except StaleMarketDataError as stale:
+        raise HTTPException(status_code=503, detail=str(stale))
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Prediction error for '{symbol}': {str(e)}")
 

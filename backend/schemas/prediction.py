@@ -25,8 +25,10 @@ class PredictionResponse(BaseModel):
     mae_benchmark: Optional[float] = None
     rmse_benchmark: Optional[float] = None
     mape_benchmark: Optional[float] = None
-    data_status: str = "LIVE"
+    data_status: str = "UNKNOWN"
     data_source: str = "Yahoo Finance"
+    data_provider_source: Optional[str] = None
+    data_as_of_date: Optional[str] = None
     market_status: str = "CLOSED"
     recent_input_candles: Optional[List[Dict[str, Any]]] = None
 

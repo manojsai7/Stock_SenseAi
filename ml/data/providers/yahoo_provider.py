@@ -86,6 +86,8 @@ class YahooFinanceProvider(BaseMarketDataProvider):
                     if "Date" in df.columns:
                         df["Date"] = pd.to_datetime(df["Date"]).dt.tz_localize(None)
                         df = df.dropna().sort_values("Date").reset_index(drop=True)
+                        df.attrs["data_status"] = "OFFLINE"
+                        df.attrs["data_source"] = f"Packaged Dataset ({p.name})"
                         logger.info(f"Loaded {len(df)} offline historical rows for {symbol} from {p.name}")
                         return df
                 except Exception as e:
@@ -140,11 +142,16 @@ class YahooFinanceProvider(BaseMarketDataProvider):
     def fetch_historical_ohlcv(self, symbol: str, period: str = "2y", interval: str = "1d") -> pd.DataFrame:
         logger.info(f"Fetching {period} ({interval}) data for {symbol} via Yahoo Finance...")
         df = None
+        data_source = None
+        source_status = None
         try:
             # Tier 1: Try yfinance library
             try:
                 ticker = yf.Ticker(symbol)
                 df = ticker.history(period=period, interval=interval, auto_adjust=False)
+                if df is not None and not df.empty:
+                    data_source = "Yahoo Finance via yfinance history"
+                    source_status = "ONLINE"
             except Exception as e:
                 logger.warning(f"yfinance ticker.history failed for {symbol}: {e}")
                 df = None
@@ -159,6 +166,9 @@ class YahooFinanceProvider(BaseMarketDataProvider):
                         auto_adjust=False,
                         progress=False
                     )
+                    if df is not None and not df.empty:
+                        data_source = "Yahoo Finance via yfinance download"
+                        source_status = "ONLINE"
                 except Exception as e:
                     logger.warning(f"yf.download failed for {symbol}: {e}")
                     df = None
@@ -167,11 +177,17 @@ class YahooFinanceProvider(BaseMarketDataProvider):
             if df is None or df.empty:
                 logger.info(f"Falling back to direct Yahoo Chart API for {symbol}...")
                 df = self._fetch_direct_chart_ohlcv(symbol, period=period, interval=interval)
+                if df is not None and not df.empty:
+                    data_source = "Yahoo Finance Chart API"
+                    source_status = "ONLINE"
 
             # Tier 3: Packaged historical CSV fallback
             if df is None or df.empty:
                 logger.warning(f"Falling back to packaged offline CSV for {symbol}...")
                 df = self._fetch_offline_ohlcv(symbol)
+                if df is not None and not df.empty:
+                    data_source = "Packaged historical CSV"
+                    source_status = "OFFLINE"
 
             if df is None or df.empty:
                 raise ValueError(f"No market data returned for symbol '{symbol}'")
@@ -207,6 +223,10 @@ class YahooFinanceProvider(BaseMarketDataProvider):
                     df[col] = pd.to_numeric(df[col], errors="coerce")
 
             df = df.dropna().drop_duplicates(subset=["Date"]).sort_values("Date").reset_index(drop=True)
+            # DataFrame attrs survive normal filtering/copy operations and let the
+            # prediction service distinguish online retrieval from an offline cache.
+            df.attrs["data_source"] = data_source or "Unknown market-data source"
+            df.attrs["source_status"] = source_status or "UNKNOWN"
             return df
         except Exception as e:
             logger.error(f"Error fetching historical data for {symbol}: {e}")

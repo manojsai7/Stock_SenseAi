@@ -16,7 +16,7 @@ import sys
 import json
 from pathlib import Path
 from datetime import datetime
-from typing import Dict, Any
+from typing import Dict, Any, Optional
 
 import numpy as np
 import pandas as pd
@@ -52,7 +52,11 @@ PRIMARY_SYMBOLS = [
 ]
 
 
-def smoke_test_artifact(symbol: str, artifact_dir: Path) -> Dict[str, Any]:
+def smoke_test_artifact(
+    symbol: str,
+    artifact_dir: Path,
+    data_file: Optional[Path] = None
+) -> Dict[str, Any]:
     """
     Performs comprehensive artifact integrity and inference smoke verification.
     """
@@ -84,9 +88,10 @@ def smoke_test_artifact(symbol: str, artifact_dir: Path) -> Dict[str, Any]:
     reloaded_target_scaler = ReturnTargetScaler.load(target_scaler_path)
 
     # 4. Load raw source data and build latest inference sequence
-    data_file = PROJECT_ROOT / "data" / "processed" / f"{clean_sym}_processed.csv"
-    if not data_file.exists():
-        data_file = PROJECT_ROOT / "data" / "raw" / f"{clean_sym}.csv"
+    if data_file is None:
+        data_file = PROJECT_ROOT / "data" / "processed" / f"{clean_sym}_processed.csv"
+        if not data_file.exists():
+            data_file = PROJECT_ROOT / "data" / "raw" / f"{clean_sym}.csv"
 
     df_raw = pd.read_csv(data_file)
     clean_inf_df, feature_cols = prepare_inference_features(df_raw)

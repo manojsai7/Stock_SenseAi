@@ -219,7 +219,7 @@ export default function BenchmarkMatrix({ metricsData, symbol, currency = '₹' 
       }}>
         <Info size={16} color="var(--accent-blue)" style={{ flexShrink: 0, marginTop: '2px' }} />
         <div style={{ fontSize: '0.78125rem', color: 'var(--text-secondary)', lineHeight: 1.5 }}>
-          <strong style={{ color: 'var(--text-primary)' }}>Empirical Finding:</strong> Stock price levels exhibit strong econometric persistence, making Naive Persistence a competitive point-estimate baseline for next-day close. The proposed <strong>CNN-LSTM architecture</strong> extracts localized temporal features via 1D convolutions before sequential recurrence, delivering strong directional classification guidance across major NSE equities while preserving leakage-safe train/test splits.
+          <strong style={{ color: 'var(--text-primary)' }}>Empirical Finding:</strong> Stock price levels are persistent, making Naive Persistence a strong point-estimate baseline for next-day close. The available CNN-LSTM results do not establish consistent directional skill above simple baselines; the active stationary-return model still needs an untouched, walk-forward evaluation.
         </div>
       </div>
 

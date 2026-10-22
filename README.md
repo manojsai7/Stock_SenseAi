@@ -282,6 +282,50 @@ If deploying the frontend on Vercel:
 - **Live Market Data**: Refers to latest available delayed exchange quote retrieved from Yahoo Finance during trading hours.
 - **Historical Directional Accuracy**: Refers strictly to the model's out-of-sample test-set hit rate ($\frac{\text{correct directions}}{\text{total periods}} \times 100$) over unseen test data.
 - **Next Trading-Day Forecast**: Refers to the predicted closing price for the next official session calculated strictly from completed daily sessions.
+- **Prediction data provenance**: Forecast responses include `data_status` (`ONLINE`, `OFFLINE`, or `UNKNOWN`), the provider tier, and `data_as_of_date`. The prediction API returns HTTP 503 when its daily history does not include the latest completed session, rather than returning a forecast from stale packaged data.
+- **Default prediction pipeline**: The Render configuration explicitly selects `stationary-return-v1`. Other deployments should set `PREDICTION_PIPELINE_VERSION=stationary-return-v1` or specify the pipeline in the prediction request.
 - **Disclaimer**: StockSense AI is a scientific research prototype. Deep learning forecasts do not guarantee trading returns and should not be used as financial advice.
+
+### 🧪 9. Google Colab Training & Artifact Release Workflow
+
+The project defines an explicit separation between research/training (Google Colab), versioned artifact management (GitHub), production API inference (Render), and user presentation (Vercel):
+
+```text
+┌───────────────────────┐
+│ Google Colab          │ ──► Historical Data Ingestion & Technical Feature Engineering
+│ (Research / Training) │ ──► Chronological Train/Val Split & Causal Scaler Fitting
+└───────────┬───────────┘ ──► CNN-LSTM Model Training & Validation Epoch Selection
+            │
+            ▼ (Versioned Artifact Package: model.keras, feature_scaler.pkl, return_scaler.pkl, manifest.json)
+┌───────────────────────┐
+│ GitHub Repository     │ ──► Verified Artifact Packages in `models_storage_stationary/`
+└───────────┬───────────┘ ──► Automated Trigger via Git Push to `master`
+            │
+            ▼ (Docker Build: Uvicorn + FastAPI + Model Registry in RAM)
+┌───────────────────────┐
+│ Render API            │ ──► Zero-training Inference Engine: Loads pre-trained model & scalers
+│ (Inference Service)   │ ──► Fetches 30 completed sessions via Yahoo Finance direct chart API
+└───────────┬───────────┘ ──► Reconstructs next-day close: predicted_close = last_close * (1 + return)
+            │
+            ▼ (HTTPS REST JSON API)
+┌───────────────────────┐
+│ Vercel Frontend       │ ──► Editorial Financial Terminal UI (Space Grotesk / Manrope / IBM Plex Mono)
+│ (React 18 + Vite)     │ ──► Interactive Bklit Candlestick Chart, MA20 Overlay, Kokonut Forecast Trigger
+└───────────────────────┘
+```
+
+#### Reproducible Training in Google Colab
+Open [`notebooks/StockSense_Colab_Workflow.ipynb`](notebooks/StockSense_Colab_Workflow.ipynb) in Google Colab.
+- **Safe Defaults**: `REFRESH_DATA=False`, `RUN_TRAINING=False`, `EXPORT_CANDIDATES_TO_DRIVE=False`.
+- **Candidate Isolation**: All Colab training runs output to `models_storage_stationary_candidate/` so production packages are never inadvertently overwritten.
+- **Artifact Verification**: Every trained candidate must pass SHA-256 checksum verification and an artifact reload smoke-test (`smoke_test_artifact`) before release.
+
+#### Controlled Release Protocol
+1. **Train & Smoke-Test**: Set `RUN_TRAINING=True` in Colab and execute the canonical `ProductionStationaryTrainer`.
+2. **Review & Compare**: Evaluate out-of-sample walk-forward directional hit rates and error metrics against baseline persistence.
+3. **Stage Package**: Move approved package into `models_storage_stationary/{SYMBOL_NAME}/` with its accompanying `manifest.json`.
+4. **Git Commit & Push**: Commit with clear metadata tags and push to `origin/master`.
+5. **Render Rebuild**: Render automatically re-compiles the Docker image, pre-loads the model weights into memory, and passes `/api/system/health`.
+6. **Smoke-Test Live Inference**: Verify `/api/predictions/{SYMBOL}/latest?pipeline_version=stationary-return-v1` returns HTTP 200 with positive, finite `predicted_close` and honest data provenance.
 
 
