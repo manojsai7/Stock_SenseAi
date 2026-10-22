@@ -1,27 +1,47 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { X, Cpu, Layers, GitBranch, ShieldCheck } from 'lucide-react';
 
 export default function ArchitectureModal({ isOpen, onClose }) {
+  const dialogRef = useRef(null);
+  const onCloseRef = useRef(onClose);
+  onCloseRef.current = onClose;
+
   // Close on Escape key
   useEffect(() => {
-    function handleKeyDown(e) {
-      if (e.key === 'Escape') onClose();
+    if (!isOpen) return undefined;
+    const previousFocus = document.activeElement;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    dialogRef.current?.focus();
+    function handleKeyDown(event) {
+      if (event.key === 'Escape') onCloseRef.current();
+      if (event.key !== 'Tab') return;
+      const focusable = dialogRef.current?.querySelectorAll('button, a[href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
+      if (!focusable?.length) return;
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
     }
-    if (isOpen) {
-      document.addEventListener('keydown', handleKeyDown);
-      document.body.style.overflow = 'hidden';
-    }
+    document.addEventListener('keydown', handleKeyDown);
     return () => {
       document.removeEventListener('keydown', handleKeyDown);
-      document.body.style.overflow = 'auto';
+      document.body.style.overflow = previousOverflow;
+      if (previousFocus instanceof HTMLElement) previousFocus.focus();
     };
-  }, [isOpen, onClose]);
+  }, [isOpen]);
 
   if (!isOpen) return null;
 
   return (
     <div
       onClick={onClose}
+      role="presentation"
       style={{
         position: 'fixed',
         top: 0,
@@ -39,6 +59,11 @@ export default function ArchitectureModal({ isOpen, onClose }) {
     >
       <div
         onClick={(e) => e.stopPropagation()}
+        ref={dialogRef}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="architecture-dialog-title"
+        tabIndex={-1}
         style={{
           maxWidth: '880px',
           width: '100%',
@@ -87,7 +112,9 @@ export default function ArchitectureModal({ isOpen, onClose }) {
               letterSpacing: '-0.02em',
               margin: 0
             }}>
+              <span id="architecture-dialog-title">
               System Architecture & Viva Defense Reference
+              </span>
             </h2>
           </div>
           <p style={{ color: 'var(--text-secondary)', fontSize: '0.8125rem' }}>

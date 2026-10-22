@@ -9,13 +9,26 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@base-ui/react": "^1.9.0",
+    "@tailwindcss/vite": "^4.3.3",
+    "@visx/event": "^4.0.0",
+    "@visx/grid": "^4.0.0",
+    "@visx/responsive": "^4.0.0",
+    "@visx/scale": "^4.0.0",
+    "animejs": "^4.5.0",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "d3-array": "^3.2.4",
     "lucide-react": "^1.16.0",
+    "motion": "^14.5.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "recharts": "^2.15.0"
+    "recharts": "^2.15.0",
+    "tailwind-merge": "^3.7.0",
+    "tailwindcss": "^4.3.3"
   },
   "devDependencies": {
     "@vitejs/plugin-react": "^4.3.4",
-    "vite": "^5.4.11"
+    "vite": "^6.4.5"
   }
 }

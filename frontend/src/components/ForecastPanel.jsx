@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { lazy, Suspense, useEffect, useRef, useState } from 'react';
 import {
   TrendingUp,
   TrendingDown,
@@ -11,6 +11,9 @@ import {
   ChevronDown,
   ChevronUp
 } from 'lucide-react';
+import { triggerHaptic } from '../lib/haptics';
+
+const ParticleButton = lazy(() => import('./kokonutui/particle-button'));
 
 export default function ForecastPanel({
   prediction,
@@ -23,6 +26,25 @@ export default function ForecastPanel({
 }) {
   const [showCandles, setShowCandles] = useState(false);
   const [showModelSpecs, setShowModelSpecs] = useState(false);
+  const [forecastButtonStatus, setForecastButtonStatus] = useState('idle');
+  const forecastStatusTimer = useRef(null);
+
+  useEffect(() => () => clearTimeout(forecastStatusTimer.current), []);
+  useEffect(() => {
+    clearTimeout(forecastStatusTimer.current);
+    setForecastButtonStatus('idle');
+  }, [symbol]);
+
+  const runForecastFromButton = async () => {
+    if (predicting) return;
+    clearTimeout(forecastStatusTimer.current);
+    triggerHaptic();
+    setForecastButtonStatus('pending');
+    const succeeded = await onRunPrediction();
+    setForecastButtonStatus(succeeded ? 'success' : 'error');
+    triggerHaptic(succeeded ? 'success' : 'error');
+    forecastStatusTimer.current = setTimeout(() => setForecastButtonStatus('idle'), succeeded ? 1800 : 2600);
+  };
 
   // Directional signal determination
   const direction = prediction?.directional_signal || prediction?.direction || 'FLAT';
@@ -38,7 +60,7 @@ export default function ForecastPanel({
   };
 
   return (
-    <div className="fintech-card" style={{ padding: '24px', marginBottom: '20px' }}>
+    <div className="fintech-card forecast-card" style={{ padding: '24px', marginBottom: '20px' }}>
       {/* Forecast Header & Action */}
       <div style={{
         display: 'flex',
@@ -78,25 +100,21 @@ export default function ForecastPanel({
 
         {/* Generate / Run Button */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <button
-            type="button"
-            onClick={onRunPrediction}
-            disabled={predicting}
-            className="btn-primary"
-            aria-busy={predicting}
-          >
-            {predicting ? (
-              <>
-                <RefreshCw size={14} style={{ animation: 'spin 1s linear infinite' }} />
-                <span>Calculating Forecast...</span>
-              </>
-            ) : (
-              <>
-                <RefreshCw size={14} />
-                <span>{prediction ? 'Recalculate Forecast' : 'Generate Forecast'}</span>
-              </>
-            )}
-          </button>
+          <Suspense fallback={<button className="btn-primary particle-forecast-button" type="button" disabled>Preparing forecast control…</button>}>
+            <ParticleButton
+              className="btn-primary particle-forecast-button"
+              status={forecastButtonStatus}
+              disabled={predicting}
+              onClick={runForecastFromButton}
+              pendingLabel="Calculating forecast"
+              successLabel="Forecast received"
+              errorLabel="Forecast unavailable"
+              particles
+              icon={<RefreshCw size={14} />}
+            >
+              {prediction ? 'Recalculate forecast' : 'Generate forecast'}
+            </ParticleButton>
+          </Suspense>
         </div>
       </div>
 
@@ -317,7 +335,7 @@ export default function ForecastPanel({
 
           {/* Collapsible 30-Day Input Sequence Table */}
           {showCandles && prediction.recent_input_candles && (
-            <div style={{
+            <div className="table-scroll input-sequence-scroll" role="region" aria-label="Recent model input candles" tabIndex={0} style={{
               marginBottom: '14px',
               border: '1px solid var(--border-subtle)',
               borderRadius: '6px',

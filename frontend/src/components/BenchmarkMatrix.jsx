@@ -22,7 +22,7 @@ export default function BenchmarkMatrix({ metricsData, symbol, currency = '₹' 
   const cnnLstm = comparison.cnn_lstm || {};
 
   return (
-    <div className="fintech-card" style={{ padding: '24px', marginBottom: '20px' }}>
+    <div className="fintech-card benchmark-card" style={{ padding: '24px', marginBottom: '20px' }}>
       {/* Header */}
       <div style={{
         display: 'flex',
@@ -96,7 +96,7 @@ export default function BenchmarkMatrix({ metricsData, symbol, currency = '₹' 
       </div>
 
       {/* Comparison Metrics Table */}
-      <div style={{ overflowX: 'auto', marginBottom: '18px' }}>
+      <div className="table-scroll" role="region" aria-label={`${symbol} legacy benchmark comparison table`} tabIndex={0} style={{ overflowX: 'auto', marginBottom: '18px' }}>
         <table style={{
           width: '100%',
           borderCollapse: 'collapse',

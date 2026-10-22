@@ -1,311 +1,135 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { Search, BookOpen, Activity, X } from 'lucide-react';
+import React, { useEffect, useRef, useState } from 'react';
+import { BookOpen, Search, X } from 'lucide-react';
 import { searchStocks } from '../services/api';
+import { triggerHaptic } from '../lib/haptics';
 
 const WATCHLIST_STOCKS = [
-  { symbol: 'TCS.NS', label: 'TCS', name: 'Tata Consultancy' },
-  { symbol: 'RELIANCE.NS', label: 'RELIANCE', name: 'Reliance Industries' },
-  { symbol: 'INFY.NS', label: 'INFY', name: 'Infosys' },
-  { symbol: 'HDFCBANK.NS', label: 'HDFCBANK', name: 'HDFC Bank' },
-  { symbol: 'ICICIBANK.NS', label: 'ICICIBANK', name: 'ICICI Bank' },
+  { symbol: 'TCS.NS', label: 'TCS' },
+  { symbol: 'RELIANCE.NS', label: 'RELIANCE' },
+  { symbol: 'INFY.NS', label: 'INFY' },
+  { symbol: 'HDFCBANK.NS', label: 'HDFC BANK' },
+  { symbol: 'ICICIBANK.NS', label: 'ICICI BANK' },
 ];
 
-export default function Navbar({
-  currentSymbol,
-  onSelectSymbol,
-  onOpenArchitecture,
-  marketStatus = 'CLOSED'
-}) {
+export default function Navbar({ currentSymbol, onSelectSymbol, onOpenArchitecture, marketStatus = 'CLOSED' }) {
   const [query, setQuery] = useState('');
   const [searchResults, setSearchResults] = useState([]);
   const [searching, setSearching] = useState(false);
+  const [searchError, setSearchError] = useState('');
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const searchContainerRef = useRef(null);
 
-  // Close dropdown when clicking outside
-  useEffect(() => {
-    function handleClickOutside(event) {
-      if (searchContainerRef.current && !searchContainerRef.current.contains(event.target)) {
-        setIsDropdownOpen(false);
-      }
-    }
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
-
-  // Debounced search when user types
   useEffect(() => {
     const trimmed = query.trim();
     if (!trimmed) {
       setSearchResults([]);
       setSearching(false);
-      return;
+      setSearchError('');
+      return undefined;
     }
-
+    let active = true;
     setSearching(true);
+    setSearchError('');
     const timer = setTimeout(async () => {
       try {
         const results = await searchStocks(trimmed);
-        setSearchResults(results || []);
-        setIsDropdownOpen(true);
-      } catch (err) {
-        console.warn('Search error:', err);
+        if (active) setSearchResults(results || []);
+      } catch (error) {
+        if (active) setSearchError(error.message || 'Equity search is unavailable.');
       } finally {
-        setSearching(false);
+        if (active) setSearching(false);
       }
     }, 250);
-
-    return () => clearTimeout(timer);
+    return () => {
+      active = false;
+      clearTimeout(timer);
+    };
   }, [query]);
 
-  const handleSelectFromSearch = (symbol) => {
+  useEffect(() => {
+    const onPointerDown = (event) => {
+      if (!searchContainerRef.current?.contains(event.target)) setIsDropdownOpen(false);
+    };
+    document.addEventListener('pointerdown', onPointerDown);
+    return () => document.removeEventListener('pointerdown', onPointerDown);
+  }, []);
+
+  const selectSymbol = (symbol) => {
+    triggerHaptic();
     onSelectSymbol(symbol);
     setQuery('');
+    setSearchResults([]);
     setIsDropdownOpen(false);
   };
 
-  const handleKeyDown = (e) => {
-    if (e.key === 'Enter') {
-      e.preventDefault();
-      if (searchResults.length > 0) {
-        handleSelectFromSearch(searchResults[0].symbol);
-      } else if (query.trim()) {
-        const formatted = query.trim().toUpperCase();
-        handleSelectFromSearch(formatted.includes('.') ? formatted : `${formatted}.NS`);
+  const handleKeyDown = (event) => {
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      if (searchResults.length) selectSymbol(searchResults[0].symbol);
+      else if (query.trim()) {
+        const symbol = query.trim().toUpperCase();
+        selectSymbol(symbol.includes('.') ? symbol : `${symbol}.NS`);
       }
-    } else if (e.key === 'Escape') {
-      setIsDropdownOpen(false);
     }
+    if (event.key === 'Escape') setIsDropdownOpen(false);
   };
 
   return (
-    <header style={{
-      backgroundColor: '#FFFFFF',
-      borderBottom: '1px solid var(--border-subtle)',
-      position: 'sticky',
-      top: 0,
-      zIndex: 40,
-      boxShadow: 'var(--shadow-sm)'
-    }}>
-      <div style={{
-        maxWidth: '1440px',
-        margin: '0 auto',
-        padding: '12px 24px',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        flexWrap: 'wrap',
-        gap: '16px'
-      }}>
-        {/* Brand identity */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-          <div style={{
-            width: '32px',
-            height: '32px',
-            borderRadius: '8px',
-            backgroundColor: 'var(--primary-green)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            color: '#FFFFFF'
-          }}>
-            <Activity size={18} strokeWidth={2.5} />
-          </div>
-          <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-              <span style={{
-                fontSize: '1.125rem',
-                fontWeight: 800,
-                color: 'var(--text-primary)',
-                letterSpacing: '-0.02em'
-              }}>
-                StockSense AI
-              </span>
-              <span style={{
-                fontSize: '0.6875rem',
-                fontWeight: 600,
-                color: 'var(--text-secondary)',
-                backgroundColor: 'var(--surface-subtle)',
-                padding: '1px 6px',
-                borderRadius: '4px'
-              }}>
-                NSE Forecasting
-              </span>
-            </div>
-          </div>
+    <header className="site-header">
+      <div className="header-inner">
+        <a className="wordmark" href="#top" aria-label="StockSense AI home">
+          <span>StockSense <em>AI</em></span>
+          <small>MARKET RESEARCH / INDIA</small>
+        </a>
+
+        <div className="header-market-state" aria-label={`Market status: ${marketStatus}`}>
+          <span className={`market-light ${marketStatus === 'OPEN' ? 'is-open' : ''}`} />
+          <span>{marketStatus.replaceAll('_', ' ')}</span>
+          <span className="market-zone">NSE · IST</span>
         </div>
 
-        {/* Watchlist Quick Tickers */}
-        <div style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: '6px',
-          overflowX: 'auto',
-          maxWidth: '100%',
-          paddingBottom: '2px'
-        }}>
-          {WATCHLIST_STOCKS.map(item => {
-            const isActive = currentSymbol === item.symbol;
-            return (
-              <button
-                key={item.symbol}
-                type="button"
-                onClick={() => onSelectSymbol(item.symbol)}
-                style={{
-                  backgroundColor: isActive ? 'var(--green-tint)' : 'var(--surface-subtle)',
-                  color: isActive ? 'var(--primary-green)' : 'var(--text-secondary)',
-                  border: isActive ? '1px solid var(--green-border)' : '1px solid var(--border-subtle)',
-                  padding: '5px 12px',
-                  borderRadius: '6px',
-                  fontSize: '0.78125rem',
-                  fontFamily: 'var(--font-mono)',
-                  fontWeight: isActive ? 700 : 500,
-                  cursor: 'pointer',
-                  whiteSpace: 'nowrap',
-                  transition: 'all 0.15s ease'
-                }}
-                aria-pressed={isActive}
-              >
-                {item.label}
-              </button>
-            );
-          })}
-        </div>
-
-        {/* Search & Actions */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          {/* Search Box */}
-          <div ref={searchContainerRef} style={{ position: 'relative' }}>
-            <div style={{ display: 'flex', alignItems: 'center', position: 'relative' }}>
-              <Search size={14} color="var(--text-muted)" style={{ position: 'absolute', left: '10px', pointerEvents: 'none' }} />
-              <input
-                type="text"
-                placeholder="Search symbol (e.g. TCS)..."
-                value={query}
-                onChange={(e) => {
-                  setQuery(e.target.value);
-                  setIsDropdownOpen(true);
-                }}
-                onFocus={() => setIsDropdownOpen(true)}
-                onKeyDown={handleKeyDown}
-                style={{
-                  backgroundColor: 'var(--surface-subtle)',
-                  border: '1px solid var(--border-subtle)',
-                  borderRadius: '6px',
-                  padding: '6px 28px 6px 30px',
-                  color: 'var(--text-primary)',
-                  fontSize: '0.8125rem',
-                  fontFamily: 'var(--font-sans)',
-                  width: '210px',
-                  outline: 'none',
-                  transition: 'border-color 0.15s ease'
-                }}
-              />
-              {query && (
-                <button
-                  type="button"
-                  onClick={() => {
-                    setQuery('');
-                    setSearchResults([]);
-                    setIsDropdownOpen(false);
-                  }}
-                  style={{
-                    position: 'absolute',
-                    right: '8px',
-                    background: 'none',
-                    border: 'none',
-                    cursor: 'pointer',
-                    color: 'var(--text-muted)',
-                    display: 'flex',
-                    alignItems: 'center'
-                  }}
-                >
-                  <X size={12} />
-                </button>
-              )}
-            </div>
-
-            {/* Live Search Suggestion Dropdown */}
+        <div className="header-actions">
+          <div className="search-wrap" ref={searchContainerRef}>
+            <Search aria-hidden="true" size={16} />
+            <input
+              type="search"
+              aria-label="Search stocks by symbol or company"
+              aria-expanded={Boolean(query.trim()) && isDropdownOpen}
+              aria-controls="stock-search-results"
+              placeholder="Search equities"
+              value={query}
+              onChange={(event) => {
+                setQuery(event.target.value);
+                setIsDropdownOpen(true);
+              }}
+              onFocus={() => setIsDropdownOpen(true)}
+              onKeyDown={handleKeyDown}
+            />
+            {query && <button className="search-clear" type="button" aria-label="Clear search" onClick={() => { setQuery(''); setSearchResults([]); }}><X size={14} /></button>}
             {isDropdownOpen && query.trim() && (
-              <div style={{
-                position: 'absolute',
-                top: 'calc(100% + 4px)',
-                right: 0,
-                width: '280px',
-                backgroundColor: '#FFFFFF',
-                border: '1px solid var(--border-default)',
-                borderRadius: '8px',
-                boxShadow: 'var(--shadow-lg)',
-                zIndex: 60,
-                maxHeight: '260px',
-                overflowY: 'auto',
-                padding: '4px'
-              }}>
-                {searching ? (
-                  <div style={{ padding: '12px', fontSize: '0.78125rem', color: 'var(--text-muted)', textAlign: 'center' }}>
-                    Searching equities...
-                  </div>
-                ) : searchResults.length > 0 ? (
-                  searchResults.map(stock => (
-                    <button
-                      key={stock.symbol}
-                      type="button"
-                      onClick={() => handleSelectFromSearch(stock.symbol)}
-                      style={{
-                        width: '100%',
-                        textAlign: 'left',
-                        padding: '8px 10px',
-                        borderRadius: '4px',
-                        background: currentSymbol === stock.symbol ? 'var(--green-tint)' : 'none',
-                        border: 'none',
-                        cursor: 'pointer',
-                        display: 'flex',
-                        justifyContent: 'space-between',
-                        alignItems: 'center',
-                        fontSize: '0.8125rem',
-                        transition: 'background-color 0.1s ease'
-                      }}
-                      onMouseEnter={(e) => {
-                        if (currentSymbol !== stock.symbol) e.currentTarget.style.backgroundColor = 'var(--surface-subtle)';
-                      }}
-                      onMouseLeave={(e) => {
-                        if (currentSymbol !== stock.symbol) e.currentTarget.style.backgroundColor = 'transparent';
-                      }}
-                    >
-                      <div>
-                        <div style={{ fontWeight: 600, color: 'var(--text-primary)', fontFamily: 'var(--font-mono)' }}>
-                          {stock.symbol}
-                        </div>
-                        <div style={{ fontSize: '0.71875rem', color: 'var(--text-secondary)' }}>
-                          {stock.name}
-                        </div>
-                      </div>
-                      <span style={{ fontSize: '0.6875rem', color: 'var(--text-muted)' }}>
-                        {stock.exchange}
-                      </span>
-                    </button>
-                  ))
-                ) : (
-                  <div style={{ padding: '12px', fontSize: '0.78125rem', color: 'var(--text-muted)', textAlign: 'center' }}>
-                    No matching equities found
-                  </div>
-                )}
+              <div className="search-results" id="stock-search-results" role="listbox" aria-label="Stock search results">
+                {searching ? <div className="search-message" role="status">Searching equities…</div>
+                  : searchError ? <div className="search-message" role="alert">{searchError}</div>
+                    : searchResults.length ? searchResults.map((stock) => (
+                      <button className="search-result" key={stock.symbol} type="button" role="option" aria-selected={currentSymbol === stock.symbol} onClick={() => selectSymbol(stock.symbol)}>
+                        <span><strong>{stock.symbol}</strong><small>{stock.name}</small></span>
+                        <small>{stock.exchange || 'NSE'}</small>
+                      </button>
+                    )) : <div className="search-message">No matching equities. Press Enter to try the NSE symbol.</div>}
               </div>
             )}
           </div>
-
-          {/* Architecture & Viva Button */}
-          <button
-            type="button"
-            onClick={onOpenArchitecture}
-            className="btn-secondary"
-            style={{ fontSize: '0.78125rem', padding: '6px 12px' }}
-          >
-            <BookOpen size={14} color="var(--primary-green)" />
-            <span>Architecture & Viva</span>
-          </button>
+          <button className="research-link" type="button" onClick={onOpenArchitecture}><BookOpen size={15} /><span>Methodology</span></button>
         </div>
       </div>
+
+      <nav className="watchlist" aria-label="Popular NSE stocks">
+        {WATCHLIST_STOCKS.map((stock) => (
+          <button key={stock.symbol} type="button" onClick={() => selectSymbol(stock.symbol)} aria-pressed={currentSymbol === stock.symbol} className={`watchlist-item ${currentSymbol === stock.symbol ? 'is-active' : ''}`}>
+            {stock.label}
+          </button>
+        ))}
+      </nav>
     </header>
   );
 }
