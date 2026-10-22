@@ -124,7 +124,7 @@ class ModelTrainingPipeline:
         callbacks_cnn_lstm = [
             EarlyStopping(monitor="val_loss", patience=10, restore_best_weights=True)
         ]
-        history = cnn_lstm_model.fit(
+        _history = cnn_lstm_model.fit(
             X_train, y_train,
             validation_data=(X_val, y_val),
             epochs=self.epochs,

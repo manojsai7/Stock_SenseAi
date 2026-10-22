@@ -18,18 +18,18 @@ def inspect_model_architecture(model: Model, symbol: str = "RELIANCE_NS", save_d
 
     summary_lines = []
     summary_lines.append("=" * 80)
-    summary_lines.append(f"  STOCKSENSE AI — NEURAL NETWORK ARCHITECTURE INSPECTION REPORT")
+    summary_lines.append("  STOCKSENSE AI — NEURAL NETWORK ARCHITECTURE INSPECTION REPORT")
     summary_lines.append(f"  Target Equity: {symbol}")
     summary_lines.append("=" * 80)
 
     # 1. Input Shape
     input_shape = model.input_shape
-    summary_lines.append(f"\n[1] Input Tensor Specification:")
+    summary_lines.append("\n[1] Input Tensor Specification:")
     summary_lines.append(f"    - Input Shape: {input_shape} (Batch Size x 30 Timesteps x 6 Features)")
-    summary_lines.append(f"    - Feature Channels: [Open, High, Low, Close, Volume, MA20]")
+    summary_lines.append("    - Feature Channels: [Open, High, Low, Close, Volume, MA20]")
 
     # 2. Layer-by-Layer Inspection
-    summary_lines.append(f"\n[2] Layer-by-Layer Mathematical Breakdown:")
+    summary_lines.append("\n[2] Layer-by-Layer Mathematical Breakdown:")
     summary_lines.append(f"    {'Index':<6} {'Layer Name':<20} {'Layer Type':<18} {'Output Shape':<24} {'Param #':<10}")
     summary_lines.append("    " + "-" * 76)
 
@@ -73,7 +73,7 @@ def inspect_model_architecture(model: Model, symbol: str = "RELIANCE_NS", save_d
             }
 
     # 3. Dedicated Parameter Geometry
-    summary_lines.append(f"\n[3] Kernel & Parameter Tensor Geometry:")
+    summary_lines.append("\n[3] Kernel & Parameter Tensor Geometry:")
     for layer_name, info in detailed_layer_params.items():
         summary_lines.append(f"    Layer: '{layer_name}' ({info['class']}) — Params: {info['param_count']}")
         for w_idx, shape in enumerate(info["weight_shapes"]):
@@ -81,7 +81,7 @@ def inspect_model_architecture(model: Model, symbol: str = "RELIANCE_NS", save_d
             summary_lines.append(f"      - Component {w_idx} ({desc}): shape = {shape}")
 
     # 4. Global Counts
-    summary_lines.append(f"\n[4] Parameter Count Totals:")
+    summary_lines.append("\n[4] Parameter Count Totals:")
     summary_lines.append(f"    - Total Parameters:         {total_params:,}")
     summary_lines.append(f"    - Trainable Parameters:     {trainable_params:,}")
     summary_lines.append(f"    - Non-Trainable Parameters: {non_trainable_params:,}")

@@ -71,7 +71,7 @@ def main():
     print("\n[3] CNN Mathematical Instrumentation:")
     act = results["activations"]
     print(f"    - Activation Map Shape: {act['activation_shape']} (30 timesteps x 64 filters)")
-    print(f"    - Top 3 Strongest Activations:")
+    print("    - Top 3 Strongest Activations:")
     for top in act["top_filters"][:3]:
         print(f"      * Filter #{top['filter_index']}: peak {top['max_activation']} at {top['correlated_date']} (mean={top['mean_activation']})")
 

@@ -16,7 +16,6 @@ import matplotlib.pyplot as plt
 import tensorflow as tf
 from tensorflow.keras.callbacks import ModelCheckpoint, EarlyStopping, CSVLogger
 
-from ml.models.baseline import NaivePersistenceModel
 from ml.models.lstm import build_lstm_model
 from ml.models.cnn_lstm import build_cnn_lstm_model
 from ml.evaluation.metrics import calculate_metrics, compute_direction_labels
@@ -146,11 +145,9 @@ class DeepLearningExperimentLab:
     def evaluate_naive_baseline(self, tensors: Dict[str, np.ndarray]) -> Dict[str, Any]:
         """Evaluates Baseline 1: Naive Persistence (prediction(t+1) = Close(t))."""
         logger.info(f"[{self.symbol}] Evaluating Baseline 1: Naive Persistence...")
-        X_test = tensors["X_test"]
         actual_test_prices = tensors["actual_target_test"]
         prev_close_prices = tensors["prev_close_test"]
 
-        naive = NaivePersistenceModel(close_col_index=3)
         # Naive persistence strictly predicts next day's price equals previous close
         naive_pred_prices = prev_close_prices.copy()
 
@@ -370,7 +367,7 @@ class DeepLearningExperimentLab:
         # 2. Extract initial weights and activations
         test_window_dates = self.get_test_window_dates(sample_index=0)
         self.cnn_instrumentor.extract_conv1d_weights(cnn_lstm_temp, symbol=self.symbol)
-        act_info = self.cnn_instrumentor.extract_activations(
+        _initial_act_info = self.cnn_instrumentor.extract_activations(
             model=cnn_lstm_temp,
             X_sample=tensors["X_test"][0],
             symbol=self.symbol,

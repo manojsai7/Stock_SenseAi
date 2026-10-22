@@ -446,8 +446,8 @@ class ModelComparisonExperiment:
 
         X_v = self.X_all[v_s:v_e]
         y_v = self.y_returns_all[v_s:v_e]
-        prev_v = self.prev_closes_all[v_s:v_e]
-        act_v = self.actual_closes_all[v_s:v_e]
+        _prev_v = self.prev_closes_all[v_s:v_e]
+        _act_v = self.actual_closes_all[v_s:v_e]
 
         X_te = self.X_all[te_s:te_e]
         y_te = self.y_returns_all[te_s:te_e]

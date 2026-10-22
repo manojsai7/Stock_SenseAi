@@ -8,7 +8,7 @@ from datetime import datetime, timedelta
 from ml.features.technical import FEATURE_COLUMNS, TARGET_COLUMN
 from ml.preprocessing.scaler import StockDataScaler
 from ml.preprocessing.sequences import SequenceGenerator
-from ml.preprocessing.dataset_builder import SupervisedDatasetBuilder, RESEARCH_SYMBOLS
+from ml.preprocessing.dataset_builder import RESEARCH_SYMBOLS
 
 
 @pytest.fixture
@@ -47,8 +47,6 @@ def test_deterministic_target_alignment(deterministic_df):
     Verifies that for any window of 30 days ending at index t,
     the target is EXACTLY Close[t+1].
     """
-    builder = SupervisedDatasetBuilder(window_size=30, train_ratio=0.70, val_ratio=0.15, test_ratio=0.15)
-
     clean_df = deterministic_df.dropna(subset=FEATURE_COLUMNS).copy()
     clean_df[TARGET_COLUMN] = clean_df["Close"].shift(-1)
     clean_df = clean_df.dropna(subset=FEATURE_COLUMNS + [TARGET_COLUMN]).reset_index(drop=True)
@@ -137,7 +135,6 @@ def test_all_six_stocks_tensor_shapes():
     Verifies that all 6 generated stock sequences exist, have 3D input shape (N, 30, 6)
     and 1D target shape (N,).
     """
-    builder = SupervisedDatasetBuilder()
     sequences_dir = Path("data/sequences")
 
     for sym in RESEARCH_SYMBOLS:

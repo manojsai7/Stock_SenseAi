@@ -16,10 +16,10 @@ STOCKS = ["TCS.NS", "RELIANCE.NS", "INFY.NS", "HDFCBANK.NS", "ICICIBANK.NS"]
 
 def run_smoke_test(base_url: str):
     base_url = base_url.rstrip("/")
-    print(f"\n=======================================================")
-    print(f"  STOCKSENSE AI — PRODUCTION SMOKE TEST")
+    print("\n=======================================================")
+    print("  STOCKSENSE AI — PRODUCTION SMOKE TEST")
     print(f"  Target: {base_url}")
-    print(f"=======================================================\n")
+    print("=======================================================\n")
 
     passed = 0
     total = 0
@@ -170,9 +170,9 @@ def run_smoke_test(base_url: str):
             except Exception as e:
                 print(f"[FAIL] Prediction [{sym}] error: {e}")
 
-    print(f"\n=======================================================")
+    print("\n=======================================================")
     print(f"  SMOKE TEST SUMMARY: {passed}/{total} Passed ({round(passed/total*100, 1)}%)")
-    print(f"=======================================================\n")
+    print("=======================================================\n")
     return passed == total
 
 if __name__ == "__main__":

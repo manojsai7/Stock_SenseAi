@@ -123,8 +123,8 @@ class SupervisedDatasetBuilder:
         val_idx = int(usable_rows * (self.train_ratio + self.val_ratio))
 
         train_df = clean_df.iloc[:train_idx].copy()
-        val_df = clean_df.iloc[train_idx:val_idx].copy()
-        test_df = clean_df.iloc[val_idx:].copy()
+        _val_df = clean_df.iloc[train_idx:val_idx].copy()
+        _test_df = clean_df.iloc[val_idx:].copy()
 
         # -------------------------------------------------------------------
         # 2. Fit Scaler ONLY on Train Partition (STRICT ZERO-LOOKAHEAD LEAKAGE)
@@ -224,12 +224,12 @@ class SupervisedDatasetBuilder:
                 row_idx = train_target_indices[i]
                 target_val = actual_target_train[i]
                 prev_val = prev_close_train[i]
-                x_seq = X_train[i]
+                _x_seq = X_train[i]
             else:
                 row_idx = test_target_indices[i]
                 target_val = actual_target_test[i]
                 prev_val = prev_close_test[i]
-                x_seq = X_test[i]
+                _x_seq = X_test[i]
 
             input_start_date = clean_df["Date"].iloc[row_idx - self.window_size + 1].strftime("%Y-%m-%d")
             input_end_date = clean_df["Date"].iloc[row_idx].strftime("%Y-%m-%d")

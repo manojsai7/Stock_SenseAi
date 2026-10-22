@@ -142,9 +142,9 @@ def main():
     results = {}
 
     for sym in PRIMARY_SYMBOLS:
-        print(f"\n========================================================")
+        print("\n========================================================")
         print(f"TRAINING FINAL DEPLOYMENT ARTIFACTS: {sym}")
-        print(f"========================================================")
+        print("========================================================")
         trainer = ProductionStationaryTrainer(
             symbol=sym,
             val_ratio=0.15,
