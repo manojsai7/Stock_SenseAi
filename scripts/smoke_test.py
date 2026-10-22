@@ -115,8 +115,9 @@ def run_smoke_test(base_url: str):
         try:
             r = client.get(f"{base_url}/api/stocks/RELIANCE.NS/history?period=1mo")
             duration = round((time.time() - t0) * 1000, 1)
-            if r.status_code == 200 and len(r.json().get("history", [])) > 0:
-                print(f"[PASS] GET /api/stocks/RELIANCE.NS/history ({duration}ms) — Data points: {len(r.json()['history'])}")
+            history_data = r.json().get("data") or r.json().get("history", [])
+            if r.status_code == 200 and len(history_data) > 0:
+                print(f"[PASS] GET /api/stocks/RELIANCE.NS/history ({duration}ms) — Data points: {len(history_data)}")
                 passed += 1
             else:
                 print(f"[FAIL] GET /api/stocks/RELIANCE.NS/history status={r.status_code}")
