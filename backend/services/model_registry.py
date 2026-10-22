@@ -2,7 +2,7 @@ import hashlib
 import json
 import logging
 from pathlib import Path
-from typing import Dict, Any, List, Optional
+from typing import Dict, Any, List
 import tensorflow as tf
 from ml.preprocessing.scaler import StockDataScaler
 from ml.preprocessing.stationary_scaler import StationaryFeatureScaler, ReturnTargetScaler

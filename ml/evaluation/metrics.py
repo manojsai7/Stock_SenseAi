@@ -1,4 +1,4 @@
-from typing import Dict, Any, Optional
+from typing import Dict, Optional
 import numpy as np
 from sklearn.metrics import mean_absolute_error, mean_squared_error
 

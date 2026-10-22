@@ -1,6 +1,5 @@
 import datetime
 import pytz
-import pytest
 from backend.services.market_status_service import MarketStatusService
 
 tz = pytz.timezone("Asia/Kolkata")

@@ -1,5 +1,4 @@
 import time
-import pytest
 from backend.core.cache import SimpleMemoryCache
 
 def test_cache_set_and_get():

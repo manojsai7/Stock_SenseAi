@@ -1,10 +1,8 @@
-import os
 import json
 import logging
+import os
 from pathlib import Path
-from typing import Dict, Any, Optional
-import numpy as np
-import pandas as pd
+from typing import Any, Dict
 import tensorflow as tf
 
 from ml.data.providers.yahoo_provider import YahooFinanceProvider
@@ -109,6 +107,9 @@ class StockPredictor:
         predicted_close = float(scaler.inverse_transform_target(raw_pred)[0])
 
         diff = predicted_close - last_close
+        expected_change = round(diff, 2)
+        expected_change_pct = round((diff / last_close) * 100, 2) if last_close != 0 else 0.0
+
         if abs(diff) <= 1e-5:
             direction = "FLAT"
         elif diff > 0:
@@ -182,6 +183,9 @@ class StockPredictor:
         predicted_close = float(temp_scaler.inverse_transform_target(raw_pred)[0])
 
         diff = predicted_close - last_close
+        expected_change = round(diff, 2)
+        expected_change_pct = round((diff / last_close) * 100, 2) if last_close != 0 else 0.0
+
         if abs(diff) <= 1e-5:
             direction = "FLAT"
         elif diff > 0:

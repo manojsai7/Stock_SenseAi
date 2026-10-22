@@ -5,7 +5,7 @@ import pandas as pd
 from pathlib import Path
 from datetime import datetime, timedelta
 
-from ml.features.technical import TechnicalFeatureExtractor, FEATURE_COLUMNS, TARGET_COLUMN
+from ml.features.technical import FEATURE_COLUMNS, TARGET_COLUMN
 from ml.preprocessing.scaler import StockDataScaler
 from ml.preprocessing.sequences import SequenceGenerator
 from ml.preprocessing.dataset_builder import SupervisedDatasetBuilder, RESEARCH_SYMBOLS

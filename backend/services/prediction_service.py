@@ -1,9 +1,6 @@
-import json
 import logging
-from pathlib import Path
 from typing import Dict, Any, List, Optional
 import numpy as np
-import pandas as pd
 from ml.data.providers.yahoo_provider import YahooFinanceProvider
 from ml.features.technical import TechnicalFeatureExtractor, FEATURE_COLUMNS as LEGACY_FEATURE_COLUMNS
 from ml.features.stationary import (
@@ -16,7 +13,7 @@ from ml.preprocessing.sequences import SequenceGenerator
 from backend.core.cache import cache
 from backend.core.config import settings
 from backend.services.market_status_service import market_status_service
-from backend.services.model_registry import model_registry, MODELS_DIR
+from backend.services.model_registry import model_registry
 
 logger = logging.getLogger(__name__)
 

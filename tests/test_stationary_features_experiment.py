@@ -13,15 +13,13 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 import pytest
-from sklearn.preprocessing import StandardScaler
 
 from scripts.run_stationary_features_experiment import (
     compute_stationary_features,
     sign_from_difference,
     compute_metrics,
     ReturnTargetScaler,
-    StationaryFeaturesExperiment,
-    FEATURE_COLUMNS
+    StationaryFeaturesExperiment
 )
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent

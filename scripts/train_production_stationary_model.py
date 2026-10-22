@@ -22,7 +22,7 @@ import argparse
 import logging
 from pathlib import Path
 from datetime import datetime
-from typing import Dict, Any, Tuple, Optional, Union, List
+from typing import Dict, Any, Optional, Union
 
 import numpy as np
 import pandas as pd
@@ -41,13 +41,10 @@ if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
 from ml.features.stationary import (
-    FEATURE_COLUMNS,
     TARGET_COLUMN,
     WINDOW_SIZE,
     compute_stationary_features,
-    prepare_inference_features,
-    validate_sequence_tensor,
-    reconstruct_price_from_return
+    validate_sequence_tensor
 )
 from ml.preprocessing.stationary_scaler import (
     StationaryFeatureScaler,

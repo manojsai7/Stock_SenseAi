@@ -13,7 +13,6 @@ Verifies:
 9. Return-to-price reconstruction identity: predicted_close = last_close * (1 + predicted_return).
 """
 
-from pathlib import Path
 import numpy as np
 import pandas as pd
 import pytest
@@ -22,12 +21,8 @@ from ml.features.stationary import (
     FEATURE_COLUMNS,
     TARGET_COLUMN,
     compute_stationary_features,
-    prepare_inference_features,
-    validate_raw_bars,
-    validate_feature_dataframe,
     validate_sequence_tensor,
-    reconstruct_price_from_return,
-    WINDOW_SIZE
+    reconstruct_price_from_return
 )
 from ml.preprocessing.stationary_scaler import (
     StationaryFeatureScaler,

@@ -1,5 +1,4 @@
 import pandas as pd
-import numpy as np
 
 FEATURE_COLUMNS = ["Open", "High", "Low", "Close", "Volume", "MA20"]
 TARGET_COLUMN = "Next_Close"

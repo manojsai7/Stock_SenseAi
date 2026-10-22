@@ -10,7 +10,6 @@ Tests whether combining:
 improves out-of-sample forecasting and resolves the raw price lag observed in EXP-01/02/03.
 """
 
-import os
 import sys
 import json
 import pickle
@@ -18,7 +17,7 @@ import argparse
 import logging
 from pathlib import Path
 from datetime import datetime
-from typing import Dict, Any, List, Optional, Tuple
+from typing import Dict, Any, List, Optional
 
 import numpy as np
 import pandas as pd
@@ -54,7 +53,6 @@ logger = logging.getLogger("EXP-04")
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
 
 from ml.features.stationary import (
-    FEATURE_COLUMNS,
     compute_stationary_features as canonical_compute_stationary_features,
 )
 

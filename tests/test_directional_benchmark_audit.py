@@ -4,19 +4,15 @@ Verifies date alignment, baseline prediction validity, metric calculations,
 and strict prevention of test-label leakage.
 """
 
-import os
 import json
 from pathlib import Path
 import numpy as np
 import pandas as pd
-import pytest
 
 from ml.analysis.directional_benchmark_audit import (
     sign_from_difference,
     compute_comprehensive_metrics,
-    DirectionalBenchmarkAuditor,
-    DIRECTION_CLASSES,
-    DIRECTION_NAMES
+    DirectionalBenchmarkAuditor
 )
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent

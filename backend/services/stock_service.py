@@ -1,6 +1,6 @@
 import logging
 from pathlib import Path
-from typing import List, Dict, Any, Optional
+from typing import List, Dict, Any
 import pandas as pd
 from ml.data.providers.yahoo_provider import YahooFinanceProvider
 from ml.features.technical import TechnicalFeatureExtractor

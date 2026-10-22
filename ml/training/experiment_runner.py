@@ -4,17 +4,13 @@ import logging
 import csv
 from pathlib import Path
 from datetime import datetime
-from typing import Dict, Any, List
-import numpy as np
-import pandas as pd
-import tensorflow as tf
+from typing import List
 from tensorflow.keras.callbacks import EarlyStopping
 
 from ml.data.ingestion import DataIngestionService, DEFAULT_TICKERS
 from ml.features.technical import TechnicalFeatureExtractor, FEATURE_COLUMNS, TARGET_COLUMN
 from ml.preprocessing.scaler import StockDataScaler
 from ml.preprocessing.sequences import SequenceGenerator
-from ml.models.baseline import NaivePersistenceModel
 from ml.models.lstm import build_lstm_model
 from ml.models.cnn_lstm import build_cnn_lstm_model
 from ml.evaluation.metrics import calculate_metrics

@@ -1,4 +1,4 @@
-from typing import Dict, Any, List
+from typing import Dict, Any
 from pydantic import BaseModel
 
 class HealthResponse(BaseModel):

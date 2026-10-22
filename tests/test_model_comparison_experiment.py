@@ -12,19 +12,16 @@ Verifies:
 
 from pathlib import Path
 import numpy as np
-import pandas as pd
 import pytest
 from sklearn.preprocessing import StandardScaler
 from sklearn.linear_model import Ridge, LogisticRegression
 
 from scripts.run_model_comparison_experiment import (
-    compute_stationary_features,
     sign_from_difference,
     calibrate_direction_threshold,
     compute_metrics,
     ReturnTargetScaler,
-    ModelComparisonExperiment,
-    FEATURE_COLUMNS
+    ModelComparisonExperiment
 )
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent

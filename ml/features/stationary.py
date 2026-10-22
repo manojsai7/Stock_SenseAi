@@ -22,7 +22,7 @@ Causality & Leakage Guarantee:
 - During inference on completed session t, only features up to session t are used to predict t+1.
 """
 
-from typing import List, Tuple, Optional, Union
+from typing import List, Tuple
 import numpy as np
 import pandas as pd
 

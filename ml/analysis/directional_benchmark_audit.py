@@ -7,7 +7,6 @@ Generates isolated, timestamped outputs with date alignment verification
 and zero test-label leakage.
 """
 
-import os
 import sys
 import json
 import pickle
@@ -283,7 +282,6 @@ class DirectionalBenchmarkAuditor:
         """
         Generates predictions for all candidate predictors strictly avoiding leakage.
         """
-        import pickle
         import tensorflow as tf
 
         alignment_info = self.verify_alignment()

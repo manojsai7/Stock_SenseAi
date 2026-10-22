@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 import pytest
-from ml.features.technical import TechnicalFeatureExtractor, FEATURE_COLUMNS, TARGET_COLUMN
+from ml.features.technical import TechnicalFeatureExtractor
 from ml.preprocessing.sequences import SequenceGenerator
 
 def test_ma20_calculation():

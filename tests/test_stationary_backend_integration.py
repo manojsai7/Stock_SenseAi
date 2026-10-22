@@ -22,16 +22,14 @@ Covers all 16 required test scenarios:
 
 import json
 import shutil
-from datetime import date, datetime, timedelta
-from pathlib import Path
-from unittest.mock import MagicMock, patch
+from datetime import date, timedelta
+from unittest.mock import patch
 
 import numpy as np
 import pandas as pd
 import pytest
 
 from backend.core.cache import cache
-from backend.core.config import settings
 from backend.schemas.prediction import PredictionResponse
 from backend.services.model_registry import ModelRegistry, model_registry
 from backend.services.prediction_service import PredictionService
