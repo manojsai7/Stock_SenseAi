@@ -41,6 +41,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY backend/ ./backend/
 COPY ml/ ./ml/
 COPY models_storage/ ./models_storage/
+COPY models_storage_stationary/ ./models_storage_stationary/
 COPY experiments/ ./experiments/
 COPY data/ ./data/
 
