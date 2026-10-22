@@ -28,9 +28,10 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 
 WORKDIR /app
 
-# Install system dependencies (curl for container healthcheck)
+# Install system dependencies (curl for container healthcheck, ca-certificates for TLS)
 RUN apt-get update && apt-get install -y --no-install-recommends \
     curl \
+    ca-certificates \
     && rm -rf /var/lib/apt/lists/*
 
 # Install Python ML and API dependencies

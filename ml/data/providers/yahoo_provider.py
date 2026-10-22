@@ -1,32 +1,177 @@
 import logging
+from pathlib import Path
 from typing import Optional, Dict, Any
+import httpx
 import pandas as pd
 import yfinance as yf
 from ml.data.providers.base import BaseMarketDataProvider
 
 logger = logging.getLogger(__name__)
 
+PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent.parent
+RAW_DATA_DIR = PROJECT_ROOT / "data" / "raw"
+if not RAW_DATA_DIR.exists():
+    RAW_DATA_DIR = Path("data/raw")
+
+
 class YahooFinanceProvider(BaseMarketDataProvider):
     """
-    Yahoo Finance Market Data Provider using yfinance.
+    Yahoo Finance Market Data Provider using resilient multi-tier fallback:
+    1. Primary: yfinance library.
+    2. Fallback: Direct Yahoo Finance Chart API (query1/query2) with browser impersonation headers.
+       (Bypasses cloud datacenter IP blocks on Render/AWS/GCP).
+    3. Final Fallback: Offline historical packaged datasets in data/raw.
     Supports NSE/BSE tickers (.NS, .BO) and global tickers.
     """
 
+    def _fetch_direct_chart_ohlcv(self, symbol: str, period: str = "2y", interval: str = "1d") -> Optional[pd.DataFrame]:
+        """
+        Direct HTTP query to Yahoo Finance Chart API with browser headers.
+        Bypasses cloud IP scraper blocks on Render/AWS/GCP.
+        """
+        headers = {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
+            "Accept": "application/json, text/plain, */*",
+            "Accept-Language": "en-US,en;q=0.9",
+        }
+        endpoints = [
+            "https://query1.finance.yahoo.com",
+            "https://query2.finance.yahoo.com",
+        ]
+        range_param = period if period in ["1d", "5d", "1mo", "3mo", "6mo", "1y", "2y", "5y", "10y", "ytd", "max"] else "1y"
+
+        for base_url in endpoints:
+            try:
+                url = f"{base_url}/v8/finance/chart/{symbol}?range={range_param}&interval={interval}"
+                with httpx.Client(timeout=10.0, follow_redirects=True, headers=headers) as client:
+                    resp = client.get(url)
+                    if resp.status_code == 200:
+                        data = resp.json()
+                        chart = data.get("chart", {})
+                        results = chart.get("result")
+                        if results and len(results) > 0:
+                            res = results[0]
+                            timestamps = res.get("timestamp", [])
+                            indicators = res.get("indicators", {})
+                            quotes = indicators.get("quote", [{}])[0]
+                            if timestamps and quotes.get("close"):
+                                df = pd.DataFrame({
+                                    "Date": pd.to_datetime(timestamps, unit="s"),
+                                    "Open": quotes.get("open"),
+                                    "High": quotes.get("high"),
+                                    "Low": quotes.get("low"),
+                                    "Close": quotes.get("close"),
+                                    "Volume": quotes.get("volume"),
+                                }).dropna()
+                                if not df.empty:
+                                    logger.info(f"Successfully fetched {len(df)} rows for {symbol} via direct Yahoo Chart API ({base_url})")
+                                    return df
+            except Exception as e:
+                logger.warning(f"Direct chart fetch error on {base_url} for {symbol}: {e}")
+        return None
+
+    def _fetch_offline_ohlcv(self, symbol: str) -> Optional[pd.DataFrame]:
+        """
+        Fallback to packaged historical dataset in data/raw when live network fails.
+        """
+        clean = symbol.strip().upper()
+        candidates = [
+            RAW_DATA_DIR / f"{clean}.csv",
+            RAW_DATA_DIR / f"{clean.replace('.', '_')}.csv",
+        ]
+        for p in candidates:
+            if p.exists():
+                try:
+                    df = pd.read_csv(p)
+                    if "Date" in df.columns:
+                        df["Date"] = pd.to_datetime(df["Date"]).dt.tz_localize(None)
+                        df = df.dropna().sort_values("Date").reset_index(drop=True)
+                        logger.info(f"Loaded {len(df)} offline historical rows for {symbol} from {p.name}")
+                        return df
+                except Exception as e:
+                    logger.warning(f"Error reading offline data from {p}: {e}")
+        return None
+
+    def _fetch_direct_chart_quote(self, symbol: str) -> Optional[Dict[str, Any]]:
+        headers = {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
+            "Accept": "application/json, text/plain, */*",
+            "Accept-Language": "en-US,en;q=0.9",
+        }
+        endpoints = [
+            "https://query1.finance.yahoo.com",
+            "https://query2.finance.yahoo.com",
+        ]
+        for base_url in endpoints:
+            try:
+                url = f"{base_url}/v8/finance/chart/{symbol}?range=5d&interval=1d"
+                with httpx.Client(timeout=8.0, follow_redirects=True, headers=headers) as client:
+                    resp = client.get(url)
+                    if resp.status_code == 200:
+                        data = resp.json()
+                        chart = data.get("chart", {})
+                        results = chart.get("result")
+                        if results and len(results) > 0:
+                            res = results[0]
+                            meta = res.get("meta", {})
+                            quotes = res.get("indicators", {}).get("quote", [{}])[0]
+                            closes = [c for c in quotes.get("close", []) if c is not None]
+                            price = meta.get("regularMarketPrice") or (closes[-1] if closes else None)
+                            prev_close = meta.get("chartPreviousClose") or (closes[-2] if len(closes) > 1 else None)
+                            open_p = meta.get("regularMarketDayOpen") or (quotes.get("open", [None])[-1] if quotes.get("open") else None)
+                            highs = [h for h in quotes.get("high", []) if h is not None]
+                            lows = [l for l in quotes.get("low", []) if l is not None]
+                            day_h = meta.get("regularMarketDayHigh") or (max(highs) if highs else None)
+                            day_l = meta.get("regularMarketDayLow") or (min(lows) if lows else None)
+                            vol = meta.get("regularMarketVolume") or (quotes.get("volume", [0])[-1] if quotes.get("volume") else 0)
+                            return {
+                                "price": round(float(price), 2) if price is not None else None,
+                                "prev_close": round(float(prev_close), 2) if prev_close is not None else None,
+                                "open": round(float(open_p), 2) if open_p is not None else None,
+                                "high": round(float(day_h), 2) if day_h is not None else None,
+                                "low": round(float(day_l), 2) if day_l is not None else None,
+                                "volume": int(vol) if vol else 0,
+                                "currency": meta.get("currency", "INR" if symbol.endswith(".NS") else "USD"),
+                            }
+            except Exception as e:
+                logger.warning(f"Direct quote fetch error on {base_url} for {symbol}: {e}")
+        return None
+
     def fetch_historical_ohlcv(self, symbol: str, period: str = "2y", interval: str = "1d") -> pd.DataFrame:
         logger.info(f"Fetching {period} ({interval}) data for {symbol} via Yahoo Finance...")
+        df = None
         try:
-            ticker = yf.Ticker(symbol)
-            df = ticker.history(period=period, interval=interval, auto_adjust=False)
+            # Tier 1: Try yfinance library
+            try:
+                ticker = yf.Ticker(symbol)
+                df = ticker.history(period=period, interval=interval, auto_adjust=False)
+            except Exception as e:
+                logger.warning(f"yfinance ticker.history failed for {symbol}: {e}")
+                df = None
 
             if df is None or df.empty:
                 # Fallback to yf.download
-                df = yf.download(
-                    symbol,
-                    period=period,
-                    interval=interval,
-                    auto_adjust=False,
-                    progress=False
-                )
+                try:
+                    df = yf.download(
+                        symbol,
+                        period=period,
+                        interval=interval,
+                        auto_adjust=False,
+                        progress=False
+                    )
+                except Exception as e:
+                    logger.warning(f"yf.download failed for {symbol}: {e}")
+                    df = None
+
+            # Tier 2: Direct Yahoo Finance Chart API (bypasses cloud IP rate limiting)
+            if df is None or df.empty:
+                logger.info(f"Falling back to direct Yahoo Chart API for {symbol}...")
+                df = self._fetch_direct_chart_ohlcv(symbol, period=period, interval=interval)
+
+            # Tier 3: Packaged historical CSV fallback
+            if df is None or df.empty:
+                logger.warning(f"Falling back to packaged offline CSV for {symbol}...")
+                df = self._fetch_offline_ohlcv(symbol)
 
             if df is None or df.empty:
                 raise ValueError(f"No market data returned for symbol '{symbol}'")
@@ -70,17 +215,13 @@ class YahooFinanceProvider(BaseMarketDataProvider):
     def get_quote(self, symbol: str) -> Dict[str, Any]:
         """
         Retrieves the latest market quote for symbol from Yahoo Finance.
-        Handles fast_info, ticker.info, and fallback to latest history candle.
+        Handles fast_info, ticker.info, direct chart quote, and offline fallback.
         """
         clean_symbol = symbol.strip().upper()
         display_symbol = clean_symbol.replace(".NS", "").replace(".BO", "")
         currency = "INR" if clean_symbol.endswith(".NS") or clean_symbol.endswith(".BO") else "USD"
 
         try:
-            ticker = yf.Ticker(clean_symbol)
-            fast_info = getattr(ticker, "fast_info", None)
-            info = ticker.info or {}
-
             price = None
             prev_close = None
             open_price = None
@@ -88,42 +229,62 @@ class YahooFinanceProvider(BaseMarketDataProvider):
             day_low = None
             volume = None
 
-            if fast_info:
-                try:
-                    price = getattr(fast_info, "last_price", None)
-                    prev_close = getattr(fast_info, "previous_close", None)
-                    open_price = getattr(fast_info, "open", None)
-                    day_high = getattr(fast_info, "day_high", None)
-                    day_low = getattr(fast_info, "day_low", None)
-                    volume = getattr(fast_info, "last_volume", None)
-                except Exception:
-                    pass
+            # Tier 1: Try yfinance fast_info / info
+            try:
+                ticker = yf.Ticker(clean_symbol)
+                fast_info = getattr(ticker, "fast_info", None)
+                info = ticker.info or {}
 
-            if price is None:
-                price = info.get("currentPrice") or info.get("regularMarketPrice")
-            if prev_close is None:
-                prev_close = info.get("previousClose") or info.get("regularMarketPreviousClose")
-            if open_price is None:
-                open_price = info.get("regularMarketOpen") or info.get("open")
-            if day_high is None:
-                day_high = info.get("regularMarketDayHigh") or info.get("dayHigh")
-            if day_low is None:
-                day_low = info.get("regularMarketDayLow") or info.get("dayLow")
-            if volume is None:
-                volume = info.get("regularMarketVolume") or info.get("volume")
+                if fast_info:
+                    try:
+                        price = getattr(fast_info, "last_price", None)
+                        prev_close = getattr(fast_info, "previous_close", None)
+                        open_price = getattr(fast_info, "open", None)
+                        day_high = getattr(fast_info, "day_high", None)
+                        day_low = getattr(fast_info, "day_low", None)
+                        volume = getattr(fast_info, "last_volume", None)
+                    except Exception:
+                        pass
 
-            # Fallback: if price still None, fetch 1-day or 5-day history
+                if price is None:
+                    price = info.get("currentPrice") or info.get("regularMarketPrice")
+                if prev_close is None:
+                    prev_close = info.get("previousClose") or info.get("regularMarketPreviousClose")
+                if open_price is None:
+                    open_price = info.get("regularMarketOpen") or info.get("open")
+                if day_high is None:
+                    day_high = info.get("regularMarketDayHigh") or info.get("dayHigh")
+                if day_low is None:
+                    day_low = info.get("regularMarketDayLow") or info.get("dayLow")
+                if volume is None:
+                    volume = info.get("regularMarketVolume") or info.get("volume")
+            except Exception as e:
+                logger.warning(f"yfinance quote lookup failed for {clean_symbol}: {e}")
+
+            # Tier 2: Direct Yahoo Chart API (resilient against cloud IP blocking)
             if price is None or prev_close is None:
-                hist = ticker.history(period="5d", interval="1d")
-                if not hist.empty:
-                    last_row = hist.iloc[-1]
+                direct_quote = self._fetch_direct_chart_quote(clean_symbol)
+                if direct_quote:
+                    price = price or direct_quote.get("price")
+                    prev_close = prev_close or direct_quote.get("prev_close")
+                    open_price = open_price or direct_quote.get("open")
+                    day_high = day_high or direct_quote.get("high")
+                    day_low = day_low or direct_quote.get("low")
+                    volume = volume or direct_quote.get("volume")
+                    currency = direct_quote.get("currency") or currency
+
+            # Tier 3: Packaged CSV fallback
+            if price is None or prev_close is None:
+                offline_df = self._fetch_offline_ohlcv(clean_symbol)
+                if offline_df is not None and not offline_df.empty:
+                    last_row = offline_df.iloc[-1]
                     price = float(last_row["Close"])
                     open_price = open_price or float(last_row["Open"])
                     day_high = day_high or float(last_row["High"])
                     day_low = day_low or float(last_row["Low"])
                     volume = volume or float(last_row["Volume"])
-                    if len(hist) > 1:
-                        prev_close = float(hist.iloc[-2]["Close"])
+                    if len(offline_df) > 1:
+                        prev_close = float(offline_df.iloc[-2]["Close"])
                     else:
                         prev_close = open_price
 
@@ -189,6 +350,12 @@ class YahooFinanceProvider(BaseMarketDataProvider):
                 (getattr(fast_info, "previous_close", None) if fast_info else None)
             )
 
+            # Fallback to get_quote if price still None
+            if current_price is None or previous_close is None:
+                q = self.get_quote(symbol)
+                current_price = current_price or q.get("price")
+                previous_close = previous_close or q.get("previous_close")
+
             name = info.get("longName") or info.get("shortName") or symbol
             currency = info.get("currency", "INR" if symbol.endswith(".NS") or symbol.endswith(".BO") else "USD")
 
@@ -217,4 +384,3 @@ class YahooFinanceProvider(BaseMarketDataProvider):
                 "current_price": None,
                 "previous_close": None,
             }
-

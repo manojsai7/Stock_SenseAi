@@ -4,7 +4,7 @@
   "rewrites": [
     {
       "source": "/api/(.*)",
-      "destination": "https://stocksense-ai.onrender.com/api/$1"
+      "destination": "https://stocksense-ai-9ww9.onrender.com/api/$1"
     },
     {
       "source": "/(.*)",

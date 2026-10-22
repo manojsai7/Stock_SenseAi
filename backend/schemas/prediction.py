@@ -16,6 +16,8 @@ class PredictionResponse(BaseModel):
     prediction_horizon: str = "Next Trading Day"
     model_version: str
     architecture: str
+    pipeline_version: Optional[str] = None
+    predicted_return: Optional[float] = None
     input_window_size: int = 30
     features_used: List[str]
     historical_directional_accuracy: Optional[float] = None
