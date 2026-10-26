@@ -1,0 +1,263 @@
+{
+  "evaluation_timestamp": "2026-10-26T06:38:09.968805+00:00",
+  "symbol": "RELIANCE.NS",
+  "evaluation_block": {
+    "type": "historical_benchmark_replay (EXP-05 Fold 3 Test Slice)",
+    "sample_count": 184,
+    "input_date_start": "2026-01-14",
+    "input_date_end": "2026-10-06",
+    "target_date_start": "2026-01-15",
+    "target_date_end": "2026-10-07"
+  },
+  "models": {
+    "production_cnn_lstm": {
+      "hash": "a4715e84cdd7a16d1b334936c9a39b35249bb594aec5c987a4f6ee62d50d4f11",
+      "training_cutoff": "2026-10-06",
+      "leakage_note": "Production model was refit on all 1191 sequences through 2026-10-06; evaluation on this block contains training lookahead for production.",
+      "metrics": {
+        "sample_count": 184,
+        "three_class_accuracy_pct": 48.91,
+        "balanced_accuracy_pct": 35.59,
+        "mcc": 0.1117,
+        "cohen_kappa": 0.0596,
+        "up_recall_pct": 95.18,
+        "down_recall_pct": 11.58,
+        "flat_recall_pct": 0.0,
+        "up_precision_pct": 47.02,
+        "down_precision_pct": 68.75,
+        "per_class": {
+          "UP": {
+            "sign": 1,
+            "support": 83,
+            "precision_pct": 47.02,
+            "recall_pct": 95.18,
+            "f1_pct": 62.95
+          },
+          "DOWN": {
+            "sign": -1,
+            "support": 95,
+            "precision_pct": 68.75,
+            "recall_pct": 11.58,
+            "f1_pct": 19.82
+          },
+          "FLAT": {
+            "sign": 0,
+            "support": 6,
+            "precision_pct": 0.0,
+            "recall_pct": 0.0,
+            "f1_pct": 0.0
+          }
+        },
+        "confusion_matrix": [
+          [
+            79,
+            4,
+            0
+          ],
+          [
+            84,
+            11,
+            0
+          ],
+          [
+            5,
+            1,
+            0
+          ]
+        ],
+        "price_mae_inr": 14.18,
+        "price_rmse_inr": 18.46,
+        "price_mape_pct": 1.06,
+        "return_mae": 0.010586,
+        "return_rmse": 0.013721
+      }
+    },
+    "colab_exp05_fold3_calibrated": {
+      "hash": "78741c67240f2626b2366443f3e4305961edc2fa424f9c7b3872f0acfa18ce97",
+      "training_cutoff": "2025-04-21 (train), 2026-01-13 (val)",
+      "theta": 0.000307,
+      "leakage_note": "Zero training or validation overlap with this test block (genuinely held-out in EXP-05).",
+      "metrics": {
+        "sample_count": 184,
+        "three_class_accuracy_pct": 51.09,
+        "balanced_accuracy_pct": 33.24,
+        "mcc": 0.0055,
+        "cohen_kappa": 0.003,
+        "up_recall_pct": 6.02,
+        "down_recall_pct": 93.68,
+        "flat_recall_pct": 0.0,
+        "up_precision_pct": 41.67,
+        "down_precision_pct": 52.05,
+        "per_class": {
+          "UP": {
+            "sign": 1,
+            "support": 83,
+            "precision_pct": 41.67,
+            "recall_pct": 6.02,
+            "f1_pct": 10.53
+          },
+          "DOWN": {
+            "sign": -1,
+            "support": 95,
+            "precision_pct": 52.05,
+            "recall_pct": 93.68,
+            "f1_pct": 66.92
+          },
+          "FLAT": {
+            "sign": 0,
+            "support": 6,
+            "precision_pct": 0.0,
+            "recall_pct": 0.0,
+            "f1_pct": 0.0
+          }
+        },
+        "confusion_matrix": [
+          [
+            5,
+            77,
+            1
+          ],
+          [
+            6,
+            89,
+            0
+          ],
+          [
+            1,
+            5,
+            0
+          ]
+        ],
+        "price_mae_inr": 14.09,
+        "price_rmse_inr": 18.44,
+        "price_mape_pct": 1.05,
+        "return_mae": 0.010522,
+        "return_rmse": 0.013718
+      }
+    },
+    "colab_exp05_fold3_uncalibrated": {
+      "hash": "78741c67240f2626b2366443f3e4305961edc2fa424f9c7b3872f0acfa18ce97",
+      "training_cutoff": "2025-04-21 (train), 2026-01-13 (val)",
+      "theta": 0.0,
+      "leakage_note": "Zero training or validation overlap with this test block.",
+      "metrics": {
+        "sample_count": 184,
+        "three_class_accuracy_pct": 52.72,
+        "balanced_accuracy_pct": 34.69,
+        "mcc": 0.056,
+        "cohen_kappa": 0.0401,
+        "up_recall_pct": 15.66,
+        "down_recall_pct": 88.42,
+        "flat_recall_pct": 0.0,
+        "up_precision_pct": 52.0,
+        "down_precision_pct": 52.83,
+        "per_class": {
+          "UP": {
+            "sign": 1,
+            "support": 83,
+            "precision_pct": 52.0,
+            "recall_pct": 15.66,
+            "f1_pct": 24.07
+          },
+          "DOWN": {
+            "sign": -1,
+            "support": 95,
+            "precision_pct": 52.83,
+            "recall_pct": 88.42,
+            "f1_pct": 66.14
+          },
+          "FLAT": {
+            "sign": 0,
+            "support": 6,
+            "precision_pct": 0.0,
+            "recall_pct": 0.0,
+            "f1_pct": 0.0
+          }
+        },
+        "confusion_matrix": [
+          [
+            13,
+            70,
+            0
+          ],
+          [
+            11,
+            84,
+            0
+          ],
+          [
+            1,
+            5,
+            0
+          ]
+        ],
+        "price_mae_inr": 14.09,
+        "price_rmse_inr": 18.44,
+        "price_mape_pct": 1.05,
+        "return_mae": 0.010522,
+        "return_rmse": 0.013718
+      }
+    },
+    "naive_persistence": {
+      "hash": "zero_parameter_baseline",
+      "training_cutoff": "none",
+      "metrics": {
+        "sample_count": 184,
+        "three_class_accuracy_pct": 3.26,
+        "balanced_accuracy_pct": 33.33,
+        "mcc": 0.0,
+        "cohen_kappa": 0.0,
+        "up_recall_pct": 0.0,
+        "down_recall_pct": 0.0,
+        "flat_recall_pct": 100.0,
+        "up_precision_pct": 0.0,
+        "down_precision_pct": 0.0,
+        "per_class": {
+          "UP": {
+            "sign": 1,
+            "support": 83,
+            "precision_pct": 0.0,
+            "recall_pct": 0.0,
+            "f1_pct": 0.0
+          },
+          "DOWN": {
+            "sign": -1,
+            "support": 95,
+            "precision_pct": 0.0,
+            "recall_pct": 0.0,
+            "f1_pct": 0.0
+          },
+          "FLAT": {
+            "sign": 0,
+            "support": 6,
+            "precision_pct": 3.26,
+            "recall_pct": 100.0,
+            "f1_pct": 6.32
+          }
+        },
+        "confusion_matrix": [
+          [
+            0,
+            0,
+            83
+          ],
+          [
+            0,
+            0,
+            95
+          ],
+          [
+            0,
+            0,
+            6
+          ]
+        ],
+        "price_mae_inr": 14.16,
+        "price_rmse_inr": 18.52,
+        "price_mape_pct": 1.06,
+        "return_mae": 0.010569,
+        "return_rmse": 0.01377
+      }
+    }
+  }
+}

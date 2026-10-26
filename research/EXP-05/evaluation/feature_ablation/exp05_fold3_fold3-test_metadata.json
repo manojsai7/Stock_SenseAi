@@ -1,0 +1,54 @@
+{
+  "model": {
+    "model_name": "exp05-fold3",
+    "model_path": "research\\EXP-05\\extracted\\EXP-05_Model_Comparison_20261021_100324\\best_cnn_lstm_fold3.keras",
+    "model_sha256": "78741c67240f2626b2366443f3e4305961edc2fa424f9c7b3872f0acfa18ce97",
+    "feature_scaler_path": "research\\EXP-05\\extracted\\EXP-05_Model_Comparison_20261021_100324\\feature_scaler_3d_fold3.pkl",
+    "target_scaler_path": "research\\EXP-05\\extracted\\EXP-05_Model_Comparison_20261021_100324\\return_scaler_fold3.pkl",
+    "features": [
+      "return_1d",
+      "return_5d",
+      "return_20d",
+      "intraday_return",
+      "hl_range_ratio",
+      "close_to_ma20",
+      "volume_ratio"
+    ],
+    "window_size": 30,
+    "metadata": {
+      "experiment": "EXP-05",
+      "symbol": "RELIANCE.NS",
+      "window_size": 30,
+      "epochs": 50,
+      "batch_size": 32,
+      "patience": 10,
+      "learning_rate": 0.001,
+      "random_seed": 42,
+      "features": [
+        "return_1d",
+        "return_5d",
+        "return_20d",
+        "intraday_return",
+        "hl_range_ratio",
+        "close_to_ma20",
+        "volume_ratio"
+      ],
+      "output_dir": "/content/drive/MyDrive/StockSense_Experiments/EXP-05_Model_Comparison_20261021_100324"
+    },
+    "data_path": "D:\\Downloads\\Stock_SenseAi\\data\\processed\\RELIANCE_NS_processed.csv",
+    "data_last_date_in_source_csv": "2026-10-07"
+  },
+  "mode": "fold3-test",
+  "summary": {
+    "evaluation_block": "2026-01-15 to 2026-10-07",
+    "test_sample_count": 184,
+    "max_abs_prediction_diff_vs_archived_csv": "4.8973307e-07",
+    "baseline_mae_inr": "14.0922",
+    "baseline_rmse_inr": "18.4407",
+    "baseline_mape_pct": "1.0533",
+    "mean_neutralization_csv": "research\\EXP-05\\evaluation\\feature_ablation\\fold3_mean_neutralization.csv",
+    "window_permutation_csv": "research\\EXP-05\\evaluation\\feature_ablation\\fold3_window_permutation.csv"
+  },
+  "random_seed": 20261026,
+  "permutations": 25
+}

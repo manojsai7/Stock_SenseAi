@@ -1,0 +1,9 @@
+StockSense EXP-05 — execution decision
+
+1. DO NOT promote any EXP-05 checkpoint to production.
+2. DO NOT run another training session on the same already-inspected folds just to chase a better threshold.
+3. Keep current production weights and the stale-data guard unchanged.
+4. Next model work: freeze a candidate and run 60–100 truly forward completed-session predictions with model hash, 7 feature values or feature hash, raw predicted return, direction, zero-return baseline, actual next-session close/return, and timestamp captured before the target session completes.
+5. The model's output volatility is severely compressed and continuous return correlations are not significant in any of the three folds; prioritize diagnosing target/scaler/output calibration and signal value before increasing CNN/LSTM complexity.
+6. Evaluate a simple logistic directional baseline alongside CNN-LSTM, but do not choose it from these old folds: its slight metric lead is statistically indistinguishable from calibrated CNN on exact shared dates (paired exact test p≈0.85).
+7. No production replacement until forward evaluation clears preregistered error, directional stability, and block-bootstrap gates.

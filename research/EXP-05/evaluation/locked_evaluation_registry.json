@@ -1,0 +1,47 @@
+{
+  "status": "LOCKED",
+  "lock_timestamp": "2026-10-26T06:40:49.262103+00:00",
+  "symbol": "RELIANCE.NS",
+  "input_window_size": 30,
+  "features": [
+    "return_1d",
+    "return_5d",
+    "return_20d",
+    "intraday_return",
+    "hl_range_ratio",
+    "close_to_ma20",
+    "volume_ratio"
+  ],
+  "target": "next_session_simple_return",
+  "models": {
+    "production_cnn_lstm": {
+      "name": "Production CNN-LSTM",
+      "hash": "a4715e84cdd7a16d1b334936c9a39b35249bb594aec5c987a4f6ee62d50d4f11",
+      "training_cutoff": "2026-10-06",
+      "feature_scaler": "stationary_feature_scaler.pkl",
+      "target_scaler": "return_target_scaler.pkl",
+      "decision_rule": "return > 0 -> UP, return < 0 -> DOWN, else FLAT"
+    },
+    "colab_exp05_fold3": {
+      "name": "Colab EXP-05 Fold 3",
+      "hash": "78741c67240f2626b2366443f3e4305961edc2fa424f9c7b3872f0acfa18ce97",
+      "training_cutoff": "2025-04-21 (val cutoff: 2026-01-13)",
+      "feature_scaler": "feature_scaler_3d_fold3.pkl",
+      "target_scaler": "return_scaler_fold3.pkl",
+      "calibrated_theta": 0.000307,
+      "decision_rule": "return > theta -> UP, return < theta -> DOWN, else FLAT"
+    },
+    "naive_persistence": {
+      "name": "Naive Persistence Benchmark",
+      "hash": "zero_parameter_baseline",
+      "training_cutoff": "none",
+      "decision_rule": "predicted_return = 0.0, predicted_close = latest_close"
+    }
+  },
+  "target_sample_size": "60-100 prospective sessions",
+  "evaluation_gates": {
+    "price_gate": "Candidate return MAE < Naive persistence MAE",
+    "direction_gate": "Macro MCC > 0 with both UP Recall and DOWN Recall > 20%",
+    "significance_gate": "Block bootstrap or Diebold-Mariano test p < 0.05"
+  }
+}

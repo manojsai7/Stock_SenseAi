@@ -1,0 +1,92 @@
+{
+  "model": {
+    "model_name": "production",
+    "model_path": "models_storage_stationary\\RELIANCE_NS\\model_cnn_lstm_stationary.keras",
+    "model_sha256": "a4715e84cdd7a16d1b334936c9a39b35249bb594aec5c987a4f6ee62d50d4f11",
+    "feature_scaler_path": "models_storage_stationary\\RELIANCE_NS\\stationary_feature_scaler.pkl",
+    "target_scaler_path": "models_storage_stationary\\RELIANCE_NS\\return_target_scaler.pkl",
+    "features": [
+      "return_1d",
+      "return_5d",
+      "return_20d",
+      "intraday_return",
+      "hl_range_ratio",
+      "close_to_ma20",
+      "volume_ratio"
+    ],
+    "window_size": 30,
+    "metadata": {
+      "pipeline_version": "stationary-return-v1",
+      "model_version": "cnn_lstm_stationary_v1",
+      "symbol": "RELIANCE.NS",
+      "architecture": "CNN-LSTM (Conv1D + LSTM)",
+      "window_size": 30,
+      "target": "next_day_return",
+      "features": [
+        "return_1d",
+        "return_5d",
+        "return_20d",
+        "intraday_return",
+        "hl_range_ratio",
+        "close_to_ma20",
+        "volume_ratio"
+      ],
+      "model_file": "model_cnn_lstm_stationary.keras",
+      "feature_scaler": "stationary_feature_scaler.pkl",
+      "target_scaler": "return_target_scaler.pkl",
+      "trained_at": "2026-10-21T17:11:30.458102",
+      "source_data_range": {
+        "start_date": "2021-10-07",
+        "last_completed_session": "2026-10-07",
+        "last_target_date": "2026-10-07"
+      },
+      "stage_a_training_duration_selection": {
+        "best_epoch": 1,
+        "best_val_loss": 0.980086,
+        "train_samples": 1012,
+        "validation_samples": 179,
+        "validation_data_end": "2026-10-06",
+        "validation_metrics": {
+          "mae": 14.12,
+          "rmse": 18.34,
+          "mape": 1.06,
+          "directional_accuracy": 51.4,
+          "balanced_accuracy": 35.94,
+          "mcc": 0.0797,
+          "sample_count": 179
+        },
+        "naive_persistence_metrics": {
+          "mae": 14.13,
+          "rmse": 18.41,
+          "mape": 1.06,
+          "directional_accuracy": 2.79,
+          "balanced_accuracy": 33.33,
+          "mcc": 0.0,
+          "sample_count": 179
+        }
+      },
+      "stage_b_final_deployment_refit": {
+        "fixed_epochs": 1,
+        "total_training_samples": 1191,
+        "training_data_end": "2026-10-07",
+        "note": "Refit on 100% eligible labelled sequences. No validation callback used during Stage B."
+      },
+      "disclaimer": "Validation metrics reflect Stage A early-stopping selection on the chronological validation fold. They are documented for model selection evidence, not as an untouched future test. Statistical estimate for academic research; not financial advice."
+    },
+    "data_path": "D:\\Downloads\\Stock_SenseAi\\data\\processed\\RELIANCE_NS_processed.csv",
+    "data_last_date_in_source_csv": "2026-10-07"
+  },
+  "mode": "input-sensitivity",
+  "summary": {
+    "input_window_start": "2026-08-27",
+    "input_window_end": "2026-10-07",
+    "last_close_inr": 1214.9000244140625,
+    "baseline_predicted_return": 0.0005755106595440548,
+    "baseline_predicted_close_inr": 1215.599212328393,
+    "sample_count": 1,
+    "interpretation": "Single-window model sensitivity only. This does not quantify out-of-sample feature importance or prove that a feature improves forecast accuracy. Confirm the input date is the latest completed market session before presenting it as a current explanation.",
+    "sensitivity_csv": "research\\EXP-05\\evaluation\\feature_ablation\\production_input_sensitivity.csv"
+  },
+  "random_seed": 20261026,
+  "permutations": 25
+}

@@ -8,7 +8,7 @@ __pycache__/
 htmlcov/
 .env
 .env.*
-
+FEATURE_ABLATION_README.md
 # Node and Vite
 node_modules/
 frontend/node_modules/
@@ -25,3 +25,7 @@ scratch/
 .idea/
 .DS_Store
 Thumbs.db
+
+# Research large binaries
+research/**/*.zip
+research/**/*.keras
