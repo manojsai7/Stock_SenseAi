@@ -7,6 +7,7 @@ import ForecastPanel from './components/ForecastPanel';
 const StockChart = lazy(() => import('./components/StockChart'));
 const BenchmarkMatrix = lazy(() => import('./components/BenchmarkMatrix'));
 const ArchitectureModal = lazy(() => import('./components/ArchitectureModal'));
+const FeatureExplainabilityPanel = lazy(() => import('./components/FeatureExplainabilityPanel'));
 import {
   getStockInfo,
   getStockQuote,
@@ -223,6 +224,12 @@ export default function App() {
             onRetry={() => runPrediction(selectedSymbol)}
             symbol={selectedSymbol}
           />
+        </motion.div>
+
+        <motion.div className="dashboard-section" initial={{ opacity: 1, y: 7 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: 0.1 }}>
+          <Suspense fallback={<section className="fintech-card explainability-card" role="status" aria-busy="true">Preparing feature sensitivity analysis…</section>}>
+            <FeatureExplainabilityPanel symbol={selectedSymbol} />
+          </Suspense>
         </motion.div>
 
         <motion.div className="dashboard-section" initial={{ opacity: 1, y: 7 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: 0.12 }}>

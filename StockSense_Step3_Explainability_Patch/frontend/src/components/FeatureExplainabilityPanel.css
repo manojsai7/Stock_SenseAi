@@ -1,0 +1,56 @@
+.explainability-card { padding: 24px; margin-bottom: 20px; }
+.explainability-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 18px; margin-bottom: 20px; flex-wrap: wrap; }
+.explainability-header h2 { margin: 5px 0 5px; color: var(--text-primary); font-size: 1.05rem; font-weight: 750; letter-spacing: -0.02em; }
+.explainability-header p { max-width: 660px; color: var(--text-secondary); font-size: 0.82rem; line-height: 1.55; }
+.explainability-eyebrow { display: flex; align-items: center; gap: 7px; color: var(--primary-green); font-size: 0.68rem; font-weight: 800; letter-spacing: 0.11em; }
+.explainability-refresh { white-space: nowrap; }
+.explainability-spinning { animation: explainability-spin 1s linear infinite; }
+@keyframes explainability-spin { to { transform: rotate(360deg); } }
+.explainability-meta-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; margin-bottom: 12px; }
+.explainability-meta-grid > div, .explainability-baseline > div { display: flex; flex-direction: column; gap: 4px; min-width: 0; background: var(--surface-subtle); border: 1px solid var(--border-subtle); border-radius: 9px; padding: 11px 12px; }
+.explainability-meta-grid span, .explainability-baseline span { color: var(--text-secondary); font-size: 0.68rem; }
+.explainability-meta-grid strong { overflow-wrap: anywhere; font-size: 0.78rem; font-weight: 700; }
+.explainability-status { display: inline-flex; width: fit-content; border-radius: 5px; padding: 2px 6px; background: var(--surface-card); border: 1px solid var(--border-default); }
+.explainability-status.status-online { color: var(--primary-green); border-color: var(--green-border); }
+.explainability-status.status-offline, .explainability-status.status-unknown { color: #9A5B09; border-color: var(--amber-border); }
+.explainability-baseline { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin-bottom: 16px; }
+.explainability-baseline strong { font-size: 0.98rem; font-family: var(--font-mono); font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+.explainability-baseline small { color: var(--text-muted); font-size: 0.69rem; line-height: 1.4; overflow-wrap: anywhere; }
+.explainability-table { overflow: hidden; border: 1px solid var(--border-subtle); border-radius: 10px; }
+.explainability-table-head, .explainability-row { display: grid; grid-template-columns: minmax(190px, 1.35fr) minmax(130px, 1fr) minmax(95px, 0.7fr) minmax(105px, 0.7fr); align-items: center; gap: 12px; padding: 11px 14px; }
+.explainability-table-head { background: var(--surface-subtle); color: var(--text-secondary); font-size: 0.66rem; font-weight: 750; letter-spacing: 0.04em; text-transform: uppercase; }
+.explainability-row { border-top: 1px solid var(--border-subtle); background: var(--surface-card); }
+.explainability-feature, .explainability-shift { min-width: 0; display: flex; flex-direction: column; gap: 3px; }
+.explainability-feature strong { font-size: 0.8rem; font-weight: 700; }
+.explainability-feature code { color: var(--text-muted); font-family: var(--font-mono); font-size: 0.66rem; overflow-wrap: anywhere; }
+.explainability-feature small, .explainability-row [role="cell"] > small { color: var(--text-muted); font-size: 0.67rem; }
+.explainability-shift strong, .explainability-price-shift { font-family: var(--font-mono); font-size: 0.78rem; font-variant-numeric: tabular-nums; }
+.shift-positive { color: var(--primary-green); }
+.shift-negative { color: var(--accent-red); }
+.explainability-track { background: var(--surface-subtle); height: 5px; border-radius: 99px; overflow: hidden; max-width: 160px; }
+.explainability-track span { display: block; height: 100%; border-radius: inherit; }
+.shift-fill-positive { background: var(--primary-green); }
+.shift-fill-negative { background: var(--accent-red); }
+.explainability-flip { display: inline-flex; width: fit-content; border-radius: 5px; padding: 2px 6px; font-size: 0.69rem; font-weight: 750; }
+.flip-yes { color: var(--accent-red); background: var(--red-tint); }
+.flip-no { color: var(--text-secondary); background: var(--surface-subtle); }
+.explainability-row [role="cell"]:last-child { display: flex; flex-direction: column; align-items: flex-start; gap: 4px; }
+.explainability-method-note { display: flex; gap: 9px; align-items: flex-start; padding: 12px 13px; margin-top: 14px; border: 1px solid var(--amber-border); border-radius: 9px; background: var(--amber-tint); color: #75420B; }
+.explainability-method-note svg { flex-shrink: 0; margin-top: 2px; }
+.explainability-method-note p { font-size: 0.73rem; line-height: 1.55; }
+.explainability-method-note strong { font-weight: 800; }
+.explainability-footer { margin-top: 10px; color: var(--text-muted); font-size: 0.66rem; overflow-wrap: anywhere; }
+.explainability-error, .explainability-empty { display: flex; align-items: flex-start; gap: 10px; padding: 14px; background: var(--surface-subtle); border: 1px solid var(--border-subtle); border-radius: 9px; color: var(--text-secondary); font-size: 0.81rem; }
+.explainability-error svg { flex-shrink: 0; color: var(--accent-amber); }
+.explainability-error strong { display: block; margin-bottom: 4px; color: var(--text-primary); }
+.explainability-error p { margin-bottom: 10px; }
+@media (max-width: 760px) {
+  .explainability-card { padding: 16px; }
+  .explainability-meta-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .explainability-baseline { grid-template-columns: 1fr; }
+  .explainability-table-head { display: none; }
+  .explainability-row { grid-template-columns: minmax(0, 1fr) minmax(110px, 0.8fr); gap: 12px; }
+  .explainability-row [role="cell"]:nth-child(3)::before { content: 'Price shift'; display: block; margin-bottom: 4px; color: var(--text-muted); font: 700 0.62rem var(--font-sans); text-transform: uppercase; }
+  .explainability-row [role="cell"]:nth-child(4)::before { content: 'Direction changed'; display: block; margin-bottom: 4px; color: var(--text-muted); font: 700 0.62rem var(--font-sans); text-transform: uppercase; }
+}
+@media (prefers-reduced-motion: reduce) { .explainability-spinning { animation: none; } }

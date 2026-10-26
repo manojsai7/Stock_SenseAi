@@ -4,6 +4,7 @@ from pathlib import Path
 import pandas as pd
 from backend.services.prediction_service import PredictionService, StaleMarketDataError
 from backend.schemas.prediction import PredictionResponse, ModelMetricsResponse
+from backend.services.explainability_service import explainability_service
 
 router = APIRouter(tags=["Predictions & Models"])
 pred_service = PredictionService()
@@ -38,6 +39,23 @@ def list_models():
     List trained model versions and saved architectures across all supported large caps.
     """
     return pred_service.list_models()
+
+@router.get("/models/{symbol}/explainability", summary="Explain current stationary model input sensitivity")
+def get_model_explainability(symbol: str):
+    """
+    Computes live input sensitivity for the stationary model using the latest 30
+    completed sessions. This is a perturbation diagnostic, not causal attribution.
+    """
+    try:
+        return explainability_service.get_stationary_feature_sensitivity(symbol)
+    except ValueError as ve:
+        raise HTTPException(status_code=400, detail=str(ve))
+    except FileNotFoundError as fe:
+        raise HTTPException(status_code=404, detail=str(fe))
+    except StaleMarketDataError as stale:
+        raise HTTPException(status_code=503, detail=str(stale))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Explainability error for '{symbol}': {str(e)}")
 
 @router.get("/models/{symbol}/metrics", response_model=ModelMetricsResponse, summary="Get Model Test Metrics")
 def get_model_metrics(symbol: str):

@@ -90,3 +90,12 @@ export async function getSystemHealth() {
   }
   return res.json();
 }
+
+export async function getFeatureSensitivity(symbol) {
+  const res = await fetch(`${API_BASE}/models/${encodeURIComponent(symbol)}/explainability`);
+  if (!res.ok) {
+    const errorMsg = await parseError(res, `Feature sensitivity unavailable for ${symbol}`);
+    throw new Error(errorMsg);
+  }
+  return res.json();
+}
