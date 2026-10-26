@@ -1,16 +1,27 @@
-# StockSense AI — Deep Learning Stock Price Prediction Using CNN-LSTM Architecture
+# StockSense AI — Explainable Next-Day Stock Price Forecasting Using CNN-LSTM Architecture
 
-**StockSense AI** is an academically defensible, end-to-end stock price forecasting system. It combines a hybrid **CNN-LSTM** neural network implemented with **TensorFlow / Keras** with a decoupled **FastAPI** backend and an interactive **React** research dashboard.
+**StockSense AI** is an academically defensible, end-to-end stock price forecasting system. It combines a hybrid **CNN-LSTM** neural network operating on scale-invariant stationary return features with an on-demand **input-sensitivity explainability panel**, a decoupled **FastAPI** backend, and an interactive **React** research dashboard.
 
 ---
 
-## 🔒 1. Frozen Problem Scope
+## 🔒 1. Frozen Problem Scope & System Architecture
 
-- **Prediction Horizon**: 1 Trading Day Ahead ($y = \text{Close}_{t+1}$).
-- **Historical Input**: 30 completed trading days sequence ($X = [t-29, \dots, t]$).
-- **Features Extracted**:
-  - `Open`, `High`, `Low`, `Close`, `Volume`
-  - `MA20` (20-day Simple Moving Average on Close)
+- **Prediction Horizon**: 1 Trading Day Ahead ($y = \text{Close}_{t+1}$ reconstructed from predicted simple return $r_{t+1}$).
+- **Historical Input**: 30 consecutive completed trading sessions sequence ($X = [t-29, \dots, t]$).
+- **Features Extracted (7 Causal Relative Stationary Features)**:
+  1. `return_1d`: 1-day close-to-close return ($\text{Close}_t / \text{Close}_{t-1} - 1$)
+  2. `return_5d`: 5-day momentum return ($\text{Close}_t / \text{Close}_{t-5} - 1$)
+  3. `return_20d`: 20-day trend return ($\text{Close}_t / \text{Close}_{t-20} - 1$)
+  4. `intraday_return`: within-session bar return ($(\text{Close}_t - \text{Open}_t) / \text{Open}_t$)
+  5. `hl_range_ratio`: normalized high-low spread ($(\text{High}_t - \text{Low}_t) / \text{Close}_{t-1}$)
+  6. `close_to_ma20`: distance from 20-day Simple Moving Average ($\text{Close}_t / \text{MA20}_t - 1$)
+  7. `volume_ratio`: volume relative to 20-day rolling mean ($\text{Volume}_t / \overline{\text{Volume}}_{20}$)
+- **Target Formulation & Price Reconstruction**:
+  - The network forecasts next-session return: $r_{t+1} = (\text{Close}_{t+1} - \text{Close}_t) / \text{Close}_t$.
+  - Price is deterministically reconstructed: $\widehat{\text{Close}}_{t+1} = \text{Close}_t \times (1 + \hat{r}_{t+1})$.
+- **Normalization**:
+  - `StationaryFeatureScaler`: StandardScaler fitted strictly on training feature distributions.
+  - `ReturnTargetScaler`: StandardScaler fitted on training simple returns.
 - **Primary Equities (NSE Large Caps)**:
   - `TCS.NS` (Tata Consultancy Services)
   - `RELIANCE.NS` (Reliance Industries)
@@ -22,21 +33,21 @@
 
 ---
 
-## 🏛️ 2. Deep Learning Framework & Architecture
+## 🏛️ 2. Deep Learning Framework & CNN-LSTM Architecture
 
-The deep learning engine is implemented strictly in **TensorFlow 2.17+** with the **Keras** Sequential API:
+The deep learning engine is implemented strictly in **TensorFlow / Keras** using the Sequential API:
 
 ```text
 ┌─────────────────────────────────────────────────────────────┐
-│                 Input Tensor: (30, 6)                       │
+│                 Input Tensor: (batch_size, 30, 7)           │
 ├─────────────────────────────────────────────────────────────┤
 │  Conv1D (filters=64, kernel_size=3, padding='same', ReLU)   │
 │  → Extracts local waveform patterns across 3-day windows    │
 ├─────────────────────────────────────────────────────────────┤
 │  MaxPooling1D (pool_size=2)                                 │
-│  → Temporal dimensionality reduction & noise suppression    │
+│  → Temporal dimensionality reduction (30 → 15 steps)        │
 ├─────────────────────────────────────────────────────────────┤
-│  LSTM (units=50, return_sequences=False)                    │
+│  LSTM (units=50, return_sequences=False, activation='tanh') │
 │  → Recurrent gating (Input, Forget, Output) for trends      │
 ├─────────────────────────────────────────────────────────────┤
 │  Dropout (rate=0.2)                                         │
@@ -46,7 +57,7 @@ The deep learning engine is implemented strictly in **TensorFlow 2.17+** with th
 │  → Non-saturating projection allowing regime shift outputs   │
 ├─────────────────────────────────────────────────────────────┤
 │  Dense (units=1, activation='linear')                       │
-│  → Final continuous Next-Day Closing Price (scaled)         │
+│  → Final standardized Next-Day Return prediction (\hat{z})  │
 └─────────────────────────────────────────────────────────────┘
 ```
 
@@ -76,31 +87,64 @@ The deep learning engine is implemented strictly in **TensorFlow 2.17+** with th
 
 ---
 
-## 📊 4. Empirical Benchmark & Ablation Study Summary
+## 📊 4. Three-Tier Empirical Evaluation & Scientific Diagnostics
 
-All experiments are logged systematically in [`experiments/results.csv`](file:///d:/Downloads/Stock_SenseAi/experiments/results.csv).
+To avoid methodological conflation, evaluation is strictly separated into three distinct tiers:
+1. **Historical EXP-05 Walk-Forward Folds:** Audited Colab candidate checkpoints across expanding historical regimes.
+2. **Production Model Validation:** Diagnostic replay of deployed production weights.
+3. **Prospective Forward Observations:** Immutable predictions recorded *before* market closes, scored only after exchange finalization.
 
-| Stock Symbol | Model / Experiment | Window | MAE (₹) ↓ | RMSE (₹) ↓ | MAPE (%) ↓ | Directional Acc (%) ↑ |
-|---|---|:---:|:---:|:---:|:---:|:---:|
-| **RELIANCE.NS** | Naive Baseline | 30 | **14.17** | **18.52** | **1.06%** | 44.02% |
-| | Standard LSTM | 30 | 18.28 | 23.34 | 1.36% | **54.35%** |
-| | **CNN-LSTM Hybrid** | **30** | **19.28** | **24.22** | **1.44%** | **52.72%** |
-| **INFY.NS** | Naive Baseline | 30 | **18.16** | **25.83** | **1.51%** | 57.07% |
-| | Standard LSTM | 30 | 35.67 | 47.43 | 3.02% | 51.63% |
-| | **CNN-LSTM Hybrid** | **30** | **28.50** | **38.69** | **2.40%** | **55.43%** |
-| **HDFCBANK.NS** | Naive Baseline | 30 | **8.97** | **12.18** | **1.14%** | 51.09% |
-| | Standard LSTM | 30 | 11.45 | 15.25 | 1.46% | 51.63% |
-| | **CNN-LSTM Hybrid** | **30** | **10.27** | **13.49** | **1.30%** | **51.63%** |
-| | CNN-LSTM (Ablation) | 20 | 10.11 | 13.66 | 1.27% | **60.33%** |
-| | CNN-LSTM (Ablation) | 60 | 12.49 | 16.34 | 1.54% | **63.04%** |
-| **ICICIBANK.NS** | Naive Baseline | 30 | **13.28** | **17.11** | **0.99%** | 48.91% |
-| | Standard LSTM | 30 | 23.61 | 29.29 | 1.76% | 47.28% |
-| | **CNN-LSTM Hybrid** | **30** | **38.02** | **46.61** | **2.89%** | **47.28%** |
+### 4.1 Tier 1: Historical Walk-Forward Folds (Colab EXP-05 Audit, $N=184$)
+Audited out-of-sample benchmark on `RELIANCE.NS` (Test window: 2026-01-15 to 2026-10-07):
 
-### 🔍 Scientific Takeaway:
-1. **Point Forecast Resilience**: Consistent with financial econometrics and the Efficient Market Hypothesis, stock prices closely approximate a martingale; hence, the Naive persistence baseline achieves very low absolute errors on calm regimes.
-2. **Directional Value**: The proposed CNN-LSTM architecture extracts local non-linear dynamics through 1D convolutions, providing directional signal improvements (up to 60-63% on HDFC Bank under window ablations and outperforming LSTM on INFY and Reliance).
-3. **Honest Framing**: The project avoids blanket claims of universal superiority, documenting that deep learning performance varies across market volatility regimes and stock liquidity structures.
+| Model / Benchmark | Price MAE (₹) ↓ | Price RMSE (₹) ↓ | Price MAPE (%) ↓ | Direction Acc (%) ↑ | Balanced Acc (%) ↑ | Direction MCC ↑ | UP Recall (%) | DOWN Recall (%) |
+|---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+| **Naive Persistence Baseline** | **₹14.16** | **₹18.52** | **1.06%** | 3.26% | 33.33% | 0.0000 | 0.0% | 0.0% |
+| **Colab EXP-05 Fold 3 (Calibrated, $\theta=+0.000307$)** | ₹14.09 | ₹18.44 | 1.05% | 51.09% | 33.24% | 0.0055 | 6.02% | 93.68% |
+| **Colab EXP-05 Fold 3 (Uncalibrated, $\theta=0$)** | ₹14.09 | ₹18.44 | 1.05% | 52.72% | 34.69% | 0.0560 | 15.66% | 88.42% |
+| **Production CNN-LSTM (Diagnostic Lookahead Replay)** | ₹14.18 | ₹18.46 | 1.06% | 48.91% | 35.59% | 0.1117 | 95.18% | 11.58% |
+
+*Scientific Takeaway:* Colab Fold 3 failed the pre-registered promotion criteria: its price MAE advantage over Naive Persistence was trivial (₹0.07, within random margin), and calibration caused severe directional collapse (93.68% DOWN, 6.02% UP). Production models were therefore **strictly frozen**.
+
+### 4.2 Tier 2: Production Model Selection Validation
+The production models in `models_storage_stationary/` were trained/refit across sequences through 2026-10-06. Retrospective evaluation on historical blocks contains lookahead bias; sound verification must occur prospectively.
+
+### 4.3 Tier 3: Prospective Forward Evaluation (Real-Time Logging)
+Forward predictions are cryptographically logged in [`research/EXP-05/evaluation/prospective_predictions_log.csv`](file:///d:/Downloads/Stock_SenseAi/research/EXP-05/evaluation/prospective_predictions_log.csv) *before* trading sessions close.
+
+**Current Forward Evaluation Scope:**
+- **1 resolved session:** October 26, 2026 (resolved against official NSE settlement).
+- **1 pending session:** October 27, 2026 (forecast committed, outcome pending).
+- **Three predictions per session:** Production CNN-LSTM, Colab EXP-05 Fold 3 (Calibrated), and Naive Persistence baseline (total 6 records logged).
+
+#### Observation 1: October 26, 2026 ($N=1$, Fully Resolved)
+- **Input Baseline (October 23 Close):** ₹1,190.00
+- **Finalized Target Close (October 26):** **₹1,201.80** (+0.9916%, `UP`)
+
+| Model | Predicted Close | Predicted Dir | Actual Close | Absolute Price Error | Direction Correct? |
+|---|:---:|:---:|:---:|:---:|:---:|
+| **Production CNN-LSTM** | **₹1,190.23** | `UP` | ₹1,201.80 | **₹11.57** | **YES** |
+| **Naive Persistence Baseline** | **₹1,190.00** | `FLAT` | ₹1,201.80 | **₹11.80** | **NO** |
+| **Colab EXP-05 Fold 3 (Calibrated)** | **₹1,189.31** | `DOWN` | ₹1,201.80 | **₹12.49** | **NO** |
+
+> **Scientific Caveat:** While Production had the lowest absolute price error on this session, **one successful forecast does not establish predictive superiority**. A difference of ₹0.23 against naive persistence on one day does not prove predictive edge. Likewise, Colab Fold 3's directional miss does not prove permanent underperformance. Valid statistical inference requires accumulating **60–100 prospective sessions** before running formal hypothesis tests.
+
+#### Observation 2: October 27, 2026 ($N=2$, Locked & Pending)
+- **Input Cutoff (October 26 Close):** ₹1,201.80 | **Target Session:** 2026-10-27
+- **Production CNN-LSTM:** ₹1,202.53 (`UP`, +0.0608%) | **Status:** `PENDING_OUTCOME`
+- **Colab Fold 3 (Calibrated):** ₹1,201.03 (`DOWN`, -0.0644%) | **Status:** `PENDING_OUTCOME`
+- **Naive Persistence:** ₹1,201.80 (`FLAT`, +0.00%) | **Status:** `PENDING_OUTCOME`
+
+### 4.4 Live Input-Sensitivity Explainability Diagnostic
+The system integrates an on-demand sensitivity panel (`/api/models/{symbol}/explainability`):
+- **Method:** Feature-perturbation sensitivity via 30-session trajectory mean neutralization (setting each standardized feature channel to 0.0, the training mean under `StandardScaler`).
+- **Primary Sensitivities:** `return_20d` and `return_5d` show the highest model responsiveness (~3–4 bps delta return).
+- **Non-Causal Disclaimer:** Model sensitivity measures feature-perturbation sensitivity (specifically 30-session mean-neutralization response), **not financial causality or guaranteed future performance**. Gradients are not calculated; rather, forward-pass delta responses to input channel neutralizations are measured.
+
+### 4.5 Multimodal News Sentiment Scope & Project Title Alignment
+A financial news sentiment pipeline is **not implemented, proven, or evaluated** in this codebase. To maintain strict academic integrity:
+- **Recommended Project Title:** **"StockSense AI: Explainable Next-Day Stock Price Forecasting Using CNN-LSTM"** accurately describes the verified working implementation.
+- Multimodal sentiment is cataloged as future research requiring leak-free timestamp-aligned news corpora.
 
 ---
 
