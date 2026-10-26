@@ -29,3 +29,4 @@ Thumbs.db
 # Research large binaries
 research/**/*.zip
 research/**/*.keras
+.StockSense_Step3_Explainability_Patch/
