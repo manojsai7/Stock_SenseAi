@@ -30,3 +30,6 @@ Thumbs.db
 research/**/*.zip
 research/**/*.keras
 StockSense_Step3_Explainability_Patch/
+
+# Ephemeral experiment audit runs
+experiments/runs/audit_*/

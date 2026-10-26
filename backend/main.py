@@ -8,6 +8,7 @@ from backend.core.config import settings
 from backend.api.health_routes import router as health_router
 from backend.api.stock_routes import router as stock_router
 from backend.api.prediction_routes import router as prediction_router
+from backend.api.research_routes import router as research_router
 
 from contextlib import asynccontextmanager
 import logging
@@ -57,6 +58,7 @@ app.include_router(health_router, prefix=settings.API_V1_PREFIX)
 app.include_router(health_router, prefix="/api/system")
 app.include_router(stock_router, prefix=settings.API_V1_PREFIX)
 app.include_router(prediction_router, prefix=settings.API_V1_PREFIX)
+app.include_router(research_router, prefix=settings.API_V1_PREFIX)
 
 
 # Serve Frontend static build if it exists

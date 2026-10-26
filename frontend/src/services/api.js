@@ -99,3 +99,12 @@ export async function getFeatureSensitivity(symbol) {
   }
   return res.json();
 }
+
+export async function getResearchModelComparison(symbol = 'RELIANCE.NS') {
+  const res = await fetch(`${API_BASE}/research/model-comparison?symbol=${encodeURIComponent(symbol)}`);
+  if (!res.ok) {
+    const errorMsg = await parseError(res, `Research model comparison unavailable for ${symbol}`);
+    throw new Error(errorMsg);
+  }
+  return res.json();
+}

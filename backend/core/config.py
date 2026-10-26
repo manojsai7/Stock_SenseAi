@@ -33,7 +33,7 @@ class Settings:
     PIPELINE_LEGACY: str = "legacy"
     PIPELINE_STATIONARY_V1: str = "stationary-return-v1"
     VALID_PIPELINE_VERSIONS: List[str] = ["legacy", "stationary-return-v1"]
-    PREDICTION_PIPELINE_VERSION: str = os.getenv("PREDICTION_PIPELINE_VERSION", "legacy").lower()
+    PREDICTION_PIPELINE_VERSION: str = os.getenv("PREDICTION_PIPELINE_VERSION", "stationary-return-v1").lower()
 
     SUPPORTED_STOCKS: List[str] = [
         "TCS.NS",

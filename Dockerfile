@@ -45,6 +45,8 @@ COPY models_storage/ ./models_storage/
 COPY models_storage_stationary/ ./models_storage_stationary/
 COPY experiments/ ./experiments/
 COPY data/ ./data/
+COPY research/ ./research/
+
 
 # Copy compiled frontend from Stage 1
 COPY --from=frontend-builder /app/frontend/dist ./frontend/dist
