@@ -175,11 +175,11 @@ class DirectionalBenchmarkAuditor:
     - Generates versioned, timestamped reports and CSV records
     """
 
-    def __init__(self, symbol: str = "RELIANCE.NS"):
+    def __init__(self, symbol: str = "RELIANCE.NS", processed_path: Optional[Path] = None):
         self.symbol = symbol
         self.clean_symbol = symbol.replace(".", "_")
         self.seq_dir = SEQUENCES_DIR / self.clean_symbol
-        self.proc_file = PROCESSED_DIR / f"{self.clean_symbol}_processed.csv"
+        self.proc_file = Path(processed_path) if processed_path is not None else PROCESSED_DIR / f"{self.clean_symbol}_processed.csv"
         self.models_storage_dir = MODELS_STORAGE_DIR / self.clean_symbol
 
         if not self.seq_dir.exists():

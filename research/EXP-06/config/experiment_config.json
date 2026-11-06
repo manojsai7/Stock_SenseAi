@@ -1,0 +1,65 @@
+{
+  "experiment_id": "EXP-06",
+  "dataset_sha256": null,
+  "data_gate": {
+    "approved": false,
+    "provenance_report": "research/EXP-05/DATA_PROVENANCE_INVESTIGATION.md",
+    "exp05_reconciled": false
+  },
+  "feature_version": "stationary-seven-v1",
+  "features": [
+    "return_1d",
+    "return_5d",
+    "return_20d",
+    "intraday_return",
+    "hl_range_ratio",
+    "close_to_ma20",
+    "volume_ratio"
+  ],
+  "window": 30,
+  "holdout_start": null,
+  "splits": {
+    "min_train": 500,
+    "validation_size": 100,
+    "test_size": 100,
+    "folds": 3
+  },
+  "seeds": [
+    42,
+    123
+  ],
+  "candidates": [
+    {
+      "architecture": "lstm",
+      "loss": "mse"
+    },
+    {
+      "architecture": "gru",
+      "loss": "mse"
+    },
+    {
+      "architecture": "cnn_lstm",
+      "loss": "mse"
+    }
+  ],
+  "training": {
+    "epochs": 30,
+    "batch_size": 32,
+    "patience": 8
+  },
+  "selection_criteria": {
+    "protocol": "research/EXP-06/SELECTION_PROTOCOL.md",
+    "primary": "mean_fold_price_mae",
+    "beat_baselines": [
+      "naive",
+      "ridge"
+    ],
+    "mcc_min": 0.1,
+    "up_recall_min": 0.2,
+    "down_recall_min": 0.2,
+    "volatility_ratio_min": 0.2,
+    "positive_mcc_majority_folds": true,
+    "holdout_min_sessions": 60,
+    "promotion": "explicit_review_required"
+  }
+}

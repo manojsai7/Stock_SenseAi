@@ -74,7 +74,7 @@ def test_metric_calculations_controlled_synthetic():
 
 def test_date_alignment_and_price_matching():
     """Verifies date alignment on actual RELIANCE.NS dataset."""
-    auditor = DirectionalBenchmarkAuditor(symbol="RELIANCE.NS")
+    auditor = DirectionalBenchmarkAuditor(symbol="RELIANCE.NS", processed_path=HISTORICAL_SNAPSHOT)
     alignment = auditor.verify_alignment()
 
     assert alignment["is_valid"] is True, f"Alignment errors: {alignment['mismatches']}"
@@ -91,7 +91,7 @@ def test_date_alignment_and_price_matching():
 
 def test_baseline_predictions_and_leakage_prevention():
     """Verifies that baseline fitting uses training data only, without test peeking."""
-    auditor = DirectionalBenchmarkAuditor(symbol="RELIANCE.NS")
+    auditor = DirectionalBenchmarkAuditor(symbol="RELIANCE.NS", processed_path=HISTORICAL_SNAPSHOT)
 
     # Training signs calculation
     train_diff = auditor.actual_target_train - auditor.prev_close_train
@@ -131,7 +131,7 @@ def test_baseline_predictions_and_leakage_prevention():
 
 def test_audit_end_to_end_execution(tmp_path):
     """Executes full audit and verifies all artifacts are generated cleanly."""
-    auditor = DirectionalBenchmarkAuditor(symbol="RELIANCE.NS")
+    auditor = DirectionalBenchmarkAuditor(symbol="RELIANCE.NS", processed_path=HISTORICAL_SNAPSHOT)
     res = auditor.run_audit()
 
     out_dir = Path(res["output_dir"])
@@ -205,3 +205,13 @@ def test_multi_stock_auditor_execution():
     assert "Macro Balanced Acc (%)" in macro_df.columns
     assert "Macro MCC" in macro_df.columns
 
+
+# Frozen regression expectations refer to the original snapshot, not refreshed history.
+HISTORICAL_SNAPSHOT = Path(__file__).resolve().parents[1] / "research/EXP-06/data/exp05_original_processed.csv"
+
+
+def test_historical_snapshot_fingerprint():
+    import hashlib
+    assert hashlib.sha256(HISTORICAL_SNAPSHOT.read_bytes()).hexdigest() == (
+        "fc307847d12795ff7019f0d5e4e6c8f0aaf685cd8c9b02a5fc4a8d313f854b40"
+    )
