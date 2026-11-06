@@ -49,7 +49,12 @@ class ProspectiveV2Service:
                 "resolution_timestamp": "object", "data_source": "object"
             }
             return pd.DataFrame({col: pd.Series(dtype=dt) for col, dt in cols.items()})
-        return pd.read_csv(self.log_path)
+        df = pd.read_csv(self.log_path)
+        obj_cols = ["actual_direction", "direction_correct", "resolution_timestamp", "status"]
+        for c in obj_cols:
+            if c in df.columns and df[c].dtype == "float64":
+                df[c] = df[c].astype("object")
+        return df
 
     def _save_log(self, df: pd.DataFrame) -> None:
         self.log_path.parent.mkdir(parents=True, exist_ok=True)

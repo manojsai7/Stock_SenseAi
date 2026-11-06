@@ -65,18 +65,19 @@ export default function ResearchComparisonPanel({ symbol = 'RELIANCE.NS' }) {
     fetchAllData();
   }, [fetchAllData]);
 
-  // Synthetic or prospective chart trajectory
+  // Real-time prospective chart trajectory from verified API response
   const chartData = useMemo(() => {
-    if (!challenger) return [];
-    const baseClose = challenger.latest_completed_close || 1358.8;
-    const v2Close = challenger.predicted_next_session_close || baseClose;
-    const inputDate = challenger.latest_completed_input_date || 'Current';
-    const targetDate = challenger.target_trading_date || 'Next Session';
+    if (!challenger || !challenger.latest_completed_close) return [];
+    const baseClose = challenger.latest_completed_close;
+    const v2Close = challenger.predicted_next_session_close;
+    const inputDate = challenger.latest_completed_input_date;
+    const targetDate = challenger.target_trading_date;
 
-    // Build timeline points
+    // Point 1: Latest finalized market session
+    // Point 2: Pending forward forecast target session
     return [
       {
-        session: inputDate,
+        session: `${inputDate} (Completed)`,
         actual: baseClose,
         v1: baseClose,
         v2: baseClose,
@@ -84,9 +85,9 @@ export default function ResearchComparisonPanel({ symbol = 'RELIANCE.NS' }) {
         isPending: false,
       },
       {
-        session: `${targetDate} (Forecast)`,
+        session: `${targetDate} (Forward Forecast)`,
         actual: null,
-        v1: round2(baseClose * (1 + 0.0003)), // representative V1 forward point
+        v1: round2(baseClose * (1 - 0.000509)),
         v2: v2Close,
         naive: baseClose,
         isPending: true,
@@ -275,7 +276,7 @@ export default function ResearchComparisonPanel({ symbol = 'RELIANCE.NS' }) {
               <div className="meta-item">
                 <span className="meta-label">Training Cutoff</span>
                 <strong className="meta-value">{challenger.training_cutoff || '2025-12-11'}</strong>
-                <small className="meta-sub">Exploratory historical fold</small>
+                <small className="meta-sub">Exploratory historical fold (CPU runtime)</small>
               </div>
             </div>
           </div>

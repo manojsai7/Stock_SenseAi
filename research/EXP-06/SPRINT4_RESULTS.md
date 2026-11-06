@@ -134,3 +134,4 @@ All 196 automated tests across the codebase are passing:
 - Frontend build: Passed (`dist/` generated in 50.94s).
 
 Sprint 4 is complete and ready for release preparation in Sprint 5.
+

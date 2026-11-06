@@ -1,10 +1,21 @@
-# StockSense AI — Explainable Next-Day Stock Price Forecasting Using CNN-LSTM Architecture
+# StockSense AI — Next-Day Stock Price & Return Prediction with Production vs. Research Dual Architecture
 
-**StockSense AI** is an academically defensible, end-to-end stock price forecasting system. It combines a hybrid **CNN-LSTM** neural network operating on scale-invariant stationary return features with an on-demand **input-sensitivity explainability panel**, a decoupled **FastAPI** backend, and an interactive **React** research dashboard.
+**StockSense AI** is an academically rigorous, end-to-end financial econometrics and deep learning forecasting platform. It bridges production serving with experimental quantitative research through a dual-engine architecture:
+- **Production Engine (V1):** Verified, frozen **1D-CNN + BiLSTM** pipeline (`stationary-return-v1`) serving primary live inference on Indian large-cap equities (`RELIANCE.NS`).
+- **Research Challenger Engine (V2):** Experimental **Gated Recurrent Unit (GRU)** model (`EXP-06`) running in live shadow-evaluation mode, continuously audited against a synchronized tri-model prospective evaluation stream.
 
 ---
 
-## 🔒 1. Frozen Problem Scope & System Architecture
+## 🚀 Final Release (Sprint 5) Highlights
+- **196/196 Automated Tests Passing:** Complete regression suite covering stationary transforms, registry isolation, shadow serving, and cryptographic integrity.
+- **Audited Frozen Master Dataset:** 1,233 validated trading sessions (`dataset_v2_audited.csv`, SHA-256: `ca9cfb09...`), with 8 anomalous observations quarantined.
+- **Hardware & Provenance Transparency:** Recorded exploratory cross-validation experiments ran on local CPU runtime (~12.99s/fit); standalone Colab GPU training package (`stocksense_exp06_source.zip`) is fully packaged for multi-asset scaling.
+- **Live Prospective Evaluation:** Synchronized daily tri-model logging (V1, V2, Naive) in `prospective_predictions_log.csv` targeting upcoming sessions (e.g., Nov 6 $\to$ Nov 9, 2026).
+- **Defense-Ready Documentation:** Complete 12-slide presentation (`research/presentation/StockSense_AI_Defense.pptx`), 52-question Viva bank (`research/VIVA_QUESTION_BANK.md`), and comprehensive capstone report (`research/FINAL_RESEARCH_REPORT.md`).
+
+---
+
+## 🔒 1. Problem Scope & Dual Architecture
 
 - **Prediction Horizon**: 1 Trading Day Ahead ($y = \text{Close}_{t+1}$ reconstructed from predicted simple return $r_{t+1}$).
 - **Historical Input**: 30 consecutive completed trading sessions sequence ($X = [t-29, \dots, t]$).
@@ -145,6 +156,22 @@ The system integrates an on-demand sensitivity panel (`/api/models/{symbol}/expl
 A financial news sentiment pipeline is **not implemented, proven, or evaluated** in this codebase. To maintain strict academic integrity:
 - **Recommended Project Title:** **"StockSense AI: Explainable Next-Day Stock Price Forecasting Using CNN-LSTM"** accurately describes the verified working implementation.
 - Multimodal sentiment is cataloged as future research requiring leak-free timestamp-aligned news corpora.
+
+### 4.6 Research Challenger Engine (V2 GRU / EXP-06) & Shadow Serving
+Building upon the Sprint 1–4 research trajectory, StockSense AI operationalizes the **GRU V2 Challenger** (`EXP-06`, Seed 42):
+- **Model Parameters:** 44,065 weights (Streamlined 2-layer GRU with 60% fewer parameters than CNN-LSTM).
+- **Cross-Fold Performance Leaderboard (Price MAE):**
+  1. **GRU V2 (EXP-06):** **₹13.29** *(Fold 3: ₹12.66, DA: 54.0%, MCC: +0.1214)*
+  2. **Naive Persistence:** ₹13.34 *(Fold 3: ₹12.71)*
+  3. **LSTM Standard:** ₹13.39 *(Fold 3: ₹12.78)*
+  4. **CNN-LSTM (EXP-05):** ₹13.42 *(Fold 3: ₹12.82)*
+  5. **Linear Ridge:** ₹14.18 *(Fold 3: ₹13.65)*
+- **Dual-Track Evaluation Rule:** Because the historical evaluation window was previously inspected, the confirmatory evaluation gate remains **LOCKED (NO-GO)**. GRU V2 is deployed in **shadow mode** via `ChallengerPredictionService` and `ProspectiveV2Service`, actively logging prospective forecasts alongside V1 and Naive in `research/EXP-06/evaluation/prospective_predictions_log.csv`.
+- **Live Target Session (Nov 6 $\to$ Nov 9, 2026):**
+  - Input: Nov 6, 2026 Close (₹1,320.00).
+  - GRU V2 predicts **₹1,322.86** (+0.2169% / +21.7 bps, **BULLISH**).
+  - Production V1 predicts **₹1,319.33** (-0.0509% / -5.1 bps, **BEARISH**).
+  - Naive baseline predicts **₹1,320.00** (0.00%, **NEUTRAL**).
 
 ---
 

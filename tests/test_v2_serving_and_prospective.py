@@ -245,3 +245,4 @@ def test_exp05_registry_remains_untouched():
     assert reg["status"] == "LOCKED"
     assert "colab_exp05_fold3" in reg["models"]
     assert "production_cnn_lstm" in reg["models"]
+

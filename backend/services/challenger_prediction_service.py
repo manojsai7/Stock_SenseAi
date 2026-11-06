@@ -181,3 +181,4 @@ class ChallengerPredictionService:
 
 
 challenger_prediction_service = ChallengerPredictionService()
+
