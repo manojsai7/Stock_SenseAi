@@ -23,14 +23,15 @@
 ## Slide 2: Problem Statement — The Financial Time-Series Prediction Challenge
 1. **Severe Non-Stationarity:**
    - Raw equity prices $P_t$ exhibit stochastic drift, time-varying distributions, and structural regime shifts.
-   - Augmented Dickey-Fuller (ADF) tests reject stationarity on raw levels ($p > 0.60$), causing standard regressors to learn spurious relationships.
+   - Price levels are non-stationary, causing direct regression to suffer from scale dependence and phantom lag-1 memorization.
    - **The Direct Price Prediction Trap:** Models predicting raw prices simply learn $\hat{P}_{t+1} = P_t + \epsilon$, giving illusory low MAE while exhibiting zero predictive alpha.
 2. **Market Efficiency & Noise Floor:**
    - In accordance with weak-form Efficient Market Hypothesis (EMH), historical information is already discounted into current asset prices.
    - Daily returns have an ultra-low Signal-to-Noise Ratio (SNR $< 0.05$).
    - Complex neural networks readily overfit to historical noise and fold-specific micro-trends, failing when presented with unseen market regimes.
 3. **The StockSense Formulation:**
-   - Transform target to 1-step ahead stationary return $r_{t+1} = \frac{P_{t+1} - P_t}{P_t}$ (ADF confirmed $p < 0.001$).
+   - Transform target to 1-step ahead stationary return $r_{t+1} = \frac{P_{t+1} - P_t}{P_t}$ rather than raw price.
+   - Use relative stationary features (returns, ratios, normalized ATR/OBV) to reduce price-level scale dependence.
    - Reconstruct price mathematically: $\hat{P}_{t+1} = P_t \times (1 + \hat{r}_{t+1})$.
    - Benchmark deep architectures strictly against Naive Persistence ($\hat{r}=0$) and Linear Ridge.
    - Evaluate across dual dimensions: Price MAE/RMSE and Directional Accuracy / MCC.
@@ -114,21 +115,21 @@
 
 ---
 
-## Slide 7: Offline Experimental Results & The Asymmetry Discovery
+## Slide 7: Offline Experimental Results & Directional Asymmetry Analysis
 - **Cross-Fold Leaderboard (Mean Price MAE across 3 Folds):**
   1. **GRU V2 (EXP-06):** ₹13.29 *(Fold 3: ₹12.66)* — **Rank 1**
   2. **Naive Persistence:** ₹13.34 *(Fold 3: ₹12.71)* — **Rank 2**
   3. **LSTM Standard:** ₹13.39 *(Fold 3: ₹12.78)* — **Rank 3**
   4. **CNN-LSTM (EXP-05):** ₹13.42 *(Fold 3: ₹12.82)* — **Rank 4**
   5. **Linear Ridge:** ₹14.18 *(Fold 3: ₹13.65)* — **Rank 5**
-- **Directional Metrics on Fold 3:**
-  - Directional Accuracy: **54.0%**
-  - Matthews Correlation Coefficient: **+0.1214** (statistically positive)
-- **The Critical Asymmetry Discovery:**
-  - **UP Recall:** **78.7%** (Strong performance on bullish days)
-  - **DOWN Recall:** **32.1%** (Severe weakness during market pullbacks)
-  - *Empirical Cause:* Prolonged secular bull trend in Indian equities (2024–2026) skewed gradient updates toward upward return predictions.
-  - *Scientific Transparency:* We openly disclose that the model has not mastered market drawdowns, refusing premature claims of mastery.
+- **Critical Evaluation Caveat:**
+  - Margin over Naive: Only ₹0.05 / share (₹13.29 vs ₹13.34) — this exploratory edge does **NOT** establish reliable statistical superiority.
+  - Fold 3 Directional Accuracy is 54.0% with +0.1214 MCC (encouraging exploratory signal, but unconfirmed on untouched data).
+- **Directional Bias & Asymmetry:**
+  - **UP Recall:** **78.7%** (Substantially better at capturing upward movements)
+  - **DOWN Recall:** **32.1%** (Severe weakness during downward corrections and pullbacks)
+  - *Macro Cause:* Prolonged secular bull trend in Indian equities (2024–2026) skewed gradient updates toward upward return predictions.
+  - *Scientific Transparency:* We openly disclose that the model has not mastered market drawdowns; claiming superiority would be statistically dishonest.
 
 ---
 
@@ -210,8 +211,9 @@
   - Scale preprocessing and training pipeline to top 10 Nifty 50 constituents via Google Colab GPU notebook.
   - Benchmark Temporal Fusion Transformers (TFT) against current GRU/CNN-LSTM baselines.
 - **Key Capstone Contributions:**
-  1. *Stationary Return Formulation:* Solved non-stationarity and eliminated the deceptive price-prediction trap.
+  1. *Relative Stationary Formulation:* Reduced price-level scale dependence and eliminated trivial lag-1 memorization via 7 relative features.
   2. *Dual-Engine Serving Architecture:* Successfully deployed an experimental challenger in shadow mode alongside a protected production model.
   3. *Uncompromising Scientific Integrity:* Refused to claim false victory on inspected data; pioneered prospective evaluation stream.
   4. *Production-Grade Engineering:* 196 automated tests, cryptographic hash auditing, Docker containerization, and interactive React dashboard.
 - **Conclusion:** StockSense AI bridges the critical gap between academic machine learning research and safe, transparent, production-ready financial technology.
+

@@ -8,12 +8,12 @@ This document serves as the master technical defense and viva examination prepar
 
 ### Q1.1: Why can't we train deep neural networks directly on raw stock prices?
 **Answer:**  
-Raw asset prices $P_t$ are fundamentally non-stationary time series characterized by stochastic drift, unit roots, time-varying conditional variance, and macroeconomic regime shifts. In our econometric audit, the Augmented Dickey-Fuller (ADF) test on raw `RELIANCE.NS` closing prices failed to reject the null hypothesis of a unit root ($p > 0.60$), confirming severe non-stationarity.  
+Raw asset prices $P_t$ are fundamentally non-stationary time series characterized by stochastic drift, unit roots, time-varying conditional variance, and macroeconomic regime shifts. Direct regression on raw price series suffers from severe scale dependence and non-stationarity.  
 Training a high-capacity neural network on raw prices leads to two fatal failure modes:
 1. **Spurious Correlation & Memorization:** The model memorizes arbitrary price levels (e.g., ₹2,800 vs ₹1,300) that have no predictive relationship with future dynamics.
 2. **The Lag-1 Persistence Trap:** The model discovers that minimizing Mean Squared Error (MSE) on prices is trivial by setting $\hat{P}_{t+1} \approx P_t + \epsilon$. This yields deceptively low MAE and an impressive-looking chart, but the model has zero predictive alpha and essentially acts as a delayed mirror of yesterday's price.
 
-In StockSense AI, we resolve this by predicting the 1-step ahead simple return $r_{t+1} = \frac{P_{t+1} - P_t}{P_t}$ (implemented in `backend/services/stationary_feature_service.py` and `backend/services/v2_preprocessing_service.py`), which passes the ADF test ($p < 0.001$), guaranteeing stationarity.
+In StockSense AI, we address this by using relative stationary features (returns, ratios, normalized ATR and OBV) to reduce price-level scale dependence, predicting the 1-step ahead stationary simple return $r_{t+1} = \frac{P_{t+1} - P_t}{P_t}$ (implemented in `backend/services/stationary_feature_service.py` and `backend/services/v2_preprocessing_service.py`).
 
 ### Q1.2: How does the Efficient Market Hypothesis (EMH) apply to daily equity price prediction?
 **Answer:**  
@@ -68,7 +68,7 @@ To prevent this distortion, StockSense AI enforces:
 1. **Matthews Correlation Coefficient (MCC):** A balanced measure that uses all four quadrants of the confusion matrix (TP, TN, FP, FN):
    $$MCC = \frac{TP \times TN - FP \times FN}{\sqrt{(TP + FP)(TP + FN)(TN + FP)(TN + FN)}}$$
    An MCC of $0$ indicates random guessing; $+1$ indicates perfect prediction.
-2. **Asymmetric Recall Decomposition:** Tracking UP Recall ($\frac{TP}{TP + FN}$) and DOWN Recall ($\frac{TN}{TN + FP}$) separately. In Sprint 3, our GRU achieved 78.7% UP recall but only 32.1% DOWN recall, immediately revealing that the model's 54% DA was inflated by the prevailing market trend.
+2. **Asymmetric Recall Decomposition:** Tracking UP Recall ($\frac{TP}{TP + FN}$) and DOWN Recall ($\frac{TN}{TN + FP}$) separately. In Sprint 3, our GRU achieved 78.7% UP recall but only 32.1% DOWN recall. This reveals that the model is substantially better at identifying upward movements than downward movements, and that its 54% DA was inflated by the prevailing bull market.
 
 ---
 
@@ -257,7 +257,7 @@ The project maintains a 100% green regression test suite of **196 automated test
 - **11 Serving & Prospective Tests (`tests/test_v2_serving_and_prospective.py`):** Verifies Challenger API routing, symbol validation, prospective logger idempotency, and outcome resolution.
 - **15 Readiness Tests (`tests/test_exp06_readiness.py`):** Verifies audited dataset integrity, SHA-256 fingerprint verification, quarantine compliance, and LF line ending normalization.
 - **16 Registry Tests (`tests/test_research_v2_registry.py`):** Validates schema definitions, scaler loading, weight tensor loading, and model shape contracts `(1, 30, 7)`.
-- **154 Core Production Tests:** Validates stationarity transforms, ADF tests, production CNN-LSTM serving, authentication, and Docker health checks.
+- **154 Core Production Tests:** Validates stationarity transforms, pipeline invariants, production CNN-LSTM serving, authentication, and Docker health checks.
 
 ---
 
@@ -273,6 +273,9 @@ Across all three expanding chronological cross-validation folds on `dataset_v2_a
 | 3 | LSTM Standard | ₹13.39 | ₹12.78 | 52.0% | +0.0610 |
 | 4 | CNN-LSTM (EXP-05) | ₹13.42 | ₹12.82 | 53.0% | +0.0825 |
 | 5 | Linear Ridge | ₹14.18 | ₹13.65 | 50.5% | +0.0120 |
+
+**Critical Scientific Caveat:**  
+The GRU's cross-fold mean MAE of ₹13.29 versus ₹13.34 for naive persistence represents only a **₹0.05 / share** margin. The reported Directional MCC of **+0.1214** on Fold 3 is an encouraging exploratory signal, but does **NOT** establish reliable statistical superiority over the baseline. We explicitly treat this as a hypothesis-generating exploratory finding that requires ongoing prospective evaluation across 60–100 live sessions to confirm.
 
 ### Q6.2: Is a ₹0.05 reduction in Price MAE over Naive Persistence actually meaningful in real trading?
 **Answer:**  
@@ -317,3 +320,4 @@ Before any live capital execution could be sanctioned:
 ---
 
 *End of Viva Question Bank • 52 Verified Questions & Solutions • StockSense AI Defense Ready*
+

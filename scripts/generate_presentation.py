@@ -143,7 +143,7 @@ def create_deck():
     tf.word_wrap = True
     items1 = [
         "Raw asset prices P_t exhibit time-varying distributions, stochastic drift, and regime shifts.",
-        "ADF tests reject stationarity on raw price series (p > 0.60), leading to spurious regressions and phantom lag-1 memorization.",
+        "Price levels are non-stationary, causing direct regression to suffer from scale dependence and phantom lag-1 memorization.",
         "Direct Price Prediction Trap: A naive price regression merely learns y_hat = y_{t-1} + epsilon, yielding deceptively low MAE without genuine edge."
     ]
     for it in items1:
@@ -177,7 +177,7 @@ def create_deck():
     tf.word_wrap = True
     items3 = [
         "Stationary Target: Predict 1-step ahead stationary return r_{t+1} = (P_{t+1} - P_t) / P_t rather than raw price.",
-        "ADF Stationarity confirmed (p < 0.001) for returns, ATR ratio, log volatility, and normalized OBV.",
+        "Scale Invariance: Uses relative stationary features (returns, ratios, normalized ATR/OBV) to reduce price scale dependence.",
         "Rigorous Benchmark: Every model is judged directly against Naive Persistence (r_hat = 0, P_hat = P_t) and Linear Ridge.",
         "Dual-Metric Scoring: Track both Price MAE/RMSE and Directional Accuracy / MCC."
     ]
@@ -420,9 +420,9 @@ def create_deck():
         "  5. Linear Ridge:         ₹14.18  (Fold 3 Test: ₹13.65)",
         "",
         "Key Quantitative Takeaways:",
-        "• GRU delivers lowest overall Price MAE across all three chronological folds.",
-        "• Margin over Naive: Exactly ₹0.05 / share (0.37% relative MAE reduction).",
-        "• Directional Accuracy on Fold 3: 54.0% with positive MCC (+0.1214).",
+        "• GRU delivers lowest overall Price MAE across all three chronological development folds.",
+        "• Margin over Naive: Only ₹0.05 / share (₹13.29 vs ₹13.34) — exploratory result, not reliable superiority.",
+        "• Directional Accuracy: 54.0% with +0.1214 MCC on Fold 3; encouraging exploratory signal.",
         "• All deep architectures outperform Ridge, confirming non-linear feature interaction."
     ]
     for it in res_text:
@@ -433,16 +433,16 @@ def create_deck():
         p.space_after = Pt(4)
 
     # Asymmetry Card
-    add_card(s7, 7.9, 1.6, 4.6, 5.2, "Asymmetric Recall Investigation", ACCENT_AMBER)
+    add_card(s7, 7.9, 1.6, 4.6, 5.2, "Directional Asymmetry & Market Bias", ACCENT_AMBER)
     box = s7.shapes.add_textbox(Inches(8.15), Inches(2.2), Inches(4.1), Inches(4.3))
     tf = box.text_frame
     tf.word_wrap = True
     asym_items = [
-        "Critical Discovery: High overall Directional Accuracy (54%) masked severe class asymmetry.",
+        "Pronounced Asymmetry: Model is substantially better at upward moves than downward moves.",
         "UP Recall: 78.7% (Model successfully captures upward bullish momentum).",
         "DOWN Recall: 32.1% (Model frequently under-predicts market pullbacks and sell-offs).",
-        "Macro Cause: The 2024-2026 Indian equity market exhibited strong secular bull bias, biasing gradient descent toward positive return forecasts.",
-        "Scientific Conclusion: The model has NOT yet mastered market downturns. Claiming unqualified superiority would be statistically dishonest."
+        "Macro Cause: The 2024-2026 Indian equity secular bull trend biased gradient updates toward positive return forecasts.",
+        "Honest Assessment: Model has not mastered market drawdowns; claiming superiority would be scientifically inaccurate."
     ]
     for it in asym_items:
         p = tf.add_paragraph() if tf.paragraphs[0].text else tf.paragraphs[0]
@@ -674,7 +674,7 @@ def create_deck():
     tf = box.text_frame
     tf.word_wrap = True
     concl_items = [
-        "1. Solved Non-Stationarity: Built an audited, 7-feature stationary return pipeline with zero data leakage.",
+        "1. Relative Stationary Formulation: Eliminated price scale dependence and trivial lag-1 memorization via 7 relative features.",
         "2. Production vs Research Dual Architecture: Protected production V1 while operationalizing V2 GRU in live shadow mode.",
         "3. Scientific Integrity First: Refused to claim false victory on inspected holdouts; established genuine prospective evaluation protocol.",
         "4. Industry-Standard Engineering: 196 automated tests, Docker packaging, FastAPI backend, React dashboard with live trajectory charts.",
@@ -696,3 +696,4 @@ def create_deck():
 
 if __name__ == "__main__":
     create_deck()
+

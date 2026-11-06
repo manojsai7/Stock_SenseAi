@@ -13,7 +13,7 @@
 StockSense AI is an end-to-end financial econometrics and deep learning forecasting system designed to predict the next official trading session closing price ($t+1$) and simple return for large-cap Indian equities, specifically benchmarked on `RELIANCE.NS`. 
 
 The system directly confronts the core failure modes of contemporary financial machine learning:
-1. **The Price-Level Memorization Trap:** Direct regression on raw asset prices learns trivial $\hat{P}_{t+1} \approx P_t$ lag-1 persistence, presenting high $R^2$ while yielding zero real-world predictive edge. StockSense AI solves this through a strictly stationary 7-feature relative return formulation.
+1. **The Price-Level Memorization Trap:** Direct regression on raw asset prices learns trivial $\hat{P}_{t+1} \approx P_t$ lag-1 persistence, presenting high $R^2$ while yielding zero real-world predictive edge. StockSense AI addresses this using relative stationary features (returns, ratios, normalized volatility) to eliminate price-level scale dependence and reduce non-stationarity.
 2. **Lookahead & Data Contamination:** Shuffled cross-validation creates temporal leakage. StockSense AI enforces expanding chronological cross-validation with sequence purging and post-validation embargoes.
 3. **Data Quality & False Claims:** Historical datasets frequently contain zero-volume exchange holidays, provider outages, and unfinished candles. StockSense AI conducted a forensic data audit, isolating 8 contaminated observations and cryptographically locking the clean 1,233-session master dataset (`dataset_v2_audited.csv`).
 4. **Premature Promotion & Inspected Holdouts:** Because historical data (May–October 2026) was previously explored during model development, the confirmatory evaluation gate was declared **NO-GO**. Rather than fabricating a test set, the system operationalizes a dual-engine architecture: the verified **Production V1** (1D-CNN + BiLSTM) serves live traffic, while the **Research Challenger V2** (GRU, EXP-06) serves in real-time **shadow evaluation mode**, accumulating an immutable, prospective forward-testing audit trail (`prospective_predictions_log.csv`).
@@ -125,12 +125,14 @@ Across the three expanding chronological folds:
 | 4 | CNN-LSTM (EXP-05) | ₹13.42 | ₹12.82 | 53.0% | +0.0825 |
 | 5 | Linear Ridge | ₹14.18 | ₹13.65 | 50.5% | +0.0120 |
 
-### 7.2 The Asymmetric Recall Discovery
-While GRU achieved the lowest overall MAE and positive MCC (+0.1214), granular confusion matrix analysis revealed a vital empirical phenomenon:
-- **UP Recall:** **78.7%** (High sensitivity to bullish momentum)
-- **DOWN Recall:** **32.1%** (Severe weakness during market corrections)
+> **Critical Evaluation Caveat:** The GRU's cross-fold mean MAE is ₹13.29 versus ₹13.34 for naive persistence—an exploratory difference of only **₹0.05 / share** (0.37% relative reduction). While the Fold 3 Directional MCC of **+0.1214** is encouraging as an exploratory signal, these development results do **NOT** establish reliable statistical superiority over naive persistence. Firm claims of superiority cannot be made until prospective evaluation is completed.
 
-*Root Cause:* The 2024–2026 Indian equity market exhibited a prolonged secular bull market, imparting upward gradient drift. The model learned to default to positive return forecasts, performing well on up-days while missing sudden pullbacks. Rather than concealing this asymmetry, StockSense AI highlights it as a primary limitation requiring asymmetric loss functions in future work.
+### 7.2 Transparent Directional Bias & Asymmetry Analysis
+While GRU achieved the lowest overall MAE and positive MCC (+0.1214), granular confusion matrix analysis revealed pronounced directional asymmetry:
+- **UP Recall:** **78.7%** (Substantially better at capturing upward movements)
+- **DOWN Recall:** **32.1%** (Severe weakness during downward corrections and pullbacks)
+
+*Root Cause:* The 2024–2026 Indian equity market exhibited a prolonged secular bull trend, imparting upward gradient drift during model optimization. The model learned to default to positive return forecasts, performing well on up-days while missing sudden pullbacks. Rather than concealing this asymmetry or claiming comprehensive market mastery, StockSense AI transparently documents that the model has not mastered downward regimes, and highlights this as a priority for asymmetric loss functions in future research.
 
 ---
 
@@ -191,7 +193,7 @@ Logs are committed to `research/EXP-06/evaluation/prospective_predictions_log.cs
   - `tests/test_v2_serving_and_prospective.py`: 11 tests covering shadow prediction, prospective logging, symbol isolation, and outcome resolution.
   - `tests/test_exp06_readiness.py`: 15 tests covering audited dataset integrity, SHA-256 fingerprint verification, and line ending normalization.
   - `tests/test_research_v2_registry.py`: 16 tests covering registry schema, tensor loading, and scaler isolation.
-  - 154 core tests covering stationary pipeline, ADF tests, security headers, and API endpoints.
+  - 154 core tests covering stationary pipeline, data verification, security headers, and API endpoints.
 - **Frontend Build Quality:**
   - Vite production build transformed 3,185 modules cleanly with 0 errors in 34.25s.
 

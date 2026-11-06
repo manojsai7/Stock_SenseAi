@@ -49,8 +49,8 @@ Open Google Chrome or Firefox and navigate to: `http://localhost:5173`
 ### Step 1: Explain the Core Problem & Stationarity (1:30 – 2:30)
 - **Action:** Point to the main header and ticker selector (`RELIANCE.NS`).
 - **Presenter Dialogue:**
-  > *"Good morning, esteemed committee members. Most financial machine learning projects commit a foundational error: they train deep networks directly on raw stock prices. Because raw prices have unit roots, the models simply learn lag-1 persistence—repeating yesterday's price and creating an illusion of high accuracy.*  
-  > *In StockSense AI, our network does not predict price. It predicts the 1-step ahead stationary return $r_{t+1} = \frac{P_{t+1}-P_t}{P_t}$ over a 30-session lookback of 7 causal relative features, passing Augmented Dickey-Fuller stationarity tests with $p < 0.001$. Closing prices are deterministically reconstructed via $P_{t+1} = P_t \times (1 + r_{t+1})$."*
+  > *"Good morning, esteemed committee members. Most financial machine learning projects commit a foundational error: they train deep networks directly on raw stock prices. Because raw price series suffer from non-stationarity and scale dependence, models simply learn lag-1 persistence—repeating yesterday's price and creating an illusion of high accuracy.*  
+  > *In StockSense AI, our network does not predict raw price levels. It uses relative stationary features (returns, ratios, normalized ATR and OBV) over a 30-session lookback to predict the 1-step ahead stationary return $r_{t+1} = \frac{P_{t+1}-P_t}{P_t}$. Closing prices are deterministically reconstructed via $P_{t+1} = P_t \times (1 + r_{t+1})$."*
 
 ### Step 2: Show Production V1 Inference (2:30 – 3:30)
 - **Action:** Click the primary "Generate Next-Day Prediction" button on the production card.
@@ -87,8 +87,10 @@ Open Google Chrome or Firefox and navigate to: `http://localhost:5173`
 - **Action:** Open `research/EXP-06/configs/exp06_chronological_splits.json` or Slide 8 in the deck.
 - **Presenter Dialogue:**
   > *"An examiner might ask: 'Why isn't GRU V2 promoted to production today if it achieved ₹13.29 MAE vs ₹13.34 for Naive?'*  
-  > *The answer highlights our commitment to scientific integrity: our historical test window was previously inspected during early research sprints. Following our rigorous data audit (which isolated 8 contaminated holiday and vendor rows), only 12 historical sessions remained genuinely uninspected—far below our preregistered threshold of 60 sessions.*  
-  > *Rather than cheating and claiming a false victory, we declared NO-GO for historical confirmatory evaluation and established an immutable prospective evaluation stream in `prospective_predictions_log.csv`.*  
+  > *First, we must be completely candid: that ₹0.05 difference across folds is only an exploratory finding, and a reported MCC of +0.1214 does not establish reliable statistical superiority over naive persistence.*  
+  > *Second, our confusion matrix revealed that the model is substantially better at identifying upward movements (78.7% UP recall) than downward movements (32.1% DOWN recall), biased by the 2024–2026 secular bull market.*  
+  > *Third, following our rigorous data audit (which isolated 8 contaminated holiday and vendor rows), only 12 historical sessions remained genuinely uninspected prior to October—far below our preregistered threshold of 60 sessions.*  
+  > *Rather than cheating and claiming a false victory on inspected data, we declared NO-GO for historical confirmatory evaluation and established an immutable prospective evaluation stream in `prospective_predictions_log.csv`.*  
   > *Only after 60–100 live sessions are prospectively scored will a formal promotion decision be made."*
 
 ---
@@ -105,7 +107,7 @@ pytest -q
   > *• Challenger shadow prediction and symbol whitelist isolation (`test_v2_serving_and_prospective.py`).*  
   > *• Audited dataset hash validation and LF line-ending normalization (`test_exp06_readiness.py`).*  
   > *• Registry schema validation and tensor contracts (`test_research_v2_registry.py`).*  
-  > *• Core stationary transforms, ADF stationarity proofs, and production regression coverage.*  
+  > *• Core stationary transforms, sequence pipeline invariants, and production regression coverage.*  
   > *All 196 tests pass cleanly with 100% green status."*
 
 ---
@@ -122,3 +124,4 @@ Refer to [`research/VIVA_QUESTION_BANK.md`](file:///d:/Downloads/Stock_SenseAi/r
 ---
 
 *End of Demonstration Walkthrough Script • StockSense AI Capstone Defense Ready*
+
