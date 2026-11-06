@@ -144,3 +144,37 @@ def test_experiment_lock_fails_on_candidate_status():
             "research/EXP-06/data/audited_original_v1/candidate.csv"
         )
 
+
+def test_verified_candidate_dataset_v2_and_manifest():
+    manifest_path = Path("research/EXP-06/data/dataset_manifest_v2.json")
+    assert manifest_path.is_file()
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    csv_path = Path("research/EXP-06/data/RELIANCE_NS_verified_v2.csv")
+    parquet_path = Path("research/EXP-06/data/RELIANCE_NS_verified_v2.parquet")
+    assert csv_path.is_file()
+    assert parquet_path.is_file()
+    assert manifest["dataset_sha256"] == fingerprint(csv_path)
+    assert manifest["parquet_sha256"] == fingerprint(parquet_path)
+    assert manifest["number_of_records"] == 1234
+    assert manifest["quarantined_records"] == 7
+    assert manifest["feature_parity"]["passed"] is True
+    assert manifest["price_adjustment_policy"] == "consistently_adjusted_ohlcv"
+    assert any("2025-03-18" in item for item in manifest.get("corporate_actions_verified", []))
+
+
+def test_models_storage_v2_bundle_and_manifest():
+    v2_dir = Path("models_storage_v2/RELIANCE_NS")
+    assert v2_dir.is_dir()
+    manifest_path = v2_dir / "manifest.json"
+    assert manifest_path.is_file()
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    for filename, file_info in manifest["files"].items():
+        file_path = v2_dir / filename
+        assert file_path.is_file()
+        assert fingerprint(file_path) == file_info["sha256"]
+    metadata = json.loads((v2_dir / "metadata.json").read_text(encoding="utf-8"))
+    assert metadata["candidate"]["architecture"] == "gru"
+    assert metadata["status"] == "experimental-v2-challenger"
+    assert metadata["fold"] == 3
+
+

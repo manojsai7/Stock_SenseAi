@@ -154,3 +154,4 @@ Quarantined Rows:            8
 Candidate Rows:          1,233 (Accepted sessions: 2021-10-07 to 2026-10-06)
 Feature Parity:          PASSED (Max Error = 0.0 across all 7 features + target)
 ```
+

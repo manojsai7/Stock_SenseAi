@@ -1,0 +1,37 @@
+{
+  "model_id": "stationary-return-v2",
+  "symbol": "RELIANCE.NS",
+  "feature_version": "stationary-seven-v1",
+  "features": [
+    "return_1d",
+    "return_5d",
+    "return_20d",
+    "intraday_return",
+    "hl_range_ratio",
+    "close_to_ma20",
+    "volume_ratio"
+  ],
+  "input_shape": [
+    30,
+    7
+  ],
+  "files": {
+    "model": {
+      "path": "model.keras",
+      "sha256": "baa7acee89a01936af736b022bc8fab61136c71e9763328e2362d581868f3307"
+    },
+    "feature_scaler": {
+      "path": "feature_scaler.pkl",
+      "sha256": "c60b8113397b5e5a64106a52ec36cda1548f61b2130e56470775323b9aedb466"
+    },
+    "target_scaler": {
+      "path": "target_scaler.pkl",
+      "sha256": "33d1427cd974820f3c98de9078f50a75ea4f8dcd0cde40c2cb51cf8c4e0efe99"
+    },
+    "metadata": {
+      "path": "model_metadata.json",
+      "sha256": "5cc9043ecaa14481e00f4f9301a4d2e6efc23b9d18c8e366debbe8151160e023"
+    }
+  },
+  "status": "experimental-fold-only"
+}

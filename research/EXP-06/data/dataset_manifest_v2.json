@@ -1,0 +1,56 @@
+{
+  "build_timestamp": "2026-11-06T14:54:24.679707+00:00",
+  "preprocessing_version": "stationary-seven-v1",
+  "preprocessing_sha256": "206e19985df360f5cfbb76b612f462ed660c36f48ee0cbf2d0a4e448a79001ec",
+  "feature_names": [
+    "return_1d",
+    "return_5d",
+    "return_20d",
+    "intraday_return",
+    "hl_range_ratio",
+    "close_to_ma20",
+    "volume_ratio"
+  ],
+  "feature_definition_source": "ml/features/stationary.py:compute_stationary_features",
+  "feature_definition_sha256": "1eed7a23e5c9e0c0a18238c053722d0dccda6b48687cb1d6c10207d618fcad15",
+  "target_definition": "next_session_close / input_end_close - 1",
+  "schema_version": 2,
+  "symbol": "RELIANCE.NS",
+  "status": "candidate_audited",
+  "audit_verdict": "candidate_v2_reconstructed_20250318",
+  "dataset_sha256": "59bd1a7a58e41bf204245c22d179c1d622eb7fe8a78ba4922890a285cf66e018",
+  "parquet_sha256": "2af59dec82c1a9576b92046b12a82cd4b2ea555bc2843aa53229b2e9ba09fd22",
+  "number_of_records": 1234,
+  "first_accepted_session": "2021-10-07",
+  "last_accepted_session": "2026-10-06",
+  "quarantined_records": 7,
+  "quarantine_reasons": {
+    "zero_volume": 6,
+    "latest_bar_finalization_unconfirmed": 1
+  },
+  "price_adjustment_policy": "consistently_adjusted_ohlcv",
+  "corporate_actions_verified": [
+    "2024-10-28 1:1 Bonus Issue (halved prices, doubled volumes prior to ex-date)",
+    "2025-03-18 Reconstructed from official NSE Bhavcopy sec_bhavdata_full_18032025.csv (adjustment factor 1.0000)"
+  ],
+  "data_source": "Yahoo Finance (Historical Daily OHLCV) + NSE Archives Bhavcopy",
+  "feature_parity": {
+    "passed": true,
+    "compared_rows": 1213,
+    "dates_match": true,
+    "max_absolute_error": {
+      "return_1d": 0.0,
+      "return_5d": 0.0,
+      "return_20d": 0.0,
+      "intraday_return": 0.0,
+      "hl_range_ratio": 0.0,
+      "close_to_ma20": 0.0,
+      "volume_ratio": 0.0,
+      "target_return": 0.0
+    }
+  },
+  "blockers": [
+    "insufficient_untouched_holdout_sessions",
+    "unbound_5yr_exchange_session_calendar"
+  ]
+}

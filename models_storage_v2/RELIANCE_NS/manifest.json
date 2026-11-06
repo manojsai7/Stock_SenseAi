@@ -1,0 +1,53 @@
+{
+  "model_id": "stocksense-v2-gru-challenger",
+  "symbol": "RELIANCE.NS",
+  "architecture": "GRU",
+  "status": "experimental-shadow-candidate",
+  "feature_version": "stationary-seven-v1",
+  "features": [
+    "return_1d",
+    "return_5d",
+    "return_20d",
+    "intraday_return",
+    "hl_range_ratio",
+    "close_to_ma20",
+    "volume_ratio"
+  ],
+  "input_shape": [
+    1,
+    30,
+    7
+  ],
+  "training_cutoff": "2025-12-11",
+  "model_checksum": "6f44d5782514af8223eb65564da7bef23ed85fbd049b79b2dc43ea1a568bbf45",
+  "files": {
+    "model.keras": {
+      "path": "model.keras",
+      "sha256": "6f44d5782514af8223eb65564da7bef23ed85fbd049b79b2dc43ea1a568bbf45"
+    },
+    "feature_scaler.pkl": {
+      "path": "feature_scaler.pkl",
+      "sha256": "06633dc7ff4e682ab11d83977555e805de8d9f8179aeb24b85b66aab7e6fadaa"
+    },
+    "target_scaler.pkl": {
+      "path": "target_scaler.pkl",
+      "sha256": "9d04f64937d3b99debccb2fc4926435f0a1bc02fd2d4be3534665511c6ae8533"
+    },
+    "history.csv": {
+      "path": "history.csv",
+      "sha256": "201c98802b3f9ad6f2546693b2caaf252971d824c0b92ef58a234d408602443a"
+    },
+    "predictions.csv": {
+      "path": "predictions.csv",
+      "sha256": "6bc337f6685360cfc503076bc35f2541324d128bb9db90c2903616e59d1c3d54"
+    },
+    "model_metadata.json": {
+      "path": "model_metadata.json",
+      "sha256": "3cb5723fdd1b52ed11bd63b65ab1d89b0db29e7047fadd912ead68cd23537461"
+    },
+    "MODEL_CARD.md": {
+      "path": "MODEL_CARD.md",
+      "sha256": "6fbf1fd03734a811aca40ec73042eac0a522d1432656690dad6972b10c43f974"
+    }
+  }
+}

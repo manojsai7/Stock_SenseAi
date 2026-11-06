@@ -1,0 +1,110 @@
+{
+  "experiment_id": "EXP-06-EXPLORATORY",
+  "fold": 2,
+  "candidate": {
+    "architecture": "lstm",
+    "loss": "mse"
+  },
+  "seed": 42,
+  "dataset_sha256": "59bd1a7a58e41bf204245c22d179c1d622eb7fe8a78ba4922890a285cf66e018",
+  "feature_version": "stationary-seven-v1",
+  "features": [
+    "return_1d",
+    "return_5d",
+    "return_20d",
+    "intraday_return",
+    "hl_range_ratio",
+    "close_to_ma20",
+    "volume_ratio"
+  ],
+  "feature_code_sha256": "1eed7a23e5c9e0c0a18238c053722d0dccda6b48687cb1d6c10207d618fcad15",
+  "input_shape": [
+    30,
+    7
+  ],
+  "target": "next_day_simple_return",
+  "training_duration_seconds": 18.162031699999716,
+  "parameter_count": 5153,
+  "environment": {
+    "python": "3.13.2",
+    "tensorflow": "2.20.0",
+    "keras": "3.11.2",
+    "numpy": "2.2.4"
+  },
+  "metrics": {
+    "n": 100,
+    "price_mae": 16.561758345182387,
+    "price_rmse": 21.878742513408117,
+    "mape_pct": 1.1728017544050768,
+    "return_mae_bps": 116.67017874404853,
+    "directional_accuracy": 0.49,
+    "balanced_accuracy": 0.34069830878341517,
+    "mcc": 0.028388753945913694,
+    "class_order": [
+      "DOWN",
+      "FLAT",
+      "UP"
+    ],
+    "precision": [
+      0.5555555555555556,
+      0.0,
+      0.47560975609756095
+    ],
+    "recall": [
+      0.19230769230769232,
+      0.0,
+      0.8297872340425532
+    ],
+    "support": [
+      52,
+      1,
+      47
+    ],
+    "confusion_matrix": [
+      [
+        10,
+        0,
+        42
+      ],
+      [
+        0,
+        0,
+        1
+      ],
+      [
+        8,
+        0,
+        39
+      ]
+    ],
+    "actual_return_std": 0.015419342004503105,
+    "predicted_return_std": 0.000883308505380433,
+    "volatility_ratio": 0.05728574572912834
+  },
+  "training_cutoff": "2025-07-17",
+  "validation_cutoff": "2025-12-11",
+  "test_cutoff": "2026-05-13",
+  "partition_dates": {
+    "train": {
+      "first": "2021-12-21",
+      "last": "2025-07-17",
+      "n": 884
+    },
+    "validation": {
+      "first": "2025-07-18",
+      "last": "2025-12-11",
+      "n": 100
+    },
+    "test": {
+      "first": "2025-12-12",
+      "last": "2026-05-13",
+      "n": 100
+    }
+  },
+  "holdout_evaluated": false,
+  "status": "experimental-fold-only",
+  "calibration": {
+    "threshold": 0.0,
+    "method": "uncalibrated"
+  }
+}

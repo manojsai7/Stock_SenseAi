@@ -97,3 +97,4 @@ When candidate data is partitioned under the standard 3-fold chronological devel
 - **Features:** Seven stationary features in production order (`return_1d`, `return_5d`, `return_20d`, `intraday_return`, `hl_range_ratio`, `close_to_ma20`, `volume_ratio`).
 - **Target:** Simple one-step forward return: $\frac{\text{Close}_{t+1}}{\text{Close}_t} - 1$.
 - **Random Seeds:** 42 and 123 for all neural stochastic weight initializations.
+

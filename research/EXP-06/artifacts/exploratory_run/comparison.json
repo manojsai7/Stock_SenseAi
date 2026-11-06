@@ -1,0 +1,1334 @@
+[
+  {
+    "fold": 1,
+    "model": "naive",
+    "metrics": {
+      "n": 100,
+      "price_mae": 10.817991943359376,
+      "price_rmse": 14.766199717730517,
+      "mape_pct": 0.7545612680986941,
+      "return_mae_bps": 75.59079912739058,
+      "directional_accuracy": 0.0,
+      "balanced_accuracy": 0.0,
+      "mcc": 0.0,
+      "class_order": [
+        "DOWN",
+        "FLAT",
+        "UP"
+      ],
+      "precision": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "recall": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "support": [
+        49.0,
+        0.0,
+        51.0
+      ],
+      "confusion_matrix": [
+        [
+          0,
+          49,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          51,
+          0
+        ]
+      ],
+      "actual_return_std": 0.01029647709501747,
+      "predicted_return_std": 0.0,
+      "volatility_ratio": 0.0
+    }
+  },
+  {
+    "fold": 1,
+    "model": "ridge",
+    "metrics": {
+      "n": 100,
+      "price_mae": 11.476982647201064,
+      "price_rmse": 14.821181761308189,
+      "mape_pct": 0.8004330642665541,
+      "return_mae_bps": 80.14244382609567,
+      "directional_accuracy": 0.52,
+      "balanced_accuracy": 0.5206082432973189,
+      "mcc": 0.041282618184048686,
+      "class_order": [
+        "DOWN",
+        "FLAT",
+        "UP"
+      ],
+      "precision": [
+        0.5094339622641509,
+        0.0,
+        0.5319148936170213
+      ],
+      "recall": [
+        0.5510204081632653,
+        0.0,
+        0.49019607843137253
+      ],
+      "support": [
+        49,
+        0,
+        51
+      ],
+      "confusion_matrix": [
+        [
+          27,
+          0,
+          22
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          26,
+          0,
+          25
+        ]
+      ],
+      "actual_return_std": 0.01029647709501747,
+      "predicted_return_std": 0.004081135852311126,
+      "volatility_ratio": 0.39636234943755794
+    }
+  },
+  {
+    "fold": 1,
+    "model": "lstm",
+    "candidate": 0,
+    "seed": 42,
+    "metrics": {
+      "n": 100,
+      "price_mae": 10.834616973264561,
+      "price_rmse": 14.839575729988844,
+      "mape_pct": 0.7558444794052844,
+      "return_mae_bps": 75.72109473423032,
+      "directional_accuracy": 0.5,
+      "balanced_accuracy": 0.4977991196478591,
+      "mcc": -0.004511410396901652,
+      "class_order": [
+        "DOWN",
+        "FLAT",
+        "UP"
+      ],
+      "precision": [
+        0.48717948717948717,
+        0.0,
+        0.5081967213114754
+      ],
+      "recall": [
+        0.3877551020408163,
+        0.0,
+        0.6078431372549019
+      ],
+      "support": [
+        49,
+        0,
+        51
+      ],
+      "confusion_matrix": [
+        [
+          19,
+          0,
+          30
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          20,
+          0,
+          31
+        ]
+      ],
+      "actual_return_std": 0.01029647709501747,
+      "predicted_return_std": 0.0007960837203208031,
+      "volatility_ratio": 0.07731612598895918
+    }
+  },
+  {
+    "fold": 1,
+    "model": "lstm",
+    "candidate": 0,
+    "seed": 123,
+    "metrics": {
+      "n": 100,
+      "price_mae": 10.79449867151726,
+      "price_rmse": 14.7929630432497,
+      "mape_pct": 0.7533208887551353,
+      "return_mae_bps": 75.47795119527416,
+      "directional_accuracy": 0.54,
+      "balanced_accuracy": 0.5406162464985994,
+      "mcc": 0.08136283001322217,
+      "class_order": [
+        "DOWN",
+        "FLAT",
+        "UP"
+      ],
+      "precision": [
+        0.5283018867924528,
+        0.0,
+        0.5531914893617021
+      ],
+      "recall": [
+        0.5714285714285714,
+        0.0,
+        0.5098039215686274
+      ],
+      "support": [
+        49,
+        0,
+        51
+      ],
+      "confusion_matrix": [
+        [
+          28,
+          0,
+          21
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          25,
+          0,
+          26
+        ]
+      ],
+      "actual_return_std": 0.01029647709501747,
+      "predicted_return_std": 0.00086608860705175,
+      "volatility_ratio": 0.08411504236442732
+    }
+  },
+  {
+    "fold": 1,
+    "model": "gru",
+    "candidate": 1,
+    "seed": 42,
+    "metrics": {
+      "n": 100,
+      "price_mae": 10.833068982111957,
+      "price_rmse": 14.761263757243334,
+      "mape_pct": 0.7561085759479952,
+      "return_mae_bps": 75.73059768327573,
+      "directional_accuracy": 0.53,
+      "balanced_accuracy": 0.5300120048019208,
+      "mcc": 0.060012003601200424,
+      "class_order": [
+        "DOWN",
+        "FLAT",
+        "UP"
+      ],
+      "precision": [
+        0.52,
+        0.0,
+        0.54
+      ],
+      "recall": [
+        0.5306122448979592,
+        0.0,
+        0.5294117647058824
+      ],
+      "support": [
+        49,
+        0,
+        51
+      ],
+      "confusion_matrix": [
+        [
+          26,
+          0,
+          23
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          24,
+          0,
+          27
+        ]
+      ],
+      "actual_return_std": 0.01029647709501747,
+      "predicted_return_std": 0.0012610120636484586,
+      "volatility_ratio": 0.12247024414386065
+    }
+  },
+  {
+    "fold": 1,
+    "model": "gru",
+    "candidate": 1,
+    "seed": 123,
+    "metrics": {
+      "n": 100,
+      "price_mae": 10.729202129566886,
+      "price_rmse": 14.76793054401934,
+      "mape_pct": 0.7482004143395508,
+      "return_mae_bps": 74.96268010084142,
+      "directional_accuracy": 0.47,
+      "balanced_accuracy": 0.47198879551820727,
+      "mcc": -0.05716619504750294,
+      "class_order": [
+        "DOWN",
+        "FLAT",
+        "UP"
+      ],
+      "precision": [
+        0.4666666666666667,
+        0.0,
+        0.475
+      ],
+      "recall": [
+        0.5714285714285714,
+        0.0,
+        0.37254901960784315
+      ],
+      "support": [
+        49,
+        0,
+        51
+      ],
+      "confusion_matrix": [
+        [
+          28,
+          0,
+          21
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          32,
+          0,
+          19
+        ]
+      ],
+      "actual_return_std": 0.01029647709501747,
+      "predicted_return_std": 0.0011850307351150178,
+      "volatility_ratio": 0.11509089217402928
+    }
+  },
+  {
+    "fold": 1,
+    "model": "cnn_lstm",
+    "candidate": 2,
+    "seed": 42,
+    "metrics": {
+      "n": 100,
+      "price_mae": 10.858109786303494,
+      "price_rmse": 14.84112601187438,
+      "mape_pct": 0.757751425660653,
+      "return_mae_bps": 75.88154258909036,
+      "directional_accuracy": 0.49,
+      "balanced_accuracy": 0.4883953581432573,
+      "mcc": -0.02350748802356865,
+      "class_order": [
+        "DOWN",
+        "FLAT",
+        "UP"
+      ],
+      "precision": [
+        0.47619047619047616,
+        0.0,
+        0.5
+      ],
+      "recall": [
+        0.40816326530612246,
+        0.0,
+        0.5686274509803921
+      ],
+      "support": [
+        49,
+        0,
+        51
+      ],
+      "confusion_matrix": [
+        [
+          20,
+          0,
+          29
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          22,
+          0,
+          29
+        ]
+      ],
+      "actual_return_std": 0.01029647709501747,
+      "predicted_return_std": 0.0007721939306271587,
+      "volatility_ratio": 0.07499593535742707
+    }
+  },
+  {
+    "fold": 1,
+    "model": "cnn_lstm",
+    "candidate": 2,
+    "seed": 123,
+    "metrics": {
+      "n": 100,
+      "price_mae": 10.941986180167428,
+      "price_rmse": 14.838112584187273,
+      "mape_pct": 0.7630724420533136,
+      "return_mae_bps": 76.3887924967185,
+      "directional_accuracy": 0.44,
+      "balanced_accuracy": 0.4345738295318127,
+      "mcc": -0.15543733585915515,
+      "class_order": [
+        "DOWN",
+        "FLAT",
+        "UP"
+      ],
+      "precision": [
+        0.34782608695652173,
+        0.0,
+        0.4675324675324675
+      ],
+      "recall": [
+        0.16326530612244897,
+        0.0,
+        0.7058823529411765
+      ],
+      "support": [
+        49,
+        0,
+        51
+      ],
+      "confusion_matrix": [
+        [
+          8,
+          0,
+          41
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          15,
+          0,
+          36
+        ]
+      ],
+      "actual_return_std": 0.01029647709501747,
+      "predicted_return_std": 0.0008355745435052576,
+      "volatility_ratio": 0.08115149830320094
+    }
+  },
+  {
+    "fold": 2,
+    "model": "naive",
+    "metrics": {
+      "n": 100,
+      "price_mae": 16.529992675781244,
+      "price_rmse": 21.928767069705454,
+      "mape_pct": 1.170314918211129,
+      "return_mae_bps": 116.52949581572997,
+      "directional_accuracy": 0.01,
+      "balanced_accuracy": 0.3333333333333333,
+      "mcc": 0.0,
+      "class_order": [
+        "DOWN",
+        "FLAT",
+        "UP"
+      ],
+      "precision": [
+        0.0,
+        0.01,
+        0.0
+      ],
+      "recall": [
+        0.0,
+        1.0,
+        0.0
+      ],
+      "support": [
+        52,
+        1,
+        47
+      ],
+      "confusion_matrix": [
+        [
+          0,
+          52,
+          0
+        ],
+        [
+          0,
+          1,
+          0
+        ],
+        [
+          0,
+          47,
+          0
+        ]
+      ],
+      "actual_return_std": 0.015419342004503105,
+      "predicted_return_std": 0.0,
+      "volatility_ratio": 0.0
+    }
+  },
+  {
+    "fold": 2,
+    "model": "ridge",
+    "metrics": {
+      "n": 100,
+      "price_mae": 17.450994586135778,
+      "price_rmse": 22.59029851138738,
+      "mape_pct": 1.2314593050437814,
+      "return_mae_bps": 122.64140498632422,
+      "directional_accuracy": 0.54,
+      "balanced_accuracy": 0.3625204582651391,
+      "mcc": 0.08554398626314882,
+      "class_order": [
+        "DOWN",
+        "FLAT",
+        "UP"
+      ],
+      "precision": [
+        0.5555555555555556,
+        0.0,
+        0.5217391304347826
+      ],
+      "recall": [
+        0.5769230769230769,
+        0.0,
+        0.5106382978723404
+      ],
+      "support": [
+        52,
+        1,
+        47
+      ],
+      "confusion_matrix": [
+        [
+          30,
+          0,
+          22
+        ],
+        [
+          1,
+          0,
+          0
+        ],
+        [
+          23,
+          0,
+          24
+        ]
+      ],
+      "actual_return_std": 0.015419342004503105,
+      "predicted_return_std": 0.006263113892210779,
+      "volatility_ratio": 0.40618554866878775
+    }
+  },
+  {
+    "fold": 2,
+    "model": "lstm",
+    "candidate": 0,
+    "seed": 42,
+    "metrics": {
+      "n": 100,
+      "price_mae": 16.561758345182387,
+      "price_rmse": 21.878742513408117,
+      "mape_pct": 1.1728017544050768,
+      "return_mae_bps": 116.67017874404853,
+      "directional_accuracy": 0.49,
+      "balanced_accuracy": 0.34069830878341517,
+      "mcc": 0.028388753945913694,
+      "class_order": [
+        "DOWN",
+        "FLAT",
+        "UP"
+      ],
+      "precision": [
+        0.5555555555555556,
+        0.0,
+        0.47560975609756095
+      ],
+      "recall": [
+        0.19230769230769232,
+        0.0,
+        0.8297872340425532
+      ],
+      "support": [
+        52,
+        1,
+        47
+      ],
+      "confusion_matrix": [
+        [
+          10,
+          0,
+          42
+        ],
+        [
+          0,
+          0,
+          1
+        ],
+        [
+          8,
+          0,
+          39
+        ]
+      ],
+      "actual_return_std": 0.015419342004503105,
+      "predicted_return_std": 0.000883308505380433,
+      "volatility_ratio": 0.05728574572912834
+    }
+  },
+  {
+    "fold": 2,
+    "model": "lstm",
+    "candidate": 0,
+    "seed": 123,
+    "metrics": {
+      "n": 100,
+      "price_mae": 16.719539395242087,
+      "price_rmse": 22.04286210271,
+      "mape_pct": 1.1843487907034471,
+      "return_mae_bps": 117.85269479559507,
+      "directional_accuracy": 0.5,
+      "balanced_accuracy": 0.34642662302236765,
+      "mcc": 0.045476997462459576,
+      "class_order": [
+        "DOWN",
+        "FLAT",
+        "UP"
+      ],
+      "precision": [
+        0.5454545454545454,
+        0.0,
+        0.48717948717948717
+      ],
+      "recall": [
+        0.23076923076923078,
+        0.0,
+        0.8085106382978723
+      ],
+      "support": [
+        52,
+        1,
+        47
+      ],
+      "confusion_matrix": [
+        [
+          12,
+          0,
+          40
+        ],
+        [
+          1,
+          0,
+          0
+        ],
+        [
+          9,
+          0,
+          38
+        ]
+      ],
+      "actual_return_std": 0.015419342004503105,
+      "predicted_return_std": 0.0008547917237019747,
+      "volatility_ratio": 0.05543632947841348
+    }
+  },
+  {
+    "fold": 2,
+    "model": "gru",
+    "candidate": 1,
+    "seed": 42,
+    "metrics": {
+      "n": 100,
+      "price_mae": 16.20331734913755,
+      "price_rmse": 21.47884445890752,
+      "mape_pct": 1.1480070856897446,
+      "return_mae_bps": 114.1667874316513,
+      "directional_accuracy": 0.53,
+      "balanced_accuracy": 0.36497545008183313,
+      "mcc": 0.10624099962475497,
+      "class_order": [
+        "DOWN",
+        "FLAT",
+        "UP"
+      ],
+      "precision": [
+        0.6153846153846154,
+        0.0,
+        0.5
+      ],
+      "recall": [
+        0.3076923076923077,
+        0.0,
+        0.7872340425531915
+      ],
+      "support": [
+        52,
+        1,
+        47
+      ],
+      "confusion_matrix": [
+        [
+          16,
+          0,
+          36
+        ],
+        [
+          0,
+          0,
+          1
+        ],
+        [
+          10,
+          0,
+          37
+        ]
+      ],
+      "actual_return_std": 0.015419342004503105,
+      "predicted_return_std": 0.0015844062373576038,
+      "volatility_ratio": 0.10275446493727745
+    }
+  },
+  {
+    "fold": 2,
+    "model": "gru",
+    "candidate": 1,
+    "seed": 123,
+    "metrics": {
+      "n": 100,
+      "price_mae": 16.565980269228433,
+      "price_rmse": 21.9594645423945,
+      "mape_pct": 1.1730912043748323,
+      "return_mae_bps": 116.7713937272963,
+      "directional_accuracy": 0.51,
+      "balanced_accuracy": 0.348063284233497,
+      "mcc": 0.04544417961539935,
+      "class_order": [
+        "DOWN",
+        "FLAT",
+        "UP"
+      ],
+      "precision": [
+        0.5555555555555556,
+        0.0,
+        0.484375
+      ],
+      "recall": [
+        0.38461538461538464,
+        0.0,
+        0.6595744680851063
+      ],
+      "support": [
+        52,
+        1,
+        47
+      ],
+      "confusion_matrix": [
+        [
+          20,
+          0,
+          32
+        ],
+        [
+          0,
+          0,
+          1
+        ],
+        [
+          16,
+          0,
+          31
+        ]
+      ],
+      "actual_return_std": 0.015419342004503105,
+      "predicted_return_std": 0.0009434751417312558,
+      "volatility_ratio": 0.061187769326065976
+    }
+  },
+  {
+    "fold": 2,
+    "model": "cnn_lstm",
+    "candidate": 2,
+    "seed": 42,
+    "metrics": {
+      "n": 100,
+      "price_mae": 16.737200339748398,
+      "price_rmse": 22.031948575952192,
+      "mape_pct": 1.1855333220802553,
+      "return_mae_bps": 117.95518560163,
+      "directional_accuracy": 0.41,
+      "balanced_accuracy": 0.28737043098745224,
+      "mcc": -0.18391032107566355,
+      "class_order": [
+        "DOWN",
+        "FLAT",
+        "UP"
+      ],
+      "precision": [
+        0.3125,
+        0.0,
+        0.42857142857142855
+      ],
+      "recall": [
+        0.09615384615384616,
+        0.0,
+        0.7659574468085106
+      ],
+      "support": [
+        52,
+        1,
+        47
+      ],
+      "confusion_matrix": [
+        [
+          5,
+          0,
+          47
+        ],
+        [
+          0,
+          0,
+          1
+        ],
+        [
+          11,
+          0,
+          36
+        ]
+      ],
+      "actual_return_std": 0.015419342004503105,
+      "predicted_return_std": 0.0009117310799890267,
+      "volatility_ratio": 0.05912905231123108
+    }
+  },
+  {
+    "fold": 2,
+    "model": "cnn_lstm",
+    "candidate": 2,
+    "seed": 123,
+    "metrics": {
+      "n": 100,
+      "price_mae": 16.688850515869,
+      "price_rmse": 21.984638347895807,
+      "mape_pct": 1.1813469865225863,
+      "return_mae_bps": 117.61907654643335,
+      "directional_accuracy": 0.45,
+      "balanced_accuracy": 0.3048281505728314,
+      "mcc": -0.08389300732614983,
+      "class_order": [
+        "DOWN",
+        "FLAT",
+        "UP"
+      ],
+      "precision": [
+        0.4772727272727273,
+        0.0,
+        0.42857142857142855
+      ],
+      "recall": [
+        0.40384615384615385,
+        0.0,
+        0.5106382978723404
+      ],
+      "support": [
+        52,
+        1,
+        47
+      ],
+      "confusion_matrix": [
+        [
+          21,
+          0,
+          31
+        ],
+        [
+          0,
+          0,
+          1
+        ],
+        [
+          23,
+          0,
+          24
+        ]
+      ],
+      "actual_return_std": 0.015419342004503105,
+      "predicted_return_std": 0.0008978688463670274,
+      "volatility_ratio": 0.058230036411723106
+    }
+  },
+  {
+    "fold": 3,
+    "model": "naive",
+    "metrics": {
+      "n": 100,
+      "price_mae": 12.681999511718743,
+      "price_rmse": 15.76875573942304,
+      "mape_pct": 0.9843612967981151,
+      "return_mae_bps": 98.400045815415,
+      "directional_accuracy": 0.0,
+      "balanced_accuracy": 0.0,
+      "mcc": 0.0,
+      "class_order": [
+        "DOWN",
+        "FLAT",
+        "UP"
+      ],
+      "precision": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "recall": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "support": [
+        53.0,
+        0.0,
+        47.0
+      ],
+      "confusion_matrix": [
+        [
+          0,
+          53,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          47,
+          0
+        ]
+      ],
+      "actual_return_std": 0.012233475770478116,
+      "predicted_return_std": 0.0,
+      "volatility_ratio": 0.0
+    }
+  },
+  {
+    "fold": 3,
+    "model": "ridge",
+    "metrics": {
+      "n": 100,
+      "price_mae": 13.607250947076086,
+      "price_rmse": 16.846884456181435,
+      "mape_pct": 1.0556650021340515,
+      "return_mae_bps": 105.53014720825426,
+      "directional_accuracy": 0.46,
+      "balanced_accuracy": 0.460457647531112,
+      "mcc": -0.07895801730347177,
+      "class_order": [
+        "DOWN",
+        "FLAT",
+        "UP"
+      ],
+      "precision": [
+        0.4897959183673469,
+        0.0,
+        0.43137254901960786
+      ],
+      "recall": [
+        0.4528301886792453,
+        0.0,
+        0.46808510638297873
+      ],
+      "support": [
+        53,
+        0,
+        47
+      ],
+      "confusion_matrix": [
+        [
+          24,
+          0,
+          29
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          25,
+          0,
+          22
+        ]
+      ],
+      "actual_return_std": 0.012233475770478116,
+      "predicted_return_std": 0.0047392230091144365,
+      "volatility_ratio": 0.3873979151984878
+    }
+  },
+  {
+    "fold": 3,
+    "model": "lstm",
+    "candidate": 0,
+    "seed": 42,
+    "metrics": {
+      "n": 100,
+      "price_mae": 12.75754636389241,
+      "price_rmse": 15.816231850601907,
+      "mape_pct": 0.990017271361876,
+      "return_mae_bps": 98.90706642238408,
+      "directional_accuracy": 0.48,
+      "balanced_accuracy": 0.49739060618225617,
+      "mcc": -0.006394893195992407,
+      "class_order": [
+        "DOWN",
+        "FLAT",
+        "UP"
+      ],
+      "precision": [
+        0.5238095238095238,
+        0.0,
+        0.46835443037974683
+      ],
+      "recall": [
+        0.20754716981132076,
+        0.0,
+        0.7872340425531915
+      ],
+      "support": [
+        53,
+        0,
+        47
+      ],
+      "confusion_matrix": [
+        [
+          11,
+          0,
+          42
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          10,
+          0,
+          37
+        ]
+      ],
+      "actual_return_std": 0.012233475770478116,
+      "predicted_return_std": 0.0007164932099628734,
+      "volatility_ratio": 0.05856824531356152
+    }
+  },
+  {
+    "fold": 3,
+    "model": "lstm",
+    "candidate": 0,
+    "seed": 123,
+    "metrics": {
+      "n": 100,
+      "price_mae": 12.66687654605139,
+      "price_rmse": 15.66206748063373,
+      "mape_pct": 0.9830149015664382,
+      "return_mae_bps": 98.23720173684596,
+      "directional_accuracy": 0.57,
+      "balanced_accuracy": 0.5750702529104776,
+      "mcc": 0.15182598118241222,
+      "class_order": [
+        "DOWN",
+        "FLAT",
+        "UP"
+      ],
+      "precision": [
+        0.6190476190476191,
+        0.0,
+        0.5344827586206896
+      ],
+      "recall": [
+        0.49056603773584906,
+        0.0,
+        0.6595744680851063
+      ],
+      "support": [
+        53,
+        0,
+        47
+      ],
+      "confusion_matrix": [
+        [
+          26,
+          0,
+          27
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          16,
+          0,
+          31
+        ]
+      ],
+      "actual_return_std": 0.012233475770478116,
+      "predicted_return_std": 0.0008079066295354297,
+      "volatility_ratio": 0.06604064492325835
+    }
+  },
+  {
+    "fold": 3,
+    "model": "gru",
+    "candidate": 1,
+    "seed": 42,
+    "metrics": {
+      "n": 100,
+      "price_mae": 12.664885187704531,
+      "price_rmse": 15.847502046820164,
+      "mape_pct": 0.9829599380435953,
+      "return_mae_bps": 98.19191929412463,
+      "directional_accuracy": 0.54,
+      "balanced_accuracy": 0.5539943797671618,
+      "mcc": 0.12140095527014533,
+      "class_order": [
+        "DOWN",
+        "FLAT",
+        "UP"
+      ],
+      "precision": [
+        0.6296296296296297,
+        0.0,
+        0.5068493150684932
+      ],
+      "recall": [
+        0.32075471698113206,
+        0.0,
+        0.7872340425531915
+      ],
+      "support": [
+        53,
+        0,
+        47
+      ],
+      "confusion_matrix": [
+        [
+          17,
+          0,
+          36
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          10,
+          0,
+          37
+        ]
+      ],
+      "actual_return_std": 0.012233475770478116,
+      "predicted_return_std": 0.0010897590373757991,
+      "volatility_ratio": 0.08908008302968246
+    }
+  },
+  {
+    "fold": 3,
+    "model": "gru",
+    "candidate": 1,
+    "seed": 123,
+    "metrics": {
+      "n": 100,
+      "price_mae": 12.765108862071111,
+      "price_rmse": 15.807451990575727,
+      "mape_pct": 0.9907497176789029,
+      "return_mae_bps": 98.99649557411543,
+      "directional_accuracy": 0.51,
+      "balanced_accuracy": 0.5244881573665194,
+      "mcc": 0.05572761195880699,
+      "class_order": [
+        "DOWN",
+        "FLAT",
+        "UP"
+      ],
+      "precision": [
+        0.5769230769230769,
+        0.0,
+        0.4864864864864865
+      ],
+      "recall": [
+        0.2830188679245283,
+        0.0,
+        0.7659574468085106
+      ],
+      "support": [
+        53,
+        0,
+        47
+      ],
+      "confusion_matrix": [
+        [
+          15,
+          0,
+          38
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          11,
+          0,
+          36
+        ]
+      ],
+      "actual_return_std": 0.012233475770478116,
+      "predicted_return_std": 0.0006478735117050982,
+      "volatility_ratio": 0.0529590709836161
+    }
+  },
+  {
+    "fold": 3,
+    "model": "cnn_lstm",
+    "candidate": 2,
+    "seed": 42,
+    "metrics": {
+      "n": 100,
+      "price_mae": 12.663442095532773,
+      "price_rmse": 15.761282621889952,
+      "mape_pct": 0.9831630710130872,
+      "return_mae_bps": 98.2217865901717,
+      "directional_accuracy": 0.53,
+      "balanced_accuracy": 0.5469690887193898,
+      "mcc": 0.11318017259628337,
+      "class_order": [
+        "DOWN",
+        "FLAT",
+        "UP"
+      ],
+      "precision": [
+        0.6363636363636364,
+        0.0,
+        0.5
+      ],
+      "recall": [
+        0.2641509433962264,
+        0.0,
+        0.8297872340425532
+      ],
+      "support": [
+        53,
+        0,
+        47
+      ],
+      "confusion_matrix": [
+        [
+          14,
+          0,
+          39
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          8,
+          0,
+          39
+        ]
+      ],
+      "actual_return_std": 0.012233475770478116,
+      "predicted_return_std": 0.0008529872707002304,
+      "volatility_ratio": 0.06972566805246498
+    }
+  },
+  {
+    "fold": 3,
+    "model": "cnn_lstm",
+    "candidate": 2,
+    "seed": 123,
+    "metrics": {
+      "n": 100,
+      "price_mae": 12.640673298585497,
+      "price_rmse": 15.716422379025216,
+      "mape_pct": 0.9810939715728433,
+      "return_mae_bps": 98.03138728649844,
+      "directional_accuracy": 0.53,
+      "balanced_accuracy": 0.5421517462866319,
+      "mcc": 0.0918169333909948,
+      "class_order": [
+        "DOWN",
+        "FLAT",
+        "UP"
+      ],
+      "precision": [
+        0.6,
+        0.0,
+        0.5
+      ],
+      "recall": [
+        0.33962264150943394,
+        0.0,
+        0.7446808510638298
+      ],
+      "support": [
+        53,
+        0,
+        47
+      ],
+      "confusion_matrix": [
+        [
+          18,
+          0,
+          35
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          12,
+          0,
+          35
+        ]
+      ],
+      "actual_return_std": 0.012233475770478116,
+      "predicted_return_std": 0.0007729274016747913,
+      "volatility_ratio": 0.06318134078787514
+    }
+  }
+]

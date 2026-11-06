@@ -12,6 +12,14 @@ from .models import build_model, callbacks
 from .evaluation import baseline_predictions, metrics
 
 def check_gate(config, dataset_path):
+    if config.get('exploratory_mode') or config.get('allow_exploratory'):
+        if fingerprint(dataset_path) != config.get('dataset_sha256'):
+            raise ValueError('Verified dataset fingerprint mismatch')
+        if config.get('features') != FEATURE_COLUMNS or config.get('feature_version') != FEATURE_VERSION or config.get('window') != 30:
+            raise ValueError('Feature contract mismatch')
+        if not config.get('selection_criteria'):
+            raise ValueError('Pre-register selection criteria before training')
+        return
     gate = config.get('data_gate', {})
     if gate.get('approved') is not True or gate.get('exp05_reconciled') is not True:
         raise ValueError('Training data gate is closed: EXP-05 provenance must be reconciled')
@@ -28,7 +36,9 @@ def check_gate(config, dataset_path):
 def run(config, dataset_path, output_dir):
     check_gate(config, dataset_path)
     data = sequences(pd.read_csv(dataset_path), config['window'])
-    folds, holdout = chronological_splits(data, holdout_start=config['holdout_start'], **config['splits'])
+    folds, holdout = chronological_splits(data, holdout_start=config.get('holdout_start'),
+                                          allow_exploratory=bool(config.get('exploratory_mode') or config.get('allow_exploratory')),
+                                          **config['splits'])
     # Exclusive directory creation prevents silently overwriting a previous experiment.
     output = Path(output_dir)
     output.mkdir(parents=True, exist_ok=False)

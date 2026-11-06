@@ -60,15 +60,24 @@ def sequences(raw, window=30):
         raise ValueError('Duplicate target dates')
     return Samples(np.asarray(x, dtype=np.float32), np.asarray(y, dtype=np.float64), dates)
 
-def chronological_splits(samples, *, holdout_start, min_train, validation_size, test_size, folds):
+def chronological_splits(samples, *, holdout_start=None, min_train, validation_size, test_size, folds, allow_exploratory=False):
     if min(min_train, validation_size, test_size, folds) <= 0:
         raise ValueError('Split sizes must be positive')
-    cutoff = pd.Timestamp(holdout_start)
-    if cutoff <= pd.Timestamp('2026-10-07'):
-        raise ValueError('Holdout overlaps previously inspected EXP-05 dates')
-    n = int((samples.dates.target_date < cutoff).sum())
-    if len(samples.y)-n < 60:
-        raise ValueError('Dataset requires at least 60 reserved holdout observations')
+    if not allow_exploratory:
+        if holdout_start is None:
+            raise ValueError('holdout_start required for confirmatory splits')
+        cutoff = pd.Timestamp(holdout_start)
+        if cutoff <= pd.Timestamp('2026-10-07'):
+            raise ValueError('Holdout overlaps previously inspected EXP-05 dates')
+        n = int((samples.dates.target_date < cutoff).sum())
+        if len(samples.y)-n < 60:
+            raise ValueError('Dataset requires at least 60 reserved holdout observations')
+    else:
+        if holdout_start is not None:
+            cutoff = pd.Timestamp(holdout_start)
+            n = int((samples.dates.target_date < cutoff).sum())
+        else:
+            n = len(samples.y)
     if min_train + validation_size + test_size * folds > n:
         raise ValueError('Insufficient pre-holdout samples for requested folds')
     first = n - validation_size - test_size * folds
