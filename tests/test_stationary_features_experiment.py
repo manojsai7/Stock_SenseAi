@@ -148,6 +148,7 @@ def test_reliance_dry_run_and_walk_forward_folds():
     exp = StationaryFeaturesExperiment(
         symbol="RELIANCE.NS",
         window_size=30,
+        processed_path=HISTORICAL_SNAPSHOT,
         dry_run=True
     )
     res = exp.run_experiment()
@@ -203,3 +204,6 @@ def test_reliance_dry_run_and_walk_forward_folds():
     for d_in, d_tgt in zip(exp.input_dates_all, exp.target_dates_all):
         assert d_to_i[d_tgt] == d_to_i[d_in] + 1
 
+
+# Frozen regression expectations refer to the original snapshot, not refreshed history.
+HISTORICAL_SNAPSHOT = Path(__file__).resolve().parents[1] / "research/EXP-06/data/exp05_original_processed.csv"

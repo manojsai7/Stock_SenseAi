@@ -1,0 +1,14 @@
+{
+  "source_git_revision": "e5205c7^",
+  "source_path": "data/processed/RELIANCE_NS_processed.csv",
+  "sha256": "d922aedd5613203d5a03598a448569dd9e00e9f290e212b75c82ddc272fdcd66",
+  "purpose": "Historical EXP-05 reproduction only",
+  "verified_for_v2_training": false,
+  "known_concerns": [
+    "Five zero-volume flat-OHLC dates",
+    "Original final 2026-10-07 candle retrieved intraday"
+  ],
+  "recovered_without_modification": false,
+  "original_git_sha256": "fc307847d12795ff7019f0d5e4e6c8f0aaf685cd8c9b02a5fc4a8d313f854b40",
+  "normalization": "CRLF to LF only; numeric contents unchanged"
+}

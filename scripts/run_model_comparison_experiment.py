@@ -314,7 +314,8 @@ class ModelComparisonExperiment:
         random_seed: int = 42,
         output_dir: Optional[str] = None,
         base_dir: Optional[Path] = None,
-        dry_run: bool = False
+        dry_run: bool = False,
+        processed_path: Optional[Path] = None
     ):
         self.symbol = symbol
         self.clean_symbol = symbol.replace(".", "_")
@@ -327,8 +328,8 @@ class ModelComparisonExperiment:
         self.dry_run = dry_run
 
         self.root_dir = base_dir or PROJECT_ROOT
-        self.proc_file = self.root_dir / "data" / "processed" / f"{self.clean_symbol}_processed.csv"
-        if not self.proc_file.exists():
+        self.proc_file = Path(processed_path) if processed_path is not None else self.root_dir / "data" / "processed" / f"{self.clean_symbol}_processed.csv"
+        if processed_path is None and not self.proc_file.exists():
             self.proc_file = self.root_dir / "data" / "raw" / f"{self.clean_symbol}.csv"
         if not self.proc_file.exists():
             raise FileNotFoundError(f"Source price bar CSV not found for {symbol} at {self.proc_file}")

@@ -164,6 +164,7 @@ def test_exp05_dry_run_and_fold_benchmarks():
     exp = ModelComparisonExperiment(
         symbol="RELIANCE.NS",
         window_size=30,
+        processed_path=HISTORICAL_SNAPSHOT,
         dry_run=True
     )
     res = exp.run_experiment()
@@ -208,3 +209,6 @@ def test_exp05_dry_run_and_fold_benchmarks():
     assert pytest.approx(mae, abs=0.01) == 14.16
     assert pytest.approx(rmse, abs=0.01) == 18.52
     assert pytest.approx(mape, abs=0.01) == 1.06
+
+# Frozen regression expectations refer to the original snapshot, not refreshed history.
+HISTORICAL_SNAPSHOT = Path(__file__).resolve().parents[1] / "research/EXP-06/data/exp05_original_processed.csv"
