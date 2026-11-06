@@ -1,6 +1,8 @@
-# Sprint 1 results — 2026-11-04
+Review follow-up 2026-11-06: fresh Python 3.13 environment: 170 passed, 2 warnings in 78.48s. pip check passed. Review fixes remain local; Sprint 1 was pushed as f187f41. See TESTING.md and PR_DESCRIPTION.md. No merge or deployment performed.
 
-Branch: `codex/stocksense-v2`, base `204dcd5`. Changes are local and uncommitted. No push or deployment performed.
+# Sprint 1 results â€” 2026-11-04
+
+Branch: `codex/stocksense-v2`, base `204dcd5`. Sprint 1 was committed and pushed as `f187f41` (`updates`). No deployment performed.
 
 ## Delivered code
 

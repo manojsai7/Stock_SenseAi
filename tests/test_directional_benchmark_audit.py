@@ -213,5 +213,5 @@ HISTORICAL_SNAPSHOT = Path(__file__).resolve().parents[1] / "research/EXP-06/dat
 def test_historical_snapshot_fingerprint():
     import hashlib
     assert hashlib.sha256(HISTORICAL_SNAPSHOT.read_bytes()).hexdigest() == (
-        "fc307847d12795ff7019f0d5e4e6c8f0aaf685cd8c9b02a5fc4a8d313f854b40"
+        "d922aedd5613203d5a03598a448569dd9e00e9f290e212b75c82ddc272fdcd66"
     )

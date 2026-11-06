@@ -1,8 +1,10 @@
+Review follow-up 2026-11-06: fresh environment passed 170 tests (2 warnings); pip check passed.
+
 # StockSense AI V2 finalization status
 
 ## Sprint 1 update (supersedes initial findings below)
 
-Final Sprint 1 validation on 2026-11-04: **170 tests passed, 1 warning**. The synthetic training/export integration test passed. Full delivery record: `research/EXP-06/SPRINT1_RESULTS.md`. Changes remain local and uncommitted.
+Final Sprint 1 validation on 2026-11-04: **170 tests passed, 1 warning**. The synthetic training/export integration test passed. Full delivery record: `research/EXP-06/SPRINT1_RESULTS.md`. Sprint 1 was committed and pushed as `f187f41` (`updates`); subsequent review fixes are tracked separately.
 
 The original EXP-05 snapshot was recovered from Git. All three folds now reproduce 184 predictions within 1e-6 return tolerance. Five historical test failures were repaired by explicitly injecting that frozen dataset; numerical assertions and application defaults remain unchanged. See `research/EXP-05/DATA_PROVENANCE_INVESTIGATION.md` for evidence and source-quality limitations.
 

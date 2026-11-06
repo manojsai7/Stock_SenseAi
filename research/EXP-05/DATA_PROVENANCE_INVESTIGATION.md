@@ -12,7 +12,7 @@ The original processed snapshot is recoverable byte-for-byte from Git:
 git show e5205c7^:data/processed/RELIANCE_NS_processed.csv
 ```
 
-It has been copied to `research/EXP-06/data/exp05_original_processed.csv`, exclusively for historical reproduction. SHA-256: `fc307847d12795ff7019f0d5e4e6c8f0aaf685cd8c9b02a5fc4a8d313f854b40`. Its OHLCV values exactly match the still-present `data/raw/RELIANCE.NS.csv` (the dot-symbol filename, distinct from the overwritten underscore filename). No missing rows were synthesized.
+It has been copied to `research/EXP-06/data/exp05_original_processed.csv`, exclusively for historical reproduction. SHA-256: `d922aedd5613203d5a03598a448569dd9e00e9f290e212b75c82ddc272fdcd66`. Its OHLCV values exactly match the still-present `data/raw/RELIANCE.NS.csv` (the dot-symbol filename, distinct from the overwritten underscore filename). No missing rows were synthesized.
 
 ## Missing dates and changed targets
 
@@ -53,3 +53,5 @@ The separate fingerprint regression test also passed (1 passed in 13.68 seconds)
 ## V2 training gate
 
 **Not passed.** Recovering the snapshot removes the reproducibility blocker but does not resolve its zero-volume rows or unfinished final candle. V2 needs a separately validated, completed-session snapshot with source/adjustment provenance, checksummed splits, and a genuinely untouched holdout. Do not train V2 on this recovered historical snapshot merely because it reproduces EXP-05.
+
+Review cleanup: the recovered CSV was normalized from CRLF to LF. The hash above describes the normalized copy; the original Git byte hash is fc307847d12795ff7019f0d5e4e6c8f0aaf685cd8c9b02a5fc4a8d313f854b40. Historical reproduction reports retain the hash of the bytes actually used at execution.
