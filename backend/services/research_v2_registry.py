@@ -13,9 +13,15 @@ import pandas as pd
 
 from ml.features.stationary import FEATURE_COLUMNS
 
-MODEL_ID = 'stationary-return-v2'
+MODEL_ID = 'stocksense-v2-gru-challenger'
 FEATURE_VERSION = 'stationary-seven-v1'
-DEFAULT_ROOT = Path(__file__).resolve().parents[2] / 'models_storage_research_v2'
+VALID_MODEL_IDS = {'stationary-return-v2', 'stocksense-v2-gru-challenger'}
+VALID_STATUSES = {'shadow-ready', 'experimental-shadow-candidate', 'experimental-v2-challenger'}
+
+_DEFAULT_V2_DIR = Path(__file__).resolve().parents[2] / 'models_storage_v2'
+if not _DEFAULT_V2_DIR.exists():
+    _DEFAULT_V2_DIR = Path(__file__).resolve().parents[2] / 'models_storage_research_v2'
+DEFAULT_ROOT = _DEFAULT_V2_DIR
 
 
 def sha256(path):
@@ -29,6 +35,7 @@ def sha256(path):
 class ResearchV2Registry:
     def __init__(self, root=DEFAULT_ROOT):
         self.root = Path(root).resolve()
+        self._cached_bundle = {}
 
     def validate_manifest(self, symbol):
         if symbol != 'RELIANCE.NS':
@@ -36,47 +43,83 @@ class ResearchV2Registry:
         bundle = (self.root / 'RELIANCE_NS').resolve()
         if not bundle.is_relative_to(self.root):
             raise ValueError('Bundle escapes registry root')
-        manifest = json.loads((bundle / 'manifest.json').read_text(encoding='utf-8'))
+        manifest_path = bundle / 'manifest.json'
+        if not manifest_path.is_file():
+            raise FileNotFoundError(f'Manifest not found: {manifest_path}')
+        manifest = json.loads(manifest_path.read_text(encoding='utf-8'))
         if not isinstance(manifest, dict) or not isinstance(manifest.get('files'), dict):
             raise ValueError('Invalid manifest structure')
-        expected = dict(model_id=MODEL_ID, symbol=symbol, features=list(FEATURE_COLUMNS),
-                        feature_version=FEATURE_VERSION, input_shape=[30, 7], status='shadow-ready')
-        for key, value in expected.items():
-            if manifest.get(key) != value:
-                raise ValueError(f'Incompatible V2 manifest: {key}')
+
+        # Compatibility checks
+        if manifest.get('symbol') != symbol:
+            raise ValueError('Incompatible V2 manifest: symbol')
+        if manifest.get('model_id') not in VALID_MODEL_IDS:
+            raise ValueError('Incompatible V2 manifest: model_id')
+        if manifest.get('features') != list(FEATURE_COLUMNS):
+            raise ValueError('Incompatible V2 manifest: features')
+        if manifest.get('feature_version') != FEATURE_VERSION:
+            raise ValueError('Incompatible V2 manifest: feature_version')
+        raw_shape = manifest.get('input_shape')
+        if raw_shape not in ([30, 7], [1, 30, 7]):
+            raise ValueError('Incompatible V2 manifest: input_shape')
+        if manifest.get('status') not in VALID_STATUSES:
+            raise ValueError('Incompatible V2 manifest: status')
+
+        role_aliases = {
+            'model': ('model', 'model.keras'),
+            'feature_scaler': ('feature_scaler', 'feature_scaler.pkl'),
+            'target_scaler': ('target_scaler', 'target_scaler.pkl'),
+            'metadata': ('metadata', 'model_metadata.json', 'metadata.json'),
+        }
+
         paths = {}
-        for role in ('model', 'feature_scaler', 'target_scaler', 'metadata'):
-            entry = manifest.get('files', {}).get(role, {})
-            if not isinstance(entry, dict):
+        files_dict = manifest.get('files', {})
+        for role, aliases in role_aliases.items():
+            matched_entry = None
+            for alias in aliases:
+                if alias in files_dict and isinstance(files_dict[alias], dict):
+                    matched_entry = files_dict[alias]
+                    break
+            if matched_entry is None:
                 raise ValueError(f'Invalid artifact entry: {role}')
-            name = entry.get('path', '')
+            name = matched_entry.get('path', '')
             if not isinstance(name, str) or not name or ':' in name or '\\' in name:
                 raise ValueError(f'Invalid artifact path: {role}')
             path = (bundle / name).resolve()
             if Path(name).is_absolute() or not path.is_relative_to(bundle) or not path.is_file():
                 raise ValueError(f'Invalid artifact path: {role}')
-            if sha256(path) != entry.get('sha256'):
+            if sha256(path) != matched_entry.get('sha256'):
                 raise ValueError(f'Artifact checksum mismatch: {role}')
             paths[role] = path
+
         if len(set(paths.values())) != 4:
             raise ValueError('Model, scalers and metadata must use distinct files')
         return manifest, paths
 
     def status(self, symbol='RELIANCE.NS'):
         try:
-            manifest, _ = self.validate_manifest(symbol)
+            manifest, paths = self.validate_manifest(symbol)
         except (FileNotFoundError, ValueError, KeyError, TypeError) as exc:
             return dict(model_id=MODEL_ID, symbol=symbol, available=False,
                         status='UNAVAILABLE', reason=str(exc))
-        return dict(model_id=MODEL_ID, symbol=symbol, available=True,
+        model_hash = manifest['files'].get('model', manifest['files'].get('model.keras', {})).get('sha256')
+        return dict(model_id=manifest.get('model_id', MODEL_ID), symbol=symbol, available=True,
                     status='EXPERIMENTAL — SHADOW EVALUATION',
-                    artifact_hash=manifest['files']['model']['sha256'])
+                    artifact_hash=model_hash,
+                    architecture=manifest.get('architecture', 'GRU'),
+                    training_cutoff=manifest.get('training_cutoff', '2025-12-11'),
+                    feature_version=manifest.get('feature_version', FEATURE_VERSION))
 
     def load(self, symbol):
         manifest, paths = self.validate_manifest(symbol)
+        cache_key = (symbol, paths['model'], paths['feature_scaler'], paths['target_scaler'])
+        if cache_key in self._cached_bundle:
+            return self._cached_bundle[cache_key]
+
         import tensorflow as tf
         model = tf.keras.models.load_model(paths['model'], compile=False)
-        if tuple(model.input_shape) != (None, 30, 7) or tuple(model.output_shape) != (None, 1):
+        input_shape = tuple(model.input_shape)
+        if input_shape not in ((None, 30, 7), (1, 30, 7), (30, 7)) or tuple(model.output_shape) != (None, 1):
             raise ValueError('Model tensor contract mismatch')
         with paths['feature_scaler'].open('rb') as stream:
             feature_scaler = pickle.load(stream)
@@ -86,7 +129,10 @@ class ResearchV2Registry:
             raise ValueError('Scaler feature ordering mismatch')
         if not getattr(feature_scaler, 'is_fitted', False) or not getattr(target_scaler, 'is_fitted', False):
             raise ValueError('Unfitted V2 scaler')
-        return manifest, model, feature_scaler, target_scaler
+
+        loaded = (manifest, model, feature_scaler, target_scaler)
+        self._cached_bundle[cache_key] = loaded
+        return loaded
 
     def predict(self, symbol, features, *, feature_names, input_dates,
                 expected_completed_date, forecast_date, last_close):

@@ -43,6 +43,7 @@ COPY backend/ ./backend/
 COPY ml/ ./ml/
 COPY models_storage/ ./models_storage/
 COPY models_storage_stationary/ ./models_storage_stationary/
+COPY models_storage_v2/ ./models_storage_v2/
 COPY experiments/ ./experiments/
 COPY data/ ./data/
 COPY research/ ./research/

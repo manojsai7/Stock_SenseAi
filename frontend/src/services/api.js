@@ -108,3 +108,22 @@ export async function getResearchModelComparison(symbol = 'RELIANCE.NS') {
   }
   return res.json();
 }
+
+export async function getChallengerPrediction(symbol = 'RELIANCE.NS') {
+  const res = await fetch(`${API_BASE}/research/challenger-prediction/${encodeURIComponent(symbol)}`);
+  if (!res.ok) {
+    const errorMsg = await parseError(res, `V2 Challenger prediction unavailable for ${symbol}`);
+    throw new Error(errorMsg);
+  }
+  return res.json();
+}
+
+export async function getExp06Comparison(symbol = 'RELIANCE.NS') {
+  const res = await fetch(`${API_BASE}/research/exp06-comparison?symbol=${encodeURIComponent(symbol)}`);
+  if (!res.ok) {
+    const errorMsg = await parseError(res, `EXP-06 model comparison unavailable for ${symbol}`);
+    throw new Error(errorMsg);
+  }
+  return res.json();
+}
+
