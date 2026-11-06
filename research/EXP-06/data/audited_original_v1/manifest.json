@@ -1,0 +1,50 @@
+{
+  "schema_version": 1,
+  "symbol": "RELIANCE.NS",
+  "status": "candidate",
+  "blockers": [
+    "unbound_source_snapshot",
+    "missing_provider_identity",
+    "unknown_adjustment_policy",
+    "missing_adjustment_evidence",
+    "unverified_provider_finalization",
+    "missing_session_calendar"
+  ],
+  "raw_sha256": "d922aedd5613203d5a03598a448569dd9e00e9f290e212b75c82ddc272fdcd66",
+  "dataset_sha256": "077493e1f37abd4e68c9b1acd3c5deefa0416c09c2231dc7e2d7563aa9337fe3",
+  "quarantine_sha256": "af8b0887ef4f8d5c234234c4f02aac4092a7ed7170ac3c39418cf715d3644488",
+  "calendar_sha256": null,
+  "evidence_sha256": null,
+  "source": null,
+  "adjustment_policy": null,
+  "retrieved_at": null,
+  "provider_finalized_through": null,
+  "source_rows": 1241,
+  "candidate_rows": 1233,
+  "quarantined_rows": 8,
+  "first_source_date": "2021-10-07",
+  "last_source_date": "2026-10-07",
+  "first_candidate_date": "2021-10-07",
+  "last_candidate_date": "2026-10-06",
+  "quarantine_reason_counts": {
+    "latest_bar_finalization_unconfirmed": 1,
+    "zero_volume": 7
+  },
+  "missing_sessions": [],
+  "feature_parity": {
+    "passed": true,
+    "compared_rows": 1212,
+    "dates_match": true,
+    "max_absolute_error": {
+      "return_1d": 0.0,
+      "return_5d": 0.0,
+      "return_20d": 0.0,
+      "intraday_return": 0.0,
+      "hl_range_ratio": 0.0,
+      "close_to_ma20": 0.0,
+      "volume_ratio": 0.0,
+      "target_return": 0.0
+    }
+  },
+  "source_row_id_definition": "One-based CSV data record after header"
+}

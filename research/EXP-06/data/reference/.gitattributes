@@ -1,0 +1,3 @@
+# SHA-256 values in sources.json describe the exchange's original bytes.
+*.csv -text -diff
+*.pdf binary

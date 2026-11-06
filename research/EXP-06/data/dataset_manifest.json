@@ -1,0 +1,60 @@
+{
+  "build_timestamp": "2026-11-06T14:33:56.848620+00:00",
+  "preprocessing_version": "stationary-seven-v1",
+  "preprocessing_sha256": "dd96228949d9f733fcd1ec84e1189ca66bd4c03dace06df2a7206c4bba184fec",
+  "feature_names": [
+    "return_1d",
+    "return_5d",
+    "return_20d",
+    "intraday_return",
+    "hl_range_ratio",
+    "close_to_ma20",
+    "volume_ratio"
+  ],
+  "feature_definition_source": "ml/features/stationary.py:compute_stationary_features",
+  "feature_definition_sha256": "1eed7a23e5c9e0c0a18238c053722d0dccda6b48687cb1d6c10207d618fcad15",
+  "target_definition": "next_session_close / input_end_close - 1",
+  "schema_version": 1,
+  "symbol": "RELIANCE.NS",
+  "status": "candidate_audited",
+  "audit_verdict": "candidate_frozen_pending_holdout",
+  "raw_source_file": "research\\EXP-06\\data\\exp05_original_processed.csv",
+  "raw_sha256": "d922aedd5613203d5a03598a448569dd9e00e9f290e212b75c82ddc272fdcd66",
+  "dataset_sha256": "213b8138857ee0739bf8b1834c12a481cc04d307b9317140d7a1875050ceea74",
+  "parquet_sha256": "bb1342079472e2b9ca48028d58220274d957cabf47d99ba178f2285e37e0b401",
+  "quarantine_sha256": "af8b0887ef4f8d5c234234c4f02aac4092a7ed7170ac3c39418cf715d3644488",
+  "first_accepted_session": "2021-10-07",
+  "last_accepted_session": "2026-10-06",
+  "number_of_records": 1233,
+  "source_records": 1241,
+  "quarantined_records": 8,
+  "quarantine_reasons": {
+    "zero_volume": 7,
+    "latest_bar_finalization_unconfirmed": 1
+  },
+  "price_adjustment_policy": "consistently_adjusted_ohlcv",
+  "corporate_actions_verified": [
+    "2024-10-28 1:1 Bonus Issue (halved prices, doubled volumes)"
+  ],
+  "data_source": "Yahoo Finance (Historical Daily OHLCV)",
+  "calendar_version": "NSE_EQUITY_CALENDAR_2021_2026_AUDIT_V1",
+  "feature_parity": {
+    "passed": true,
+    "compared_rows": 1212,
+    "dates_match": true,
+    "max_absolute_error": {
+      "return_1d": 0.0,
+      "return_5d": 0.0,
+      "return_20d": 0.0,
+      "intraday_return": 0.0,
+      "hl_range_ratio": 0.0,
+      "close_to_ma20": 0.0,
+      "volume_ratio": 0.0,
+      "target_return": 0.0
+    }
+  },
+  "blockers": [
+    "insufficient_untouched_holdout_sessions",
+    "unbound_5yr_exchange_session_calendar"
+  ]
+}

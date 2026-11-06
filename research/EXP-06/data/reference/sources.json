@@ -1,0 +1,101 @@
+{
+  "scope": "Selected NSE reference-only observations for historical data quality diagnosis",
+  "files": [
+    {
+      "filename": "sec_bhavdata_full_18032025.csv",
+      "url": "https://archives.nseindia.com/products/content/sec_bhavdata_full_18032025.csv",
+      "fetched_utc": "2026-11-06T12:35:07.878866+00:00",
+      "sha256": "f3123b48c1f8ad466bb108a60847ae11e5d5b17967c9616df447dd24753fef8a",
+      "bytes": 326627,
+      "reliance_eq": {
+        "DATE1": "18-Mar-2025",
+        "OPEN_PRICE": 1244.7,
+        "HIGH_PRICE": 1248.35,
+        "LOW_PRICE": 1235.0,
+        "CLOSE_PRICE": 1238.8,
+        "TTL_TRD_QNTY": 15745877
+      }
+    },
+    {
+      "filename": "sec_bhavdata_full_01022026.csv",
+      "url": "https://archives.nseindia.com/products/content/sec_bhavdata_full_01022026.csv",
+      "fetched_utc": "2026-11-06T12:35:08.018728+00:00",
+      "sha256": "18aef3b3e75af4eb4d9b199b2fb1af692f4ac1798ceebc5f8a0a9c3cc0102247",
+      "bytes": 349303,
+      "reliance_eq": {
+        "DATE1": "01-Feb-2026",
+        "OPEN_PRICE": 1396.0,
+        "HIGH_PRICE": 1411.0,
+        "LOW_PRICE": 1335.0,
+        "CLOSE_PRICE": 1347.0,
+        "TTL_TRD_QNTY": 9714528
+      }
+    },
+    {
+      "filename": "sec_bhavdata_full_07102026.csv",
+      "url": "https://archives.nseindia.com/products/content/sec_bhavdata_full_07102026.csv",
+      "fetched_utc": "2026-11-06T12:35:07.992762+00:00",
+      "sha256": "b0471d0b4fd0b2269015fd12fd3a991f6fbe1ae6e9b386f7d93eda518f1d8328",
+      "bytes": 399943,
+      "reliance_eq": {
+        "DATE1": "07-Oct-2026",
+        "OPEN_PRICE": 1212.0,
+        "HIGH_PRICE": 1220.8,
+        "LOW_PRICE": 1203.5,
+        "CLOSE_PRICE": 1207.7,
+        "TTL_TRD_QNTY": 11880731
+      }
+    },
+    {
+      "filename": "sec_bhavdata_full_25102024.csv",
+      "url": "https://archives.nseindia.com/products/content/sec_bhavdata_full_25102024.csv",
+      "fetched_utc": "2026-11-06T12:35:07.997243+00:00",
+      "sha256": "e889503392d34424785be117156656b0fc6b554d26d6d195ae06f92ce0279904",
+      "bytes": 312536,
+      "reliance_eq": {
+        "DATE1": "25-Oct-2024",
+        "OPEN_PRICE": 2687.0,
+        "HIGH_PRICE": 2688.7,
+        "LOW_PRICE": 2644.0,
+        "CLOSE_PRICE": 2655.7,
+        "TTL_TRD_QNTY": 9298748
+      }
+    },
+    {
+      "filename": "sec_bhavdata_full_28102024.csv",
+      "url": "https://archives.nseindia.com/products/content/sec_bhavdata_full_28102024.csv",
+      "fetched_utc": "2026-11-06T12:35:09.794639+00:00",
+      "sha256": "2ea975e4b0568e33de01c8f55ae96aa0cc8a35a11aab35074e6143aba051d1ef",
+      "bytes": 312638,
+      "reliance_eq": {
+        "DATE1": "28-Oct-2024",
+        "OPEN_PRICE": 1337.0,
+        "HIGH_PRICE": 1353.0,
+        "LOW_PRICE": 1322.1,
+        "CLOSE_PRICE": 1334.35,
+        "TTL_TRD_QNTY": 10824350
+      }
+    },
+    {
+      "filename": "CMTR71775.pdf",
+      "url": "https://archives.nseindia.com/content/circulars/CMTR71775.pdf",
+      "fetched_utc": "2026-11-06T12:35:09.599720+00:00",
+      "sha256": "aa97e0afc0ce394097f2fc62631c68e3c2e4c7c23541ed35f21d9fc06b0dcacb",
+      "bytes": 176256
+    },
+    {
+      "filename": "CMTR72260.pdf",
+      "url": "https://archives.nseindia.com/content/circulars/CMTR72260.pdf",
+      "fetched_utc": "2026-11-06T12:35:09.570087+00:00",
+      "sha256": "c5d32a838b46d5044717b830a4793479a51a40f8e4e19d3896c65682d15b6ebc",
+      "bytes": 78974
+    },
+    {
+      "filename": "CMTR72349.pdf",
+      "url": "https://archives.nseindia.com/content/circulars/CMTR72349.pdf",
+      "fetched_utc": "2026-11-06T12:35:09.606674+00:00",
+      "sha256": "70458f7b8126f47584d4bc402a78dde357e42dbebaa5d53cfce0c70c82dabfc3",
+      "bytes": 93817
+    }
+  ]
+}

@@ -61,5 +61,10 @@
     "positive_mcc_majority_folds": true,
     "holdout_min_sessions": 60,
     "promotion": "explicit_review_required"
-  }
+  },
+  "last_inspected_date": "2026-11-06",
+  "readiness_lock_required": true,
+  "readiness_lock": null,
+  "dataset_manifest": null,
+  "calendar": null
 }
