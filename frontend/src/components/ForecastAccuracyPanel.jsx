@@ -71,7 +71,37 @@ export default function ForecastAccuracyPanel({ symbol = 'RELIANCE.NS' }) {
     fetchData();
   }, [fetchData]);
 
-  // Unsupported Symbol State
+  // Filter records for table (Hooks MUST execute unconditionally on every render)
+  const filteredRecords = useMemo(() => {
+    if (!data || !data.supported) return [];
+    let list = [];
+    if (statusFilter === 'RESOLVED') {
+      list = [...(data.resolved_records || [])];
+    } else if (statusFilter === 'PENDING') {
+      list = [...(data.pending_records || [])];
+    } else {
+      list = [...(data.resolved_records || []), ...(data.pending_records || [])];
+    }
+
+    if (selectedModel !== 'ALL') {
+      list = list.filter(
+        (r) =>
+          r.model_family === selectedModel ||
+          r.model_name === selectedModel ||
+          r.model_name.toLowerCase().includes(selectedModel.toLowerCase())
+      );
+    }
+
+    // Sort descending by target_date
+    return list.sort((a, b) => (b.target_date || '').localeCompare(a.target_date || ''));
+  }, [data, statusFilter, selectedModel]);
+
+  const activeMetrics = useMemo(() => {
+    if (!data?.per_family_metrics || !data?.supported) return null;
+    return data.per_family_metrics[activeTabModel] || Object.values(data.per_family_metrics)[0] || null;
+  }, [data, activeTabModel]);
+
+  // Unsupported Symbol State (Rendered AFTER all hooks are defined)
   if (data && !data.supported) {
     return (
       <section className="fintech-card forecast-accuracy-card" aria-labelledby="accuracy-heading">
@@ -99,36 +129,6 @@ export default function ForecastAccuracyPanel({ symbol = 'RELIANCE.NS' }) {
       </section>
     );
   }
-
-  // Filter records for table
-  const filteredRecords = useMemo(() => {
-    if (!data) return [];
-    let list = [];
-    if (statusFilter === 'RESOLVED') {
-      list = [...(data.resolved_records || [])];
-    } else if (statusFilter === 'PENDING') {
-      list = [...(data.pending_records || [])];
-    } else {
-      list = [...(data.resolved_records || []), ...(data.pending_records || [])];
-    }
-
-    if (selectedModel !== 'ALL') {
-      list = list.filter(
-        (r) =>
-          r.model_family === selectedModel ||
-          r.model_name === selectedModel ||
-          r.model_name.toLowerCase().includes(selectedModel.toLowerCase())
-      );
-    }
-
-    // Sort descending by target_date
-    return list.sort((a, b) => (b.target_date || '').localeCompare(a.target_date || ''));
-  }, [data, statusFilter, selectedModel]);
-
-  const activeMetrics = useMemo(() => {
-    if (!data?.per_family_metrics) return null;
-    return data.per_family_metrics[activeTabModel] || Object.values(data.per_family_metrics)[0] || null;
-  }, [data, activeTabModel]);
 
   const assessment = data?.sample_size_assessment || {
     tier: 'Awaiting Data',
