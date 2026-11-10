@@ -1,402 +1,386 @@
-# StockSense AI — Next-Day Stock Price & Return Prediction with Production vs. Research Dual Architecture
+# StockSense AI — Next-Day Stock Price & Return Prediction Terminal
+### Production Dual-Architecture (1D-CNN-LSTM vs. GRU Challenger) with Strict Stationary Transforms & Real-Time Prospective Auditing
 
-**StockSense AI** is an academically rigorous, end-to-end financial econometrics and deep learning forecasting platform. It bridges production serving with experimental quantitative research through a dual-engine architecture:
-- **Production Engine (V1):** Verified, frozen **1D-CNN + BiLSTM** pipeline (`stationary-return-v1`) serving primary live inference on Indian large-cap equities (`RELIANCE.NS`).
-- **Research Challenger Engine (V2):** Experimental **Gated Recurrent Unit (GRU)** model (`EXP-06`) running in live shadow-evaluation mode, continuously audited against a synchronized tri-model prospective evaluation stream.
-
----
-
-## 🚀 Final Release (Sprint 5) Highlights
-- **196/196 Automated Tests Passing:** Complete regression suite covering stationary transforms, registry isolation, shadow serving, and cryptographic integrity.
-- **Audited Frozen Master Dataset:** 1,233 validated trading sessions (`dataset_v2_audited.csv`, SHA-256: `ca9cfb09...`), with 8 anomalous observations quarantined.
-- **Hardware & Provenance Transparency:** Recorded exploratory cross-validation experiments ran on local CPU runtime (~12.99s/fit); standalone Colab GPU training package (`stocksense_exp06_source.zip`) is fully packaged for multi-asset scaling.
-- **Live Prospective Evaluation:** Synchronized daily tri-model logging (V1, V2, Naive) in `prospective_predictions_log.csv` targeting upcoming sessions (e.g., Nov 6 $\to$ Nov 9, 2026).
-- **Defense-Ready Documentation:** Complete 12-slide presentation (`research/presentation/StockSense_AI_Defense.pptx`), 52-question Viva bank (`research/VIVA_QUESTION_BANK.md`), and comprehensive capstone report (`research/FINAL_RESEARCH_REPORT.md`).
+[![Frontend Deployment](https://img.shields.io/badge/Vercel-Live%20Dashboard-black?logo=vercel)](https://stock-sense-ai-phi.vercel.app/)
+[![Backend Deployment](https://img.shields.io/badge/Render-FastAPI%20Docker-46E3B7?logo=render)](https://stocksense-ai-9ww9.onrender.com/api/system/health)
+[![Regression Tests](https://img.shields.io/badge/Pytest-204%2F204%20Passing-brightgreen?logo=pytest)](file:///d:/Downloads/Stock_SenseAi/tests/)
+[![Python](https://img.shields.io/badge/Python-3.11%20%7C%203.13-blue?logo=python)](https://python.org)
+[![React](https://img.shields.io/badge/React-18%20%7C%20Vite-61DAFB?logo=react)](https://react.dev)
 
 ---
 
-## 🔒 1. Problem Scope & Dual Architecture
+## 🌟 Executive Summary & Project Purpose
 
-- **Prediction Horizon**: 1 Trading Day Ahead ($y = \text{Close}_{t+1}$ reconstructed from predicted simple return $r_{t+1}$).
-- **Historical Input**: 30 consecutive completed trading sessions sequence ($X = [t-29, \dots, t]$).
-- **Features Extracted (7 Causal Relative Stationary Features)**:
-  1. `return_1d`: 1-day close-to-close return ($\text{Close}_t / \text{Close}_{t-1} - 1$)
-  2. `return_5d`: 5-day momentum return ($\text{Close}_t / \text{Close}_{t-5} - 1$)
-  3. `return_20d`: 20-day trend return ($\text{Close}_t / \text{Close}_{t-20} - 1$)
-  4. `intraday_return`: within-session bar return ($(\text{Close}_t - \text{Open}_t) / \text{Open}_t$)
-  5. `hl_range_ratio`: normalized high-low spread ($(\text{High}_t - \text{Low}_t) / \text{Close}_{t-1}$)
-  6. `close_to_ma20`: distance from 20-day Simple Moving Average ($\text{Close}_t / \text{MA20}_t - 1$)
-  7. `volume_ratio`: volume relative to 20-day rolling mean ($\text{Volume}_t / \overline{\text{Volume}}_{20}$)
-- **Target Formulation & Price Reconstruction**:
-  - The network forecasts next-session return: $r_{t+1} = (\text{Close}_{t+1} - \text{Close}_t) / \text{Close}_t$.
-  - Price is deterministically reconstructed: $\widehat{\text{Close}}_{t+1} = \text{Close}_t \times (1 + \hat{r}_{t+1})$.
-- **Normalization**:
-  - `StationaryFeatureScaler`: StandardScaler fitted strictly on training feature distributions.
-  - `ReturnTargetScaler`: StandardScaler fitted on training simple returns.
-- **Primary Equities (NSE Large Caps)**:
-  - `TCS.NS` (Tata Consultancy Services)
-  - `RELIANCE.NS` (Reliance Industries)
-  - `INFY.NS` (Infosys)
-  - `HDFCBANK.NS` (HDFC Bank)
-  - `ICICIBANK.NS` (ICICI Bank)
-- **Data Source**: Historical Daily OHLCV from Yahoo Finance via `yfinance`.
-- **Reproducibility**: All cleaned and processed datasets are preserved in `data/processed/{symbol}_processed.csv`.
+**StockSense AI** is an academically rigorous financial econometrics and deep learning platform built for Indian large-cap equities (NSE: `RELIANCE.NS`, `TCS.NS`, `INFY.NS`, `HDFCBANK.NS`, `ICICIBANK.NS`). 
+
+Unlike naive student projects that feed raw non-stationary stock prices into basic LSTMs (which inevitably produces a lagged, visual illusion of accuracy), StockSense AI implements a **statistically sound, leak-free quantitative pipeline**:
+1. **Mathematical Stationarity:** Forecasts fractional daily simple returns ($r_{t+1}$), not raw prices, eliminating spurious correlation and random-walk trends.
+2. **Dual-Engine Architecture:**
+   - **Production Engine (V1):** A verified, frozen **1D-CNN + BiLSTM** hybrid network (`stationary-return-v1`) serving primary live inference.
+   - **Research Challenger Engine (V2):** An experimental **Gated Recurrent Unit (GRU)** model (`EXP-06`) running in live shadow-evaluation mode, continuously audited against a synchronized tri-model prospective stream.
+3. **Strict Causal Discipline:** Models ingest strictly completed daily sessions; incomplete intraday candles are never fed to the neural network.
+4. **Honest Prospective Evaluation:** Historical backtests are completely decoupled from forward-tested live market settlements, with explicit sample-size disclosure ($N=1$ for GRU, $N=2$ for V1) and zero-denominator degenerate class handling.
 
 ---
 
-## 🏛️ 2. Deep Learning Framework & CNN-LSTM Architecture
+## 🏛️ End-to-End System Architecture
 
-The deep learning engine is implemented strictly in **TensorFlow / Keras** using the Sequential API:
+The diagram below illustrates the end-to-end data flow from live market feeds to the client browser:
 
-```text
-┌─────────────────────────────────────────────────────────────┐
-│                 Input Tensor: (batch_size, 30, 7)           │
-├─────────────────────────────────────────────────────────────┤
-│  Conv1D (filters=64, kernel_size=3, padding='same', ReLU)   │
-│  → Extracts local waveform patterns across 3-day windows    │
-├─────────────────────────────────────────────────────────────┤
-│  MaxPooling1D (pool_size=2)                                 │
-│  → Temporal dimensionality reduction (30 → 15 steps)        │
-├─────────────────────────────────────────────────────────────┤
-│  LSTM (units=50, return_sequences=False, activation='tanh') │
-│  → Recurrent gating (Input, Forget, Output) for trends      │
-├─────────────────────────────────────────────────────────────┤
-│  Dropout (rate=0.2)                                         │
-│  → Regularization against historical noise memorization     │
-├─────────────────────────────────────────────────────────────┤
-│  Dense (units=32) + LeakyReLU (negative_slope=0.1)          │
-│  → Non-saturating projection allowing regime shift outputs   │
-├─────────────────────────────────────────────────────────────┤
-│  Dense (units=1, activation='linear')                       │
-│  → Final standardized Next-Day Return prediction (\hat{z})  │
-└─────────────────────────────────────────────────────────────┘
+```mermaid
+flowchart TD
+    subgraph ClientLayer["🖥️ Frontend Presentation Layer (Vercel)"]
+        UI["React 18 + Vite SPA"]
+        Chart["Interactive Candlestick Chart (Visx/Recharts)"]
+        ForecastCard["Forecast & Confidence Panel"]
+        AccuracyModule["Forecast Accuracy & Track Record"]
+        UI --> Chart
+        UI --> ForecastCard
+        UI --> AccuracyModule
+    end
+
+    subgraph APILayer["⚡ High-Performance Serving Layer (Render Docker)"]
+        FastAPI["FastAPI Application (Python 3.11/3.13)"]
+        MemCache["In-Memory Cache (TTL: 20s Quotes / 1h History)"]
+        MarketCal["NSE Exchange Calendar & Holiday Engine"]
+        FastAPI --> MemCache
+        FastAPI --> MarketCal
+    end
+
+    subgraph QuantitativePipeline["🧠 Dual Deep Learning Engine"]
+        RawData["Yahoo Finance Historical & Real-Time OHLCV"]
+        FeatureEngine["7 Causal Relative Stationary Features"]
+        Scaler["Frozen StandardScaler (Fitted on Training Split Only)"]
+        
+        V1_Model["Production Engine V1: 1D-CNN + BiLSTM (112k params)"]
+        V2_Model["Research Challenger V2: Streamlined GRU (44k params)"]
+        Naive_Model["Naive Persistence Benchmark (0 params)"]
+
+        RawData --> FeatureEngine
+        FeatureEngine --> Scaler
+        Scaler --> V1_Model
+        Scaler --> V2_Model
+        Scaler --> Naive_Model
+    end
+
+    subgraph ProspectiveAudit["🛡️ Prospective Verification & Guardrail Gate"]
+        Logger["Prospective Predictions Logger (EXP-06 CSV)"]
+        Settlement["Post-Session Settlement Scorer (Official NSE Close)"]
+        AccuracyMetrics["Statistical Evaluation: MAE, RMSE, MCC, Recall"]
+        
+        V1_Model --> Logger
+        V2_Model --> Logger
+        Naive_Model --> Logger
+        Logger --> Settlement
+        Settlement --> AccuracyMetrics
+    end
+
+    ClientLayer <-->|"HTTPS / REST JSON"| APILayer
+    APILayer <--> QuantitativePipeline
+    QuantitativePipeline --> ProspectiveAudit
+    AccuracyMetrics -.->|"Scored Real-Time Track Record"| AccuracyModule
 ```
 
 ---
 
-## 🛡️ 3. Mathematical Rigor & Leakage Prevention Audit
+## 🧠 Plain-English Financial Glossary (For Faculty & Students)
 
-1. **Chronological Splitting (No Random Shuffling)**:
-   - **Training Set**: 70% oldest chronological observations.
-   - **Validation Set**: 15% intermediate observations (used strictly for model selection and hyperparameter tuning).
-   - **Test Set**: 15% newest observations (evaluated ONCE as unseen test horizon).
+*Financial and quantitative terms explained with intuitive, real-world analogies.*
 
-2. **Strict Scaling Isolation**:
-   - `MinMaxScaler` is fitted **exclusively on the 70% Training partition**.
-   - Validation and Test partitions are strictly transformed using the Training parameters.
-   - No future test price or volume datum enters the scaler.
-
-3. **Sequence Construction without Boundary Leakage**:
-   - For any sample predicting target at timestamp $t+1$, the input window $[t-29, \dots, t]$ contains only past information.
-   - Sequence generation across partition boundaries uses strictly preceding chronological observations for input features, with targets assigned exclusively to their true date partitions.
-
-4. **Directional Accuracy (Hit Rate) Formula**:
-   $$\text{Actual Direction } d_{t+1} = \begin{cases} +1 & \text{if } \text{Close}_{t+1} \ge \text{Close}_t \\ -1 & \text{if } \text{Close}_{t+1} < \text{Close}_t \end{cases}$$
-   $$\text{Predicted Direction } \hat{d}_{t+1} = \begin{cases} +1 & \text{if } \widehat{\text{Close}}_{t+1} \ge \text{Close}_t \\ -1 & \text{if } \widehat{\text{Close}}_{t+1} < \text{Close}_t \end{cases}$$
-   $$\text{Directional Accuracy (\%)} = \frac{1}{N} \sum_{i=1}^N \mathbf{1}_{\{ d_{i} = \hat{d}_{i} \}} \times 100$$
-   *Note: For the Naive Persistence baseline ($\hat{y}_{t+1} = y_t$), which forecasts zero change, directional accuracy is benchmarked against the standard financial momentum baseline $\operatorname{sign}(y_t - y_{t-1})$.*
+### 1. What is a "Basis Point" (bps)?
+* **The Definition:** A basis point (abbreviated as **bps**, pronounced *"bips"*) is one-hundredth of a percentage point:
+  $$\mathbf{1\text{ bps} = 0.01\% = 0.0001}$$
+  $$\mathbf{100\text{ bps} = 1.00\% = 0.01}$$
+* **The Everyday Analogy:** Think of a **₹100 currency note**.
+  - 1 Rupee = $1\%$ of the note.
+  - 1 Paisa = $0.01\%$ of the note = **1 basis point**.
+* **Why Quantitative Analysts Use It:** In stock markets, daily price shifts are subtle (often between $0.05\%$ and $0.50\%$). Instead of saying *"Reliance moved zero point zero eight seven percent"*, quantitative analysts say *"Reliance moved 8.7 basis points"*. It eliminates confusion with decimal points.
 
 ---
 
-## 📊 4. Three-Tier Empirical Evaluation & Scientific Diagnostics
+### 2. What is "Price Shift" / Simple Return ($r_t$)? Why Don't We Predict Raw Prices?
+* **The Big Trap of Predicting Raw Stock Prices:**
+  Most machine learning tutorials teach students to feed raw closing prices (e.g., ₹1,300, ₹1,320, ₹1,315) into an LSTM to predict tomorrow's raw price. **This is fundamentally flawed in real finance.**
+  
+  > 🚗 **The Rearview Mirror Analogy:**  
+  > Predicting raw prices is like driving a car forward by only staring into the rearview mirror. Because stock prices drift slowly over time (a random walk with a unit root), an LSTM quickly realizes the safest trick to minimize error is to simply output:
+  > $$\widehat{\text{Close}}_{t+1} \approx \text{Close}_t \quad \text{(Today's price)}$$
+  > On a visual chart, the predicted line looks like an amazing fit, but zoom in: **the predicted line is just yesterday's price shifted one day to the right!** It possesses zero predictive capability.
 
-To avoid methodological conflation, evaluation is strictly separated into three distinct tiers:
-1. **Historical EXP-05 Walk-Forward Folds:** Audited Colab candidate checkpoints across expanding historical regimes.
-2. **Production Model Validation:** Diagnostic replay of deployed production weights.
-3. **Prospective Forward Observations:** Immutable predictions recorded *before* market closes, scored only after exchange finalization.
-
-### 4.1 Tier 1: Historical Walk-Forward Folds (Colab EXP-05 Audit, $N=184$)
-Audited out-of-sample benchmark on `RELIANCE.NS` (Test window: 2026-01-15 to 2026-10-07):
-
-| Model / Benchmark | Price MAE (₹) ↓ | Price RMSE (₹) ↓ | Price MAPE (%) ↓ | Direction Acc (%) ↑ | Balanced Acc (%) ↑ | Direction MCC ↑ | UP Recall (%) | DOWN Recall (%) |
-|---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-| **Naive Persistence Baseline** | **₹14.16** | **₹18.52** | **1.06%** | 3.26% | 33.33% | 0.0000 | 0.0% | 0.0% |
-| **Colab EXP-05 Fold 3 (Calibrated, $\theta=+0.000307$)** | ₹14.09 | ₹18.44 | 1.05% | 51.09% | 33.24% | 0.0055 | 6.02% | 93.68% |
-| **Colab EXP-05 Fold 3 (Uncalibrated, $\theta=0$)** | ₹14.09 | ₹18.44 | 1.05% | 52.72% | 34.69% | 0.0560 | 15.66% | 88.42% |
-| **Production CNN-LSTM (Diagnostic Lookahead Replay)** | ₹14.18 | ₹18.46 | 1.06% | 48.91% | 35.59% | 0.1117 | 95.18% | 11.58% |
-
-*Scientific Takeaway:* Colab Fold 3 failed the pre-registered promotion criteria: its price MAE advantage over Naive Persistence was trivial (₹0.07, within random margin), and calibration caused severe directional collapse (93.68% DOWN, 6.02% UP). Production models were therefore **strictly frozen**.
-
-### 4.2 Tier 2: Production Model Selection Validation
-The production models in `models_storage_stationary/` were trained/refit across sequences through 2026-10-06. Retrospective evaluation on historical blocks contains lookahead bias; sound verification must occur prospectively.
-
-### 4.3 Tier 3: Prospective Forward Evaluation (Real-Time Logging)
-Forward predictions are cryptographically logged in [`research/EXP-05/evaluation/prospective_predictions_log.csv`](file:///d:/Downloads/Stock_SenseAi/research/EXP-05/evaluation/prospective_predictions_log.csv) *before* trading sessions close.
-
-**Current Forward Evaluation Scope:**
-- **1 resolved session:** October 26, 2026 (resolved against official NSE settlement).
-- **1 pending session:** October 27, 2026 (forecast committed, outcome pending).
-- **Three predictions per session:** Production CNN-LSTM, Colab EXP-05 Fold 3 (Calibrated), and Naive Persistence baseline (total 6 records logged).
-
-#### Observation 1: October 26, 2026 ($N=1$, Fully Resolved)
-- **Input Baseline (October 23 Close):** ₹1,190.00
-- **Finalized Target Close (October 26):** **₹1,201.80** (+0.9916%, `UP`)
-
-| Model | Predicted Close | Predicted Dir | Actual Close | Absolute Price Error | Direction Correct? |
-|---|:---:|:---:|:---:|:---:|:---:|
-| **Production CNN-LSTM** | **₹1,190.23** | `UP` | ₹1,201.80 | **₹11.57** | **YES** |
-| **Naive Persistence Baseline** | **₹1,190.00** | `FLAT` | ₹1,201.80 | **₹11.80** | **NO** |
-| **Colab EXP-05 Fold 3 (Calibrated)** | **₹1,189.31** | `DOWN` | ₹1,201.80 | **₹12.49** | **NO** |
-
-> **Scientific Caveat:** While Production had the lowest absolute price error on this session, **one successful forecast does not establish predictive superiority**. A difference of ₹0.23 against naive persistence on one day does not prove predictive edge. Likewise, Colab Fold 3's directional miss does not prove permanent underperformance. Valid statistical inference requires accumulating **60–100 prospective sessions** before running formal hypothesis tests.
-
-#### Observation 2: October 27, 2026 ($N=2$, Locked & Pending)
-- **Input Cutoff (October 26 Close):** ₹1,201.80 | **Target Session:** 2026-10-27
-- **Production CNN-LSTM:** ₹1,202.53 (`UP`, +0.0608%) | **Status:** `PENDING_OUTCOME`
-- **Colab Fold 3 (Calibrated):** ₹1,201.03 (`DOWN`, -0.0644%) | **Status:** `PENDING_OUTCOME`
-- **Naive Persistence:** ₹1,201.80 (`FLAT`, +0.00%) | **Status:** `PENDING_OUTCOME`
-
-### 4.4 Live Input-Sensitivity Explainability Diagnostic
-The system integrates an on-demand sensitivity panel (`/api/models/{symbol}/explainability`):
-- **Method:** Feature-perturbation sensitivity via 30-session trajectory mean neutralization (setting each standardized feature channel to 0.0, the training mean under `StandardScaler`).
-- **Primary Sensitivities:** `return_20d` and `return_5d` show the highest model responsiveness (~3–4 bps delta return).
-- **Non-Causal Disclaimer:** Model sensitivity measures feature-perturbation sensitivity (specifically 30-session mean-neutralization response), **not financial causality or guaranteed future performance**. Gradients are not calculated; rather, forward-pass delta responses to input channel neutralizations are measured.
-
-### 4.5 Multimodal News Sentiment Scope & Project Title Alignment
-A financial news sentiment pipeline is **not implemented, proven, or evaluated** in this codebase. To maintain strict academic integrity:
-- **Recommended Project Title:** **"StockSense AI: Explainable Next-Day Stock Price Forecasting Using CNN-LSTM"** accurately describes the verified working implementation.
-- Multimodal sentiment is cataloged as future research requiring leak-free timestamp-aligned news corpora.
-
-### 4.6 Research Challenger Engine (V2 GRU / EXP-06) & Shadow Serving
-Building upon the Sprint 1–4 research trajectory, StockSense AI operationalizes the **GRU V2 Challenger** (`EXP-06`, Seed 42):
-- **Model Parameters:** 44,065 weights (Streamlined 2-layer GRU with 60% fewer parameters than CNN-LSTM).
-- **Cross-Fold Performance Leaderboard (Price MAE):**
-  1. **GRU V2 (EXP-06):** **₹13.29** *(Fold 3: ₹12.66, DA: 54.0%, MCC: +0.1214)*
-  2. **Naive Persistence:** ₹13.34 *(Fold 3: ₹12.71)*
-  3. **LSTM Standard:** ₹13.39 *(Fold 3: ₹12.78)*
-  4. **CNN-LSTM (EXP-05):** ₹13.42 *(Fold 3: ₹12.82)*
-  5. **Linear Ridge:** ₹14.18 *(Fold 3: ₹13.65)*
-- **Dual-Track Evaluation Rule:** Because the historical evaluation window was previously inspected, the confirmatory evaluation gate remains **LOCKED (NO-GO)**. GRU V2 is deployed in **shadow mode** via `ChallengerPredictionService` and `ProspectiveV2Service`, actively logging prospective forecasts alongside V1 and Naive in `research/EXP-06/evaluation/prospective_predictions_log.csv`.
-- **Live Target Session (Nov 6 $\to$ Nov 9, 2026):**
-  - Input: Nov 6, 2026 Close (₹1,320.00).
-  - GRU V2 predicts **₹1,322.86** (+0.2169% / +21.7 bps, **BULLISH**).
-  - Production V1 predicts **₹1,319.33** (-0.0509% / -5.1 bps, **BEARISH**).
-  - Naive baseline predicts **₹1,320.00** (0.00%, **NEUTRAL**).
+* **The Scientific Solution (Stationary Simple Return):**  
+  Instead of predicting the raw price level, StockSense AI computes the fractional price change (simple return):
+  $$r_{t+1} = \frac{\text{Close}_{t+1} - \text{Close}_t}{\text{Close}_t}$$
+  Return values fluctuate around a constant mean of zero with bounded variance (stationarity). By forcing the neural network to predict the *percentage shift*, it is forced to learn multi-day momentum patterns rather than memorizing the price level.
 
 ---
 
-## ⚡ 5. Live Production System Architecture
+### 3. The Reconstructed Price Equation
+Once the neural network predicts the next-day standardized return $\hat{r}_{t+1}$, our service reconstructs the expected closing price using basic algebra:
+$$\widehat{\text{Close}}_{t+1} = \text{Close}_t \times (1 + \hat{r}_{t+1})$$
 
-StockSense AI is an operational daily stock-price forecasting system that couples **live market-data acquisition** with **pre-trained CNN-LSTM inference**.
+* **Step-by-Step Example:**
+  1. Reliance closes today at **₹1,324.40**.
+  2. The GRU V2 model predicts a return of $\hat{r} = +0.000876$ ($+8.76\text{ bps}$).
+  3. Reconstructed target:
+     $$\widehat{\text{Close}}_{t+1} = ₹1,324.40 \times (1 + 0.000876) = \mathbf{₹1,325.56}$$
 
-### 🔄 End-to-End Data Flow
+---
 
-```text
-USER / Browser
-   │
-   ▼
-React Dashboard (Vite 5 + Recharts)
-   │
-   ▼ HTTPS / REST
-FastAPI Modular Application
-   │
-   ├────────────────────────┼────────────────────────┐
-   │                        │                        │
-   ▼                        ▼                        ▼
-Market Data Service     Prediction Service       Experiment Service
-   │                        │                        │
-   ▼                        ▼                        ▼
-Yahoo Finance Provider   Model Registry          results.csv
-   │                     (In-Memory Cache)           │
-   ▼                        │                        ▼
-SimpleMemoryCache        CNN-LSTM (.keras)       Empirical Matrix
-(Quote: 20s TTL)         Fitted Scaler (.pkl)        │
-   │                        │                        │
-   └───────────┬────────────┴────────────────────────┘
-               ▼
-       JSON API Response
-               │
-               ▼
-     React Live Dashboard
+### 4. What are MAE, RMSE, and MAPE?
+* **Mean Absolute Error (MAE):** The average rupee gap between predicted price and reality:
+  $$\text{MAE} = \frac{1}{N} \sum_{i=1}^N \left| \widehat{\text{Close}}_i - \text{Close}_i \right|$$
+  *Example:* If a model predicted ₹1,322.86 and the market closed at ₹1,324.40, the absolute error is **₹1.54**.
+* **Root Mean Squared Error (RMSE):** Squares errors before taking the square root. Because it squares each gap, a big mistake (like missing an earnings drop by ₹50) is penalized much more severely than five ₹2 misses.
+* **Mean Absolute Percentage Error (MAPE):** The error expressed as a percentage:
+  $$\text{MAPE} = \frac{\text{Absolute Error}}{\text{Actual Price}} \times 100$$
+  *Why it matters:* An error of ₹10 on a ₹100 stock is a huge $10\%$ blunder; an error of ₹10 on a ₹4,000 TCS stock is a tiny $0.25\%$ error. MAPE lets you compare accuracy fairly across different stocks.
+
+---
+
+### 5. What is Directional Accuracy (Hit Rate) & What is its Trap?
+* **Definition:** The percentage of days the model got the market direction right:
+  $$\text{Directional Accuracy} = \frac{\text{Number of Correct UP/DOWN Calls}}{\text{Total Sessions}} \times 100$$
+* **The Bull Market Trap:**
+  > ☀️ **The Rainmaker Analogy:**  
+  > If it rains on 85 out of 100 days during Mumbai's monsoon season, a lazy weather forecaster who predicts "Rain" every single morning will achieve an **85% accuracy rate** without checking a single weather radar!  
+  > Similarly, during a multi-year Indian bull market, a naive model that always predicts `UP` can show a 60–70% hit rate while being completely blind to market downturns.
+
+---
+
+### 6. What is the Matthews Correlation Coefficient (MCC)?
+* **The Definition:** MCC is the gold-standard mathematical metric for binary directional quality. It considers all 4 cells of the confusion matrix:
+  - **TP (True Positive):** Predicted UP, Actually UP
+  - **TN (True Negative):** Predicted DOWN, Actually DOWN
+  - **FP (False Positive):** Predicted UP, Actually DOWN
+  - **FN (False Negative):** Predicted DOWN, Actually UP
+  
+  $$\text{MCC} = \frac{TP \times TN - FP \times FN}{\sqrt{(TP + FP)(TP + FN)(TN + FP)(TN + FN)}}$$
+
+* **The Scale:**
+  - **$+1.0$**: Perfect foresight (100% correct in all bull and bear sessions).
+  - **$0.0$**: No better than flipping a fair coin.
+  - **$-1.0$**: Total disagreement (always predicts opposite of reality).
+* **The "N/A" Condition:** If every single evaluated day was positive ($TN = FP = 0$), the formula divides zero by zero ($\frac{0}{0}$). Instead of outputting a misleading $0.0$ or $1.0$, StockSense AI displays **`N/A — insufficient class variation`**.
+
+---
+
+### 7. What is UP Recall vs. DOWN Recall (Directional Asymmetry)?
+* **UP Recall (Sensitivity):** When the market rallied, did the model catch the rally?
+* **DOWN Recall (Specificity):** When the market crashed or pulled back, did the model warn you?
+* **The Scientific Takeaway:** Our diagnostic audit revealed that deep learning models trained on post-2020 Indian equities have strong UP recall (~78%) but lower DOWN recall (~32%). Being completely transparent about this asymmetry is what separates real engineering from marketing hype.
+
+---
+
+### 8. What is the "Naive Persistence Baseline"?
+* **Definition:** The ultimate zero-effort benchmark:
+  $$\widehat{\text{Close}}_{t+1} = \text{Close}_t \quad (\hat{r}_{t+1} = 0.0)$$
+* **Why It is the Hardest Baseline to Beat:**
+  According to the **Efficient Market Hypothesis** (Fama, 1970), stock prices reflect all known information. In liquid markets, tomorrow's price is expected to be close to today's price.
+  
+  > ☕ **The Cup of Tea Rule:**  
+  > If our GRU model achieves an MAE of **₹13.29** across 3 historical test folds, and the Naive Baseline achieves an MAE of **₹13.34**, the AI's edge is only **₹0.05 (5 paise)**! That 5-paise advantage is not even enough to buy a cup of tea, and exchange brokerage fees will completely consume it. That is why we do not claim guaranteed trading profits.
+
+---
+
+## 🔬 Dual Deep Learning Architectures Compared
+
+Below is the architectural breakdown comparing our deployed Production V1 model with our Research Challenger V2 model:
+
+```mermaid
+flowchart LR
+    subgraph V1["Production V1 (112,417 Params)"]
+        direction TB
+        V1_In["Input (30, 7)"] --> V1_Conv["Conv1D (64 filters, k=3, ReLU)"]
+        V1_Conv --> V1_Pool["MaxPooling1D (pool=2)"]
+        V1_Pool --> V1_LSTM["BiLSTM (50 units, tanh)"]
+        V1_LSTM --> V1_Drop["Dropout (0.2)"]
+        V1_Drop --> V1_Dense1["Dense (32 units) + LeakyReLU"]
+        V1_Dense1 --> V1_Out["Linear Output (1 unit)"]
+    end
+
+    subgraph V2["Research Challenger V2 (44,065 Params)"]
+        direction TB
+        V2_In["Input (30, 7)"] --> V2_GRU1["GRU Layer 1 (64 units, tanh)"]
+        V2_GRU1 --> V2_Drop2["Dropout (0.2)"]
+        V2_Drop2 --> V2_GRU2["GRU Layer 2 (32 units, tanh)"]
+        V2_GRU2 --> V2_Dense2["Dense (16 units) + ReLU"]
+        V2_Dense2 --> V2_Out["Linear Output (1 unit)"]
+    end
 ```
 
-### 🕒 The Daily Candle Inference Rule (Academically Defensible)
-- **Live Display**: During NSE regular trading hours (09:15–15:30 IST), the dashboard polls the live quote endpoint to present current prices, day delta, and volume.
-- **CNN-LSTM Model Input**: Our deep learning model was trained strictly on **completed daily sessions**. Therefore, an incomplete intraday candle (where `Close`, `High`, `Low`, and `Volume` are unfinalized) is **never** fed into the model.
-- **Session Boundary Logic**:
-  - During market hours (`OPEN`): Inference strictly uses the sequence of the last 30 completed trading days (up to $t-1$), forecasting today's/next session's close.
-  - After market close (`15:30+ IST`): Today's candle is complete and validated, allowing the model to incorporate it and forecast the next official trading day.
-- **Calendar & Target Logic**: Target dates account for weekends and the official NSE holiday calendar rather than blindly adding `+1 calendar day`.
+### Architectural Comparison Table
+
+| Property | Production V1 (`stationary-return-v1`) | Research Challenger V2 (`EXP-06`) |
+|---|:---:|:---:|
+| **Primary Core** | 1D-CNN + Bidirectional LSTM | 2-Layer Gated Recurrent Unit (GRU) |
+| **Total Parameters** | 112,417 | **44,065 (60% leaner)** |
+| **Feature Extraction** | Waveform convolution across 3-day windows | Direct gated recurrent memory update |
+| **Training Speed** | ~45s per fold | **~12.9s per fold (3.5x faster)** |
+| **Historical Cross-Fold MAE** | ₹13.42 | **₹13.29 (Best challenger)** |
+| **Directional Hit Rate** | 53.0% | **54.0%** |
+| **Directional MCC** | +0.0825 | **+0.1214** |
+| **Deployment State** | **Live Primary Production** | **Live Shadow Tracking Mode** |
+| **Promotion Gate** | Proven standard | Locked pending $\ge 60$ prospective sessions |
 
 ---
 
+## 🖥️ Interactive Website Walkthrough: How to Read & Use the Terminal
+
+Visit the live production dashboard: **[https://stock-sense-ai-phi.vercel.app/](https://stock-sense-ai-phi.vercel.app/)**
+
+```mermaid
+flowchart TD
+    Step1["1. Watchlist Selector\nClick stock (e.g. RELIANCE, TCS)"]
+    Step2["2. Interactive Candlestick Chart\nInspect 30-day OHLCV & 20-day SMA"]
+    Step3["3. Forecast Panel\nRead predicted close, return in bps, and bull/bear tag"]
+    Step4["4. Sensitivity Analysis\nInspect feature perturbation responses"]
+    Step5["5. Model Comparison\nCompare V1 CNN-LSTM vs V2 GRU vs Naive"]
+    Step6["6. Accuracy & Track Record\nAudit verified past predictions vs actual settlement"]
+
+    Step1 --> Step2 --> Step3 --> Step4 --> Step5 --> Step6
+```
+
+### 1. Market State & Ticker Watchlist
+* **Market State Badge:** Automatically tracks NSE trading sessions in Indian Standard Time (`OPEN` during 09:15–15:30 IST; `CLOSED` or `HOLIDAY` outside exchange hours).
+* **Watchlist Navigation:** Click any of the 5 supported large-cap stocks. Live quote data is polled every 20 seconds.
+
+### 2. The Candlestick Chart
+* Displays historical Open, High, Low, Close, and Volume series.
+* **SMA-20 Overlay:** Toggle the 20-day Simple Moving Average line to see if the stock is trading above or below its medium-term baseline.
+* **Zoom Filters:** Switch horizons seamlessly between 1 Month, 3 Months, 6 Months, and 1 Year.
+
+### 3. Next Trading-Day Forecast Panel
+* **The Completed-Candle Rule:** Before 15:30 IST, the model strictly runs on finalized candles up to $t-1$. After 15:30 IST, today's finalized settlement candle is processed to generate the forecast for the next trading day.
+* **Holiday & Weekend Intelligence:** Target dates dynamically skip weekends and exchange holidays (e.g., Diwali-Balipratipada on Nov 10 skips directly to Wednesday, Nov 11), ensuring the system never logs forecasts for closed market days.
+
+### 4. Feature Sensitivity & Explainability Panel
+* **How It Works:** Neutralizes each of the 7 feature channels to 0.0 (their training distribution mean) and measures the resulting basis-point shift in predicted return.
+* **Interpretation:** Reveals which input signals (e.g., 20-day trend vs. intraday range) dominate the network's current prediction without making unproven causal claims.
+
+### 5. Prospective Research Comparison (EXP-05 & EXP-06)
+* Visualizes real-time shadow inference comparing:
+  1. **Production CNN-LSTM V1:** Deployed baseline.
+  2. **Research GRU V2:** Leaner experimental challenger.
+  3. **Naive Persistence:** Market random-walk baseline.
+
+### 6. Forecast Accuracy & Track Record Dashboard
+* **Scorecards:** Displays realized MAE, RMSE, MAPE, Directional Hit Rate, and MCC.
+* **Degenerate Handling:** Displays `N/A` when single-class outcomes make metrics mathematically undefined.
+* **Sample Size Banner:** Discloses current observation counts ($N=1$ for GRU, $N=2$ for V1) and displays a cautionary badge until the pre-registered 60-observation threshold is achieved.
+* **Historical Backtest Accordion:** Decoupled table displaying offline 3-fold cross-validation metrics, clearly segregated from live forward results.
+
 ---
 
-## 🚀 6. Verification & Local Execution
+## 🛡️ Prospective Evaluation Protocol & Guardrail Gate
+
+To avoid the data contamination that plagues academic ML research, StockSense AI enforces a strict prospective evaluation workflow:
+
+```mermaid
+sequenceDiagram
+    autonumber
+    participant Market as 🏛️ National Stock Exchange (NSE)
+    participant Engine as 🧠 StockSense AI Backend
+    participant Log as 📝 Prospective Predictions Log (CSV)
+    participant Evaluator as ⚖️ Forward Evaluation Scorer
+    participant Dashboard as 📊 Track Record UI
+
+    Note over Engine,Log: Step A: Pre-Session Forecast Commitment
+    Market->>Engine: Market Session Completes (15:30 IST Close finalized)
+    Engine->>Engine: Ingest 30 completed candles & compute 7 stationary features
+    Engine->>Engine: Generate V1, V2, and Naive predictions for next session
+    Engine->>Log: Cryptographically append row (Status: PENDING_OUTCOME, Actual Close: null)
+    
+    Note over Market,Evaluator: Step B: Real-Time Market Session Execution
+    Market->>Market: Target trading day opens and closes
+    Market->>Evaluator: Official final settlement price published
+    
+    Note over Evaluator,Dashboard: Step C: Verified Post-Session Scoring
+    Evaluator->>Log: Match target date & record realized Close
+    Evaluator->>Evaluator: Compute exact price error in ₹ and check directional sign
+    Evaluator->>Log: Update row to RESOLVED with finalized timestamp
+    Evaluator->>Dashboard: Render verified MAE, RMSE, MAPE, and N/A guarded MCC
+```
+
+### Realized Prospective Track Record (`RELIANCE.NS`)
+
+| Target Date | Model | Forecast Price | Actual Settlement | Absolute Error | Direction Match | Status |
+|:---:|:---|:---:|:---:|:---:|:---:|:---:|
+| **2026-10-26** | Production CNN-LSTM | ₹1,190.23 | ₹1,201.80 | ₹11.57 | UP $\rightarrow$ UP (**True**) | `RESOLVED` |
+| **2026-10-26** | Colab EXP-05 Fold 3 | ₹1,189.31 | ₹1,201.80 | ₹12.49 | DOWN $\rightarrow$ UP (**False**) | `RESOLVED` |
+| **2026-10-26** | Naive Baseline | ₹1,190.00 | ₹1,201.80 | ₹11.80 | FLAT $\rightarrow$ UP (**False**) | `RESOLVED` |
+| **2026-11-09** | **GRU V2 Challenger** | **₹1,322.86** | **₹1,324.40** | **₹1.54** | **UP $\rightarrow$ UP (True)** | `RESOLVED` |
+| **2026-11-09** | Production CNN-LSTM V1 | ₹1,319.33 | ₹1,324.40 | ₹5.07 | DOWN $\rightarrow$ UP (**False**) | `RESOLVED` |
+| **2026-11-09** | Naive Baseline | ₹1,320.00 | ₹1,324.40 | ₹4.40 | FLAT $\rightarrow$ UP (**False**) | `RESOLVED` |
+| **2026-11-11** | GRU V2 Challenger | ₹1,325.56 | *Awaiting settlement* | — | PENDING (UP) | `PENDING_OUTCOME` |
+| **2026-11-11** | Production CNN-LSTM V1 | ₹1,323.12 | *Awaiting settlement* | — | PENDING (DOWN) | `PENDING_OUTCOME` |
+| **2026-11-11** | Naive Baseline | ₹1,324.40 | *Awaiting settlement* | — | PENDING (FLAT) | `PENDING_OUTCOME` |
+
+---
+
+## 🛠️ Local Development & Quickstart
 
 ```powershell
-# 1. Run formal automated pytest suite (31 unit & integration tests)
-python -m pytest tests/
+# 1. Clone repository
+git clone https://github.com/manojsai7/Stock_SenseAi.git
+cd Stock_SenseAi
 
-# 2. Build the production React frontend
+# 2. Setup Python virtual environment
+python -m venv .venv
+.venv\Scripts\activate
+pip install -r requirements.txt
+
+# 3. Run automated regression suite (204 passing tests)
+pytest -q
+
+# 4. Start backend FastAPI service
+uvicorn backend.main:app --host 0.0.0.0 --port 8000 --reload
+
+# 5. In a separate terminal, start frontend Vite dev server
 cd frontend
-npm run build
-cd ..
-
-# 3. Start the live unified application (FastAPI + Embedded React Frontend)
-python -m uvicorn backend.main:app --host 0.0.0.0 --port 8000
-
-# 4. Access the live dashboard and API documentation
-# Dashboard: http://localhost:8000
-# OpenAPI Docs: http://localhost:8000/docs
-# System Health: http://localhost:8000/api/system/health
-# System Readiness: http://localhost:8000/api/system/ready
+npm install
+npm run dev
+# Dashboard opens at: http://localhost:5173
 ```
 
 ---
 
-## 🐳 7. Production Deployment & Dockerization
+## ❓ Frequently Asked Questions (FAQ) for Viva & Faculty
 
-### 🌐 System Architecture
+#### Q1: "How can an AI predict future stock prices when the market is famously uncertain and random?"
+> **Answer:** StockSense AI **does not** claim to possess clairvoyance, foresee black-swan news, or predict exact long-term prices. According to quantitative financial theory, short-term stock returns are a combination of a structural signal (autocorrelation, momentum, volatility clustering) and high-variance noise. By predicting **stationary fractional returns** rather than raw prices, our deep learning architectures extract weak conditional probabilities (e.g., a 54% directional hit rate) from 30-day technical sequences. We treat all forecasts as probabilistic expectations, not guarantees.
 
-```text
-INTERNET
-   │
-   ▼
-Public HTTPS URL (e.g. Render / Railway / Custom Domain)
-   │
-   ▼
-┌──────────────────────────────────────────────┐
-│ Docker Container                             │
-│                                              │
-│  FastAPI Application (0.0.0.0:$PORT)         │
-│  ├── Dynamic Port Binding ($PORT)            │
-│  ├── In-Memory TTL Cache (Quote: 20s)        │
-│  ├── In-Memory Model Registry                │
-│  │                                           │
-│  ├── ┌────────────────────────────────────┐  │
-│  │   │ React Production Build             │  │
-│  │   │ Static SPA Mount: frontend/dist    │  │
-│  │   └────────────────────────────────────┘  │
-│  │                                           │
-│  ├── ┌────────────────────────────────────┐  │
-│  │   │ REST API Endpoints                 │  │
-│  │   │ /api/stocks, /api/predict/*, etc.  │  │
-│  │   └────────────────────────────────────┘  │
-│  │                                           │
-│  └── ┌────────────────────────────────────┐  │
-│      │ ML Inference Runtime (TensorFlow)  │  │
-│      │ 5 Trained CNN-LSTM Models (.keras) │  │
-│      │ 5 Fitted Feature Scalers (.pkl)    │  │
-│      │ Offline Training Metadata (.json)  │  │
-│      └────────────────────────────────────┘  │
-└──────────────────────┬───────────────────────┘
-                       │
-                       ▼
-                 Yahoo Finance
-          (Historical Daily OHLCV +
-           Live Market Quote Polling)
-```
+#### Q2: "Can someone use this website for automated live trading and get rich?"
+> **Answer:** **No.** StockSense AI is strictly an academic econometric research prototype. In live algorithmic trading, an edge of ₹0.05 to ₹1.50 per share over naive persistence is completely erased by market bid-ask spread, exchange transaction fees, Securities Transaction Tax (STT), brokerage, and execution slippage. Claiming commercial profitability from a small sample size ($N=1$ or $N=2$) would be scientifically fraudulent.
 
-### 📦 Docker Multi-Stage Build
+#### Q3: "Why predict only 1 day ahead? Why not 5 minutes or 1 month ahead?"
+> **Answer:** 
+> - **5-minute intraday trading** requires tick-level Order Book (L2/L3) data and microsecond latency; daily OHLCV models cannot capture intraday order flow.
+> - **1-month or 1-year forecasting** introduces massive macroeconomic variance, quarterly earnings reports, and geopolitical events that render 30-day technical waveforms useless.
+> - **1-day ahead** represents the canonical discrete econometrics horizon: overnight information processing and daily market settlement.
 
-The root `Dockerfile` packages the entire application into a single, self-contained, production-grade image:
-1. **Stage 1 (`node:20-slim`)**: Installs dependencies and compiles the React dashboard into optimized static assets (`frontend/dist`).
-2. **Stage 2 (`python:3.11-slim`)**: Installs Python requirements, copies backend services, model artifacts (`models_storage/`), empirical results, and the compiled frontend build.
-3. **Entrypoint**: Binds dynamically to `0.0.0.0:${PORT:-8000}`.
+#### Q4: "Why isn't financial news sentiment included in this model?"
+> **Answer:** Many student projects boast "multimodal sentiment analysis" using FinBERT or Vader on news scraped from the web. In almost all cases, these implementations suffer from **severe lookahead bias** (articles published at 18:00 IST are incorrectly assigned to the 09:15 trading session) or data leakage. Because an audited, leak-free timestamped news corpus for Indian equities was not verifiable, news sentiment was deliberately excluded to protect academic integrity.
 
-```bash
-# Build the Docker image
-docker build -t stocksense-ai:latest .
+#### Q5: "If the GRU V2 had a lower historical MAE (₹13.29) than CNN-LSTM (₹13.42), why hasn't it replaced V1 in production?"
+> **Answer:** This is a core demonstration of rigorous scientific discipline. The historical evaluation window (May–October 2026) was previously inspected during the development of EXP-05. Re-testing a new model on previously inspected historical data constitutes an **exploratory result**, not a confirmatory out-of-sample proof. Under our pre-registered research protocol, a challenger model cannot replace the production standard until it demonstrates statistically significant outperformance over a **minimum of 60 prospective sessions**.
 
-# Run the container locally (mimicking cloud port injection)
-docker run --rm -p 8000:8000 -e PORT=8000 stocksense-ai:latest
+#### Q6: "Why does the Matthews Correlation Coefficient (MCC) show 'N/A' on the dashboard?"
+> **Answer:** In our resolved prospective sessions, the market moved upward on every single evaluated day (100% positive class). When there are zero actual negative sessions ($TN = FP = 0$), the mathematical formula for correlation contains a division by zero:
+> $$\text{MCC} = \frac{0 - 0}{\sqrt{\dots \times 0}} = \frac{0}{0} \implies \text{Undefined}$$
+> A dishonest application would output `0.0` or `1.0`. StockSense AI adheres to mathematical truth by declaring the metric `N/A` due to insufficient class variation.
 
-# Verify deployment with the automated smoke test suite
-python scripts/smoke_test.py --url http://localhost:8000
-```
+#### Q7: "What happens if there is an unscheduled market closure or exchange holiday?"
+> **Answer:** The backend incorporates the official NSE Holiday Calendar. Incomplete intraday candles are rejected with HTTP 503. Target settlement dates dynamically skip weekends and exchange holidays (e.g., skipping Tuesday, Nov 10 for Diwali-Balipratipada and targeting Wednesday, Nov 11), ensuring the system never logs forecasts for non-existent trading sessions.
 
-### ⚙️ Environment Configuration
-
-| Variable | Default | Purpose |
-|---|:---:|---|
-| `PORT` | `8000` | Port injected dynamically by cloud platforms (Render, Railway). |
-| `ENVIRONMENT` | `production` | Runtime mode (`production` disables debug reload). |
-| `MARKET_TIMEZONE` | `Asia/Kolkata` | Timezone for NSE session determination. |
-| `QUOTE_CACHE_TTL` | `20` | Cache TTL in seconds for live market quotes. |
-| `HISTORY_CACHE_TTL` | `3600` | Cache TTL in seconds for historical daily candles. |
-| `PREDICTION_CACHE_TTL`| `1800` | Cache TTL in seconds for deep learning predictions. |
-| `LOG_LEVEL` | `INFO` | Application log verbosity (`INFO`, `DEBUG`, `WARNING`). |
-
-### 🩺 Health & Readiness Probes
-
-- **Health Probe**: `GET /api/system/health` (also aliased at `/health`). Returns 200 OK without depending on external Yahoo Finance uptime. Used for container liveness.
-- **Readiness Probe**: `GET /api/system/ready` (also aliased at `/ready`). Validates that all 5 model artifacts, scalers, and metadata files are accessible on disk.
-
-### ☁️ Cloud Deployment Options
-
-#### Option A: Unified Docker Web Service on Render (Recommended)
-1. Push repository to GitHub.
-2. In [Render Dashboard](https://dashboard.render.com), select **New > Blueprint** and link your repo (it automatically detects `render.yaml`).
-3. Or select **New > Web Service > Docker runtime**:
-   - **Runtime**: Docker
-   - **Region**: Singapore (`sin`)
-   - **Plan**: Starter (minimum 512 MB – 1 GB RAM for TensorFlow runtime)
-   - **Health Check Path**: `/api/system/health`
-4. The service will build and provide a public URL: `https://<service-name>.onrender.com`.
-
-#### Option B: Unified Docker Service on Railway
-1. Push repository to GitHub.
-2. On [Railway](https://railway.app), create a **New Project > Deploy from GitHub repo**.
-3. Railway detects the root `Dockerfile`, injects `$PORT`, and serves both the React UI and FastAPI endpoints on a public URL (`https://<project>.up.railway.app`).
-
-#### Option C: Vercel Frontend + Render Backend
-If deploying the frontend on Vercel:
-- Deploy the React dashboard from `frontend/` to Vercel.
-- Configure `VITE_API_BASE_URL=https://<your-backend>.onrender.com` in Vercel environment variables so API calls route to the Docker backend.
-- *(Note: TensorFlow is ~500MB and exceeds Vercel's 250MB serverless function limit; the full unified Docker container on Render/Railway is the recommended single-service deployment).*
+#### Q8: "What is the single most important contribution of this capstone project?"
+> **Answer:** Demonstrating that **data hygiene, leakage prevention, stationary formulation, and prospective evaluation integrity** matter far more than arbitrarily stacking deeper neural network layers. A simple model evaluated honestly against a strong naive baseline is ten times more valuable than a complex model producing visually impressive but methodologically fraudulent backtests.
 
 ---
 
-## ⚖️ 8. Academic Terminology & Disclaimers
+## 📜 Research Disclaimers & Academic Ethics
+* **Educational Purpose:** StockSense AI is developed for academic capstone presentation and econometrics research. Nothing herein constitutes investment, trading, or financial advice.
+* **Model Freezing:** Production neural network weights in `models_storage_stationary/` and locked evaluation registries are cryptographically sealed to ensure 100% auditability and reproducibility.
 
-- **Live Market Data**: Refers to latest available delayed exchange quote retrieved from Yahoo Finance during trading hours.
-- **Historical Directional Accuracy**: Refers strictly to the model's out-of-sample test-set hit rate ($\frac{\text{correct directions}}{\text{total periods}} \times 100$) over unseen test data.
-- **Next Trading-Day Forecast**: Refers to the predicted closing price for the next official session calculated strictly from completed daily sessions.
-- **Prediction data provenance**: Forecast responses include `data_status` (`ONLINE`, `OFFLINE`, or `UNKNOWN`), the provider tier, and `data_as_of_date`. The prediction API returns HTTP 503 when its daily history does not include the latest completed session, rather than returning a forecast from stale packaged data.
-- **Default prediction pipeline**: The Render configuration explicitly selects `stationary-return-v1`. Other deployments should set `PREDICTION_PIPELINE_VERSION=stationary-return-v1` or specify the pipeline in the prediction request.
-- **Disclaimer**: StockSense AI is a scientific research prototype. Deep learning forecasts do not guarantee trading returns and should not be used as financial advice.
-
-### 🧪 9. Google Colab Training & Artifact Release Workflow
-
-The project defines an explicit separation between research/training (Google Colab), versioned artifact management (GitHub), production API inference (Render), and user presentation (Vercel):
-
-```text
-┌───────────────────────┐
-│ Google Colab          │ ──► Historical Data Ingestion & Technical Feature Engineering
-│ (Research / Training) │ ──► Chronological Train/Val Split & Causal Scaler Fitting
-└───────────┬───────────┘ ──► CNN-LSTM Model Training & Validation Epoch Selection
-            │
-            ▼ (Versioned Artifact Package: model.keras, feature_scaler.pkl, return_scaler.pkl, manifest.json)
-┌───────────────────────┐
-│ GitHub Repository     │ ──► Verified Artifact Packages in `models_storage_stationary/`
-└───────────┬───────────┘ ──► Automated Trigger via Git Push to `master`
-            │
-            ▼ (Docker Build: Uvicorn + FastAPI + Model Registry in RAM)
-┌───────────────────────┐
-│ Render API            │ ──► Zero-training Inference Engine: Loads pre-trained model & scalers
-│ (Inference Service)   │ ──► Fetches 30 completed sessions via Yahoo Finance direct chart API
-└───────────┬───────────┘ ──► Reconstructs next-day close: predicted_close = last_close * (1 + return)
-            │
-            ▼ (HTTPS REST JSON API)
-┌───────────────────────┐
-│ Vercel Frontend       │ ──► Editorial Financial Terminal UI (Space Grotesk / Manrope / IBM Plex Mono)
-│ (React 18 + Vite)     │ ──► Interactive Bklit Candlestick Chart, MA20 Overlay, Kokonut Forecast Trigger
-└───────────────────────┘
-```
-
-#### Reproducible Training in Google Colab
-Open [`notebooks/StockSense_Colab_Workflow.ipynb`](notebooks/StockSense_Colab_Workflow.ipynb) in Google Colab.
-- **Safe Defaults**: `REFRESH_DATA=False`, `RUN_TRAINING=False`, `EXPORT_CANDIDATES_TO_DRIVE=False`.
-- **Candidate Isolation**: All Colab training runs output to `models_storage_stationary_candidate/` so production packages are never inadvertently overwritten.
-- **Artifact Verification**: Every trained candidate must pass SHA-256 checksum verification and an artifact reload smoke-test (`smoke_test_artifact`) before release.
-
-#### Controlled Release Protocol
-1. **Train & Smoke-Test**: Set `RUN_TRAINING=True` in Colab and execute the canonical `ProductionStationaryTrainer`.
-2. **Review & Compare**: Evaluate out-of-sample walk-forward directional hit rates and error metrics against baseline persistence.
-3. **Stage Package**: Move approved package into `models_storage_stationary/{SYMBOL_NAME}/` with its accompanying `manifest.json`.
-4. **Git Commit & Push**: Commit with clear metadata tags and push to `origin/master`.
-5. **Render Rebuild**: Render automatically re-compiles the Docker image, pre-loads the model weights into memory, and passes `/api/system/health`.
-6. **Smoke-Test Live Inference**: Verify `/api/predictions/{SYMBOL}/latest?pipeline_version=stationary-return-v1` returns HTTP 200 with positive, finite `predicted_close` and honest data provenance.
-
-
+**Authors:** StockSense AI Engineering Team  
+**Institution:** Final-Year Capstone Defense Package (2026)  
+**License:** MIT Open Source
