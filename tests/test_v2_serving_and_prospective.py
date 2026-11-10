@@ -128,10 +128,12 @@ def test_challenger_prediction_api_endpoint(client, monkeypatch):
 
     from backend.services.challenger_prediction_service import challenger_prediction_service
     from backend.services.market_status_service import market_status_service
+    from backend.services.prospective_v2_service import prospective_v2_service
 
     monkeypatch.setattr(challenger_prediction_service.provider, "fetch_historical_ohlcv", lambda *args, **kwargs: mock_df)
     monkeypatch.setattr(market_status_service, "get_latest_completed_trading_day", lambda: dates[-1].date())
     monkeypatch.setattr(market_status_service, "get_next_trading_day", lambda d: d + timedelta(days=1))
+    monkeypatch.setattr(prospective_v2_service, "record_daily_forecasts", lambda *args, **kwargs: [])
 
     res = client.get("/api/research/challenger-prediction/RELIANCE.NS")
     assert res.status_code == 200

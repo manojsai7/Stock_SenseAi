@@ -9,6 +9,7 @@ const BenchmarkMatrix = lazy(() => import('./components/BenchmarkMatrix'));
 const ArchitectureModal = lazy(() => import('./components/ArchitectureModal'));
 const FeatureExplainabilityPanel = lazy(() => import('./components/FeatureExplainabilityPanel'));
 const ResearchComparisonPanel = lazy(() => import('./components/ResearchComparisonPanel'));
+const ForecastAccuracyPanel = lazy(() => import('./components/ForecastAccuracyPanel'));
 import {
   getStockInfo,
   getStockQuote,
@@ -236,6 +237,12 @@ export default function App() {
         <motion.div className="dashboard-section" initial={{ opacity: 1, y: 7 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: 0.11 }}>
           <Suspense fallback={<section className="fintech-card research-panel-card" role="status" aria-busy="true">Loading prospective model comparison…</section>}>
             <ResearchComparisonPanel symbol={selectedSymbol} />
+          </Suspense>
+        </motion.div>
+
+        <motion.div className="dashboard-section" initial={{ opacity: 1, y: 7 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: 0.115 }}>
+          <Suspense fallback={<section className="fintech-card forecast-accuracy-card" role="status" aria-busy="true">Loading forecast accuracy & track record…</section>}>
+            <ForecastAccuracyPanel symbol={selectedSymbol} />
           </Suspense>
         </motion.div>
 

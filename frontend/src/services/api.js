@@ -127,3 +127,17 @@ export async function getExp06Comparison(symbol = 'RELIANCE.NS') {
   return res.json();
 }
 
+export async function getForecastAccuracy(symbol = 'RELIANCE.NS', options = {}) {
+  const { limit, includeHistorical = true } = options;
+  const params = new URLSearchParams({ symbol });
+  if (limit) params.set('limit', limit);
+  if (includeHistorical !== undefined) params.set('include_historical', String(includeHistorical));
+
+  const res = await fetch(`${API_BASE}/research/forecast-accuracy?${params}`);
+  if (!res.ok) {
+    const errorMsg = await parseError(res, `Forecast accuracy track record unavailable for ${symbol}`);
+    throw new Error(errorMsg);
+  }
+  return res.json();
+}
+

@@ -4,6 +4,7 @@ from backend.services.research_service import research_service
 from backend.services.challenger_prediction_service import challenger_prediction_service
 from backend.services.prediction_service import StaleMarketDataError, PredictionService
 from backend.services.prospective_v2_service import prospective_v2_service
+from backend.services.forecast_accuracy_service import forecast_accuracy_service
 
 router = APIRouter(prefix="/research", tags=["Research & Evaluation"])
 
@@ -96,4 +97,35 @@ def get_exp06_comparison(symbol: str = "RELIANCE.NS") -> Dict[str, Any]:
         raise HTTPException(status_code=400, detail=str(ve))
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to load EXP-06 prospective comparison: {str(e)}")
+
+
+@router.get("/forecast-accuracy", summary="Get Historical Forecast Accuracy & Track Record")
+@router.get("/forecast-accuracy/{symbol}", summary="Get Historical Forecast Accuracy & Track Record by Symbol")
+def get_forecast_accuracy(
+    symbol: str = "RELIANCE.NS",
+    limit: Optional[int] = Query(None, description="Limit to last N resolved sessions (e.g. 20, 60)"),
+    include_historical: bool = Query(True, description="Include separate historical development backtest benchmarks")
+) -> Dict[str, Any]:
+    """
+    Returns data-driven forecast accuracy metrics and historical track record:
+    - Overall model error (MAE, RMSE, MAPE in INR and %)
+    - Directional accuracy, balanced accuracy, MCC, UP/DOWN recall
+    - Common-date paired head-to-head comparison
+    - Recharts-ready predicted vs actual price timeline
+    - Chronological table of resolved outcomes and pending forecasts
+    - Strict decoupling between prospective track records and historical offline backtests
+    """
+    try:
+        return forecast_accuracy_service.get_accuracy_payload(
+            symbol=symbol,
+            limit=limit,
+            include_historical_benchmarks=include_historical
+        )
+    except FileNotFoundError as fe:
+        raise HTTPException(status_code=404, detail=str(fe))
+    except ValueError as ve:
+        raise HTTPException(status_code=400, detail=str(ve))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to load forecast accuracy track record: {str(e)}")
+
 
