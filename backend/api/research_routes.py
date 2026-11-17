@@ -5,6 +5,7 @@ from backend.services.challenger_prediction_service import challenger_prediction
 from backend.services.prediction_service import StaleMarketDataError, PredictionService
 from backend.services.prospective_v2_service import prospective_v2_service
 from backend.services.forecast_accuracy_service import forecast_accuracy_service
+from backend.services.historical_predictions_service import historical_predictions_service
 
 router = APIRouter(prefix="/research", tags=["Research & Evaluation"])
 
@@ -127,5 +128,40 @@ def get_forecast_accuracy(
         raise HTTPException(status_code=400, detail=str(ve))
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to load forecast accuracy track record: {str(e)}")
+
+
+@router.get("/historical-predictions", summary="Get Historical Walk-Forward Predictions & Explorer Data")
+@router.get("/historical-predictions/{symbol}", summary="Get Historical Walk-Forward Predictions by Symbol")
+def get_historical_predictions(
+    symbol: str = "RELIANCE.NS",
+    experiment: Optional[str] = Query(None, description="Experiment filter: EXP-06, EXP-05, V1-Production-Audit, or ALL"),
+    model_name: Optional[str] = Query(None, description="Model name filter"),
+    fold: Optional[str] = Query(None, description="Fold filter (e.g. 1, 2, 3, or ALL)"),
+    start_date: Optional[str] = Query(None, description="Start date YYYY-MM-DD"),
+    end_date: Optional[str] = Query(None, description="End date YYYY-MM-DD"),
+    limit: Optional[int] = Query(None, description="Limit returned prediction rows for UI performance (e.g. 100, 300)")
+) -> Dict[str, Any]:
+    """
+    Returns verified archived historical walk-forward predictions, error distributions,
+    model predicting capability scores, and model coverage matrices.
+    Clearly designated as OFFLINE_DEVELOPMENT_EVALUATION.
+    """
+    try:
+        return historical_predictions_service.get_historical_predictions(
+            symbol=symbol,
+            experiment=experiment,
+            model_name=model_name,
+            fold=fold,
+            start_date=start_date,
+            end_date=end_date,
+            limit=limit
+        )
+    except FileNotFoundError as fe:
+        raise HTTPException(status_code=404, detail=str(fe))
+    except ValueError as ve:
+        raise HTTPException(status_code=400, detail=str(ve))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to query historical predictions for '{symbol}': {str(e)}")
+
 
 

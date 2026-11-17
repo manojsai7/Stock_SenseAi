@@ -141,3 +141,22 @@ export async function getForecastAccuracy(symbol = 'RELIANCE.NS', options = {}) 
   return res.json();
 }
 
+export async function getHistoricalPredictions(symbol = 'RELIANCE.NS', options = {}) {
+  const { experiment, modelName, fold, startDate, endDate, limit } = options;
+  const params = new URLSearchParams({ symbol });
+  if (experiment) params.set('experiment', experiment);
+  if (modelName) params.set('model_name', modelName);
+  if (fold) params.set('fold', fold);
+  if (startDate) params.set('start_date', startDate);
+  if (endDate) params.set('end_date', endDate);
+  if (limit) params.set('limit', String(limit));
+
+  const res = await fetch(`${API_BASE}/research/historical-predictions?${params}`);
+  if (!res.ok) {
+    const errorMsg = await parseError(res, `Historical predictions unavailable for ${symbol}`);
+    throw new Error(errorMsg);
+  }
+  return res.json();
+}
+
+

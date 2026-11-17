@@ -28,9 +28,11 @@ import {
   Lock,
 } from 'lucide-react';
 import { getForecastAccuracy } from '../services/api';
+import HistoricalPredictionExplorer from './HistoricalPredictionExplorer';
 import './ForecastAccuracyPanel.css';
 
 export default function ForecastAccuracyPanel({ symbol = 'RELIANCE.NS' }) {
+  const [activeView, setActiveView] = useState('PROSPECTIVE'); // 'PROSPECTIVE' | 'HISTORICAL'
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -101,10 +103,69 @@ export default function ForecastAccuracyPanel({ symbol = 'RELIANCE.NS' }) {
     return data.per_family_metrics[activeTabModel] || Object.values(data.per_family_metrics)[0] || null;
   }, [data, activeTabModel]);
 
-  // Unsupported Symbol State (Rendered AFTER all hooks are defined)
+  // Render Historical Walk-Forward Explorer view when selected
+  if (activeView === 'HISTORICAL') {
+    return (
+      <section className="fintech-card forecast-accuracy-card" aria-labelledby="accuracy-heading">
+        <div className="accuracy-view-tabs" role="tablist" aria-label="Forecast Accuracy View Selector">
+          <button
+            type="button"
+            role="tab"
+            aria-selected={false}
+            className="accuracy-view-tab-btn"
+            onClick={() => setActiveView('PROSPECTIVE')}
+          >
+            <span className="view-tab-dot live-dot" />
+            <span className="view-tab-label">Live Track Record</span>
+            <span className="view-tab-badge">Prospective (Forward)</span>
+          </button>
+          <button
+            type="button"
+            role="tab"
+            aria-selected={true}
+            className="accuracy-view-tab-btn active"
+            onClick={() => setActiveView('HISTORICAL')}
+          >
+            <span className="view-tab-dot offline-dot" />
+            <span className="view-tab-label">Historical Walk-Forward Explorer</span>
+            <span className="view-tab-badge highlight">Offline Development</span>
+          </button>
+        </div>
+
+        <HistoricalPredictionExplorer symbol={symbol} />
+      </section>
+    );
+  }
+
+  // Unsupported Symbol State for Prospective Tracking
   if (data && !data.supported) {
     return (
       <section className="fintech-card forecast-accuracy-card" aria-labelledby="accuracy-heading">
+        <div className="accuracy-view-tabs" role="tablist" aria-label="Forecast Accuracy View Selector">
+          <button
+            type="button"
+            role="tab"
+            aria-selected={true}
+            className="accuracy-view-tab-btn active"
+            onClick={() => setActiveView('PROSPECTIVE')}
+          >
+            <span className="view-tab-dot live-dot" />
+            <span className="view-tab-label">Live Track Record</span>
+            <span className="view-tab-badge">Prospective (Forward)</span>
+          </button>
+          <button
+            type="button"
+            role="tab"
+            aria-selected={false}
+            className="accuracy-view-tab-btn"
+            onClick={() => setActiveView('HISTORICAL')}
+          >
+            <span className="view-tab-dot offline-dot" />
+            <span className="view-tab-label">Historical Walk-Forward Explorer</span>
+            <span className="view-tab-badge highlight">Offline Development</span>
+          </button>
+        </div>
+
         <div className="accuracy-header">
           <div>
             <span className="accuracy-eyebrow">
@@ -123,8 +184,18 @@ export default function ForecastAccuracyPanel({ symbol = 'RELIANCE.NS' }) {
             exclusively to <strong>RELIANCE.NS</strong>.
           </p>
           <span className="accuracy-unsupported-note">
-            Constituent '{symbol}' is not enrolled in the live prospective shadow registry. Switch to RELIANCE.NS to inspect genuine predictive outcomes.
+            Constituent '{symbol}' is not enrolled in the live prospective shadow registry.
           </span>
+          <div style={{ marginTop: '1.25rem' }}>
+            <button
+              type="button"
+              className="accuracy-btn-pill active"
+              onClick={() => setActiveView('HISTORICAL')}
+              style={{ padding: '8px 18px', fontSize: '0.85rem' }}
+            >
+              🔬 Switch to Historical Walk-Forward Explorer for {symbol}
+            </button>
+          </div>
         </div>
       </section>
     );
@@ -141,6 +212,32 @@ export default function ForecastAccuracyPanel({ symbol = 'RELIANCE.NS' }) {
 
   return (
     <section className="fintech-card forecast-accuracy-card" aria-labelledby="accuracy-heading">
+      {/* Top-Level View Selector */}
+      <div className="accuracy-view-tabs" role="tablist" aria-label="Forecast Accuracy View Selector">
+        <button
+          type="button"
+          role="tab"
+          aria-selected={true}
+          className="accuracy-view-tab-btn active"
+          onClick={() => setActiveView('PROSPECTIVE')}
+        >
+          <span className="view-tab-dot live-dot" />
+          <span className="view-tab-label">Live Track Record</span>
+          <span className="view-tab-badge">Prospective (Forward)</span>
+        </button>
+        <button
+          type="button"
+          role="tab"
+          aria-selected={false}
+          className="accuracy-view-tab-btn"
+          onClick={() => setActiveView('HISTORICAL')}
+        >
+          <span className="view-tab-dot offline-dot" />
+          <span className="view-tab-label">Historical Walk-Forward Explorer</span>
+          <span className="view-tab-badge highlight">Offline Development</span>
+        </button>
+      </div>
+
       {/* Header */}
       <div className="accuracy-header">
         <div>
@@ -250,7 +347,10 @@ export default function ForecastAccuracyPanel({ symbol = 'RELIANCE.NS' }) {
       {activeMetrics && (
         <div className="accuracy-scorecard-grid">
           <div className="accuracy-metric-card primary-card">
-            <span className="metric-label">Mean Absolute Error (MAE)</span>
+            <div className="metric-header-row">
+              <span className="metric-label">Mean Absolute Error (MAE)</span>
+              <span className="metric-n-badge">N={activeMetrics.sample_size}</span>
+            </div>
             <div className="metric-val-row">
               <span className="metric-val">
                 {activeMetrics.price_mae !== null ? `₹${activeMetrics.price_mae.toFixed(2)}` : '—'}
@@ -261,25 +361,46 @@ export default function ForecastAccuracyPanel({ symbol = 'RELIANCE.NS' }) {
           </div>
 
           <div className="accuracy-metric-card">
-            <span className="metric-label">Directional Accuracy (Hit Rate)</span>
+            <div className="metric-header-row">
+              <span className="metric-label">Directional Accuracy</span>
+              <span className="metric-n-badge">N={activeMetrics.sample_size}</span>
+            </div>
             <div className="metric-val-row">
-              <span
-                className={`metric-val ${
-                  activeMetrics.directional_accuracy_pct >= 50 ? 'accent-green' : 'accent-amber'
-                }`}
-              >
-                {activeMetrics.directional_accuracy_pct !== null
-                  ? `${activeMetrics.directional_accuracy_pct.toFixed(1)}%`
-                  : '—'}
-              </span>
+              {activeMetrics.directional_accuracy_pct !== null ? (
+                activeMetrics.sample_size <= 2 ? (
+                  <div className="metric-val-small-sample">
+                    <span className="metric-val accent-amber">
+                      {Math.round((activeMetrics.directional_accuracy_pct / 100) * activeMetrics.sample_size)} / {activeMetrics.sample_size}
+                    </span>
+                    <span className="metric-val-sub">
+                      ({activeMetrics.directional_accuracy_pct.toFixed(0)}% · Limited Evidence)
+                    </span>
+                  </div>
+                ) : (
+                  <span
+                    className={`metric-val ${
+                      activeMetrics.directional_accuracy_pct >= 50 ? 'accent-green' : 'accent-amber'
+                    }`}
+                  >
+                    {activeMetrics.directional_accuracy_pct.toFixed(1)}%
+                  </span>
+                )
+              ) : (
+                <span className="metric-val">—</span>
+              )}
             </div>
             <span className="metric-desc">
-              Correct sign match: sign(r̂) == sign(r)
+              {activeMetrics.sample_size <= 2
+                ? `1 / ${activeMetrics.sample_size} Correct directional predictions · Very limited evidence (${activeMetrics.sample_size} resolved forecast)`
+                : 'Correct sign match: sign(r̂) == sign(r)'}
             </span>
           </div>
 
           <div className="accuracy-metric-card">
-            <span className="metric-label">Mean Abs Percentage Error (MAPE)</span>
+            <div className="metric-header-row">
+              <span className="metric-label">Mean Abs % Error (MAPE)</span>
+              <span className="metric-n-badge">N={activeMetrics.sample_size}</span>
+            </div>
             <div className="metric-val-row">
               <span className="metric-val">
                 {activeMetrics.price_mape !== null ? `${activeMetrics.price_mape.toFixed(2)}%` : '—'}
@@ -289,7 +410,10 @@ export default function ForecastAccuracyPanel({ symbol = 'RELIANCE.NS' }) {
           </div>
 
           <div className="accuracy-metric-card">
-            <span className="metric-label">Root Mean Squared Error (RMSE)</span>
+            <div className="metric-header-row">
+              <span className="metric-label">Root Mean Squared Error</span>
+              <span className="metric-n-badge">N={activeMetrics.sample_size}</span>
+            </div>
             <div className="metric-val-row">
               <span className="metric-val">
                 {activeMetrics.price_rmse !== null ? `₹${activeMetrics.price_rmse.toFixed(2)}` : '—'}
@@ -299,7 +423,10 @@ export default function ForecastAccuracyPanel({ symbol = 'RELIANCE.NS' }) {
           </div>
 
           <div className="accuracy-metric-card">
-            <span className="metric-label">Matthews Correlation (MCC)</span>
+            <div className="metric-header-row">
+              <span className="metric-label">Matthews Correlation (MCC)</span>
+              <span className="metric-n-badge">N={activeMetrics.sample_size}</span>
+            </div>
             <div className="metric-val-row">
               <span
                 className={`metric-val ${
@@ -323,7 +450,10 @@ export default function ForecastAccuracyPanel({ symbol = 'RELIANCE.NS' }) {
           </div>
 
           <div className="accuracy-metric-card">
-            <span className="metric-label">Return Prediction Error</span>
+            <div className="metric-header-row">
+              <span className="metric-label">Return Prediction Error</span>
+              <span className="metric-n-badge">N={activeMetrics.sample_size}</span>
+            </div>
             <div className="metric-val-row">
               <span className="metric-val">
                 {activeMetrics.return_mae_bps !== null ? `${activeMetrics.return_mae_bps} bps` : '—'}

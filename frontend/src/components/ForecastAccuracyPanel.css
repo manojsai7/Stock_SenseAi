@@ -9,6 +9,114 @@
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.28);
 }
 
+/* Top-level View Selector Tabs */
+.accuracy-view-tabs {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #1e293b;
+  flex-wrap: wrap;
+}
+
+.accuracy-view-tab-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: #0f172a;
+  border: 1px solid #23324d;
+  color: #94a3b8;
+  padding: 10px 18px;
+  border-radius: 10px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.accuracy-view-tab-btn:hover {
+  background: #1e293b;
+  border-color: #334155;
+  color: #f1f5f9;
+}
+
+.accuracy-view-tab-btn.active {
+  background: linear-gradient(135deg, rgba(14, 165, 233, 0.15) 0%, #1e293b 100%);
+  border-color: #0ea5e9;
+  color: #f8fafc;
+  box-shadow: 0 4px 14px rgba(14, 165, 233, 0.2);
+}
+
+.view-tab-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.view-tab-dot.live-dot {
+  background: #10b981;
+  box-shadow: 0 0 8px rgba(16, 185, 129, 0.7);
+}
+
+.view-tab-dot.offline-dot {
+  background: #38bdf8;
+  box-shadow: 0 0 8px rgba(56, 189, 248, 0.7);
+}
+
+.view-tab-label {
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.view-tab-badge {
+  font-size: 0.7rem;
+  font-weight: 700;
+  background: rgba(148, 163, 184, 0.15);
+  color: #cbd5e1;
+  padding: 2px 7px;
+  border-radius: 4px;
+  letter-spacing: 0.02em;
+}
+
+.view-tab-badge.highlight {
+  background: rgba(14, 165, 233, 0.2);
+  color: #38bdf8;
+}
+
+/* Metric header and small sample styling */
+.metric-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+  gap: 8px;
+}
+
+.metric-n-badge {
+  background: #1e293b;
+  color: #94a3b8;
+  font-size: 0.65rem;
+  padding: 1px 6px;
+  border-radius: 4px;
+  border: 1px solid #334155;
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 600;
+}
+
+.metric-val-small-sample {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.metric-val-sub {
+  color: #f59e0b;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
 .accuracy-header {
   display: flex;
   justify-content: space-between;
@@ -446,6 +554,7 @@
 /* Tables */
 .accuracy-table-wrapper {
   overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
   border: 1px solid #1e293b;
   border-radius: 10px;
   background: #0f172a;
@@ -456,6 +565,20 @@
   border-collapse: collapse;
   font-size: 0.8rem;
   text-align: left;
+  min-width: 720px;
+}
+
+.accuracy-table th:first-child,
+.accuracy-table td:first-child {
+  position: sticky;
+  left: 0;
+  z-index: 2;
+  background: #0f172a;
+}
+
+.accuracy-table th:first-child {
+  z-index: 3;
+  background: #1e293b;
 }
 
 .accuracy-table th {
