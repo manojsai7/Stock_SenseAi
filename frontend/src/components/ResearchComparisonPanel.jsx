@@ -65,13 +65,18 @@ export default function ResearchComparisonPanel({ symbol = 'RELIANCE.NS' }) {
     fetchAllData();
   }, [fetchAllData]);
 
-  // Real-time prospective chart trajectory from verified API response
+    // Real-time prospective chart trajectory from verified API response
   const chartData = useMemo(() => {
     if (!challenger || !challenger.latest_completed_close) return [];
     const baseClose = challenger.latest_completed_close;
     const v2Close = challenger.predicted_next_session_close;
     const inputDate = challenger.latest_completed_input_date;
     const targetDate = challenger.target_trading_date;
+
+    // Retrieve genuine V1 prediction from prospective log if available, else reference close
+    const pendingTrio = exp06Data?.pending_forecasts?.find((p) => p.target_date === targetDate);
+    const v1FromLog = pendingTrio?.predictions?.['Production CNN-LSTM V1']?.predicted_close;
+    const v1Close = v1FromLog != null ? round2(v1FromLog) : baseClose;
 
     // Point 1: Latest finalized market session
     // Point 2: Pending forward forecast target session
@@ -87,13 +92,13 @@ export default function ResearchComparisonPanel({ symbol = 'RELIANCE.NS' }) {
       {
         session: `${targetDate} (Forward Forecast)`,
         actual: null,
-        v1: round2(baseClose * (1 - 0.000509)),
+        v1: v1Close,
         v2: v2Close,
         naive: baseClose,
         isPending: true,
       },
     ];
-  }, [challenger]);
+  }, [challenger, exp06Data]);
 
   function round2(val) {
     return Math.round(val * 100) / 100;

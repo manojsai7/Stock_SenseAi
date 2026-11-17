@@ -551,45 +551,389 @@
   border: 1px solid #334155;
 }
 
-/* Tables */
+/* AREA A — LATEST NEXT-SESSION FORECAST HERO STYLING */
+.latest-forecast-hero-container {
+  background: linear-gradient(135deg, rgba(15, 23, 42, 0.85) 0%, rgba(30, 41, 59, 0.6) 100%);
+  border: 1px solid #23324d;
+  border-radius: 12px;
+  padding: 20px 22px;
+  margin-bottom: 24px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+  position: relative;
+  overflow: hidden;
+}
+
+.latest-forecast-hero-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, #38bdf8 0%, #8b5cf6 50%, #f59e0b 100%);
+}
+
+.latest-forecast-hero-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 18px;
+  flex-wrap: wrap;
+}
+
+.hero-header-left {
+  flex: 1;
+}
+
+.hero-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: #38bdf8;
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+
+.hero-title {
+  margin: 0 0 6px;
+  color: #f8fafc;
+  font-size: 1.25rem;
+  font-weight: 750;
+  letter-spacing: -0.02em;
+}
+
+.hero-subtitle {
+  margin: 0;
+  color: #94a3b8;
+  font-size: 0.82rem;
+  line-height: 1.5;
+}
+
+.hero-subtitle strong {
+  color: #f8fafc;
+}
+
+.market-status-pill {
+  display: inline-block;
+  background: #1e293b;
+  color: #cbd5e1;
+  padding: 1px 7px;
+  border-radius: 4px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  border: 1px solid #334155;
+}
+
+.forecast-sync-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(16, 185, 129, 0.12);
+  color: #10b981;
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 650;
+}
+
+.hero-stale-banner {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(245, 158, 11, 0.1);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  color: #fbbf24;
+  padding: 12px 16px;
+  border-radius: 8px;
+  font-size: 0.84rem;
+}
+
+.hero-loading-state {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 30px;
+  justify-content: center;
+  color: #94a3b8;
+  font-size: 0.88rem;
+}
+
+.latest-forecast-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+
+@media (max-width: 900px) {
+  .latest-forecast-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.latest-forecast-card {
+  background: #0f172a;
+  border: 1px solid #1e293b;
+  border-radius: 10px;
+  padding: 16px 18px;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.latest-forecast-card:hover {
+  transform: translateY(-2px);
+  border-color: #334155;
+}
+
+.latest-forecast-card.card-v1 {
+  border-left: 3px solid #8b5cf6;
+}
+
+.latest-forecast-card.card-v2-challenger {
+  border-left: 3px solid #38bdf8;
+  background: linear-gradient(135deg, rgba(14, 165, 233, 0.04) 0%, #0f172a 100%);
+}
+
+.latest-forecast-card.card-naive {
+  border-left: 3px solid #f59e0b;
+}
+
+.forecast-card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.card-model-badge {
+  font-size: 0.65rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  padding: 2px 7px;
+  border-radius: 4px;
+}
+
+.badge-prod {
+  background: rgba(139, 92, 246, 0.2);
+  color: #c084fc;
+}
+
+.badge-experimental {
+  background: rgba(14, 165, 233, 0.2);
+  color: #38bdf8;
+  border: 1px solid rgba(14, 165, 233, 0.4);
+}
+
+.badge-naive {
+  background: rgba(245, 158, 11, 0.2);
+  color: #fbbf24;
+}
+
+.card-version {
+  color: #64748b;
+  font-size: 0.68rem;
+  font-family: monospace;
+}
+
+.card-model-name {
+  margin: 0 0 10px;
+  color: #f1f5f9;
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+
+.forecast-price-row {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+  margin-bottom: 8px;
+}
+
+.forecast-currency {
+  font-size: 1.1rem;
+  color: #64748b;
+  font-weight: 600;
+}
+
+.forecast-price {
+  font-size: 1.7rem;
+  font-weight: 800;
+  color: #f8fafc;
+  letter-spacing: -0.03em;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.forecast-price.accent-blue {
+  color: #38bdf8;
+}
+
+.forecast-price.accent-amber {
+  color: #fbbf24;
+}
+
+.forecast-return-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.forecast-dir-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.72rem;
+  font-weight: 750;
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+
+.forecast-dir-pill.up,
+.forecast-dir-pill.bullish {
+  background: rgba(16, 185, 129, 0.15);
+  color: #34d399;
+}
+
+.forecast-dir-pill.down,
+.forecast-dir-pill.bearish {
+  background: rgba(239, 68, 68, 0.15);
+  color: #f87171;
+}
+
+.forecast-dir-pill.flat {
+  background: rgba(148, 163, 184, 0.15);
+  color: #94a3b8;
+}
+
+.forecast-return-val {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #cbd5e1;
+  font-family: monospace;
+}
+
+.forecast-return-val.accent-blue {
+  color: #38bdf8;
+}
+
+.forecast-card-meta {
+  border-top: 1px solid #1e293b;
+  padding-top: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 0.72rem;
+  color: #64748b;
+}
+
+.meta-row {
+  display: flex;
+  justify-content: space-between;
+}
+
+.meta-row strong {
+  color: #94a3b8;
+}
+
+.meta-row code {
+  color: #38bdf8;
+  font-family: monospace;
+}
+
+/* Tables & Sticky Viewport */
 .accuracy-table-wrapper {
-  overflow-x: auto;
+  max-height: 68vh;
+  overflow: auto;
   -webkit-overflow-scrolling: touch;
   border: 1px solid #1e293b;
   border-radius: 10px;
   background: #0f172a;
+  position: relative;
+  scrollbar-width: thin;
+  scrollbar-color: #334155 #0f172a;
+}
+
+.accuracy-table-wrapper::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.accuracy-table-wrapper::-webkit-scrollbar-track {
+  background: #0f172a;
+}
+
+.accuracy-table-wrapper::-webkit-scrollbar-thumb {
+  background: #334155;
+  border-radius: 4px;
+}
+
+.accuracy-table-wrapper::-webkit-scrollbar-thumb:hover {
+  background: #475569;
 }
 
 .accuracy-table {
   width: 100%;
-  border-collapse: collapse;
+  border-collapse: separate;
+  border-spacing: 0;
   font-size: 0.8rem;
   text-align: left;
-  min-width: 720px;
+  min-width: 980px;
 }
 
-.accuracy-table th:first-child,
-.accuracy-table td:first-child {
-  position: sticky;
-  left: 0;
-  z-index: 2;
-  background: #0f172a;
-}
-
-.accuracy-table th:first-child {
-  z-index: 3;
-  background: #1e293b;
-}
-
+/* 1. Persistent Sticky Top Header */
 .accuracy-table th {
+  position: sticky;
+  top: 0;
+  z-index: 20;
   background: #1e293b;
   color: #94a3b8;
-  padding: 10px 14px;
+  padding: 12px 14px;
   font-size: 0.72rem;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.04em;
   white-space: nowrap;
+  border-bottom: 2px solid #334155;
+}
+
+/* 2. Sticky Target Date Column (Col 1) */
+.accuracy-table th:first-child,
+.accuracy-table td:first-child {
+  position: sticky;
+  left: 0;
+  z-index: 15;
+  background: #0f172a;
+  min-width: 125px;
+  max-width: 125px;
+  border-right: 1px solid #1e293b;
+}
+
+/* 3. Sticky Model Column (Col 2) */
+.accuracy-table th:nth-child(2),
+.accuracy-table td:nth-child(2) {
+  position: sticky;
+  left: 125px;
+  z-index: 15;
+  background: #0f172a;
+  min-width: 185px;
+  max-width: 185px;
+  border-right: 2px solid #23324d;
+}
+
+/* 4. Top-Left Dual-Sticky Header Intersections */
+.accuracy-table th:first-child {
+  z-index: 25;
+  background: #1e293b;
+}
+
+.accuracy-table th:nth-child(2) {
+  z-index: 25;
+  background: #1e293b;
 }
 
 .accuracy-table td {
@@ -601,6 +945,15 @@
 
 .accuracy-table tr:last-child td {
   border-bottom: none;
+}
+
+.accuracy-table tr:hover td {
+  background: rgba(14, 165, 233, 0.04);
+}
+
+.accuracy-table tr:hover td:first-child,
+.accuracy-table tr:hover td:nth-child(2) {
+  background: #131f36;
 }
 
 .accuracy-table tr.highlight-row {

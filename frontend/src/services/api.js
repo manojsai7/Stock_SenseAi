@@ -118,6 +118,15 @@ export async function getChallengerPrediction(symbol = 'RELIANCE.NS') {
   return res.json();
 }
 
+export async function getLatestForecast(symbol = 'RELIANCE.NS') {
+  const res = await fetch(`${API_BASE}/research/latest-forecast?symbol=${encodeURIComponent(symbol)}`);
+  if (!res.ok) {
+    const errorMsg = await parseError(res, `Latest forecast unavailable for ${symbol}`);
+    throw new Error(errorMsg);
+  }
+  return res.json();
+}
+
 export async function getExp06Comparison(symbol = 'RELIANCE.NS') {
   const res = await fetch(`${API_BASE}/research/exp06-comparison?symbol=${encodeURIComponent(symbol)}`);
   if (!res.ok) {

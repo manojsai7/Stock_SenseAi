@@ -117,7 +117,7 @@ export default function HistoricalPredictionExplorer({ symbol = 'RELIANCE.NS' })
             <div className="capability-badge-cluster">
               <Award size={20} className="capability-award-icon" style={{ color: capabilityScore.color }} />
               <div>
-                <span className="capability-score-kicker">MODEL PREDICTING CAPABILITY SCORE</span>
+                <span className="capability-score-kicker">EXPLORATORY MODEL CAPABILITY INDEX</span>
                 <h4>
                   {selectedModel} · {symbol}
                 </h4>
@@ -136,6 +136,12 @@ export default function HistoricalPredictionExplorer({ symbol = 'RELIANCE.NS' })
           </div>
 
           <p className="capability-summary-text">{capabilityScore.summary}</p>
+          <div className="capability-disclaimer-sub">
+            <Info size={13} />
+            <span>
+              <strong>Scientific Framing:</strong> Exploratory multi-factor comparative index (0–100) vs naive persistence on identical historical slices. Not a scientifically guaranteed probability of trading success.
+            </span>
+          </div>
 
           <div className="capability-components-grid">
             <div className="capability-sub-metric">

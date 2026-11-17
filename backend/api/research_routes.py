@@ -6,6 +6,8 @@ from backend.services.prediction_service import StaleMarketDataError, Prediction
 from backend.services.prospective_v2_service import prospective_v2_service
 from backend.services.forecast_accuracy_service import forecast_accuracy_service
 from backend.services.historical_predictions_service import historical_predictions_service
+from backend.services.market_status_service import market_status_service
+from backend.services.research_v2_registry import ResearchV2Registry
 
 router = APIRouter(prefix="/research", tags=["Research & Evaluation"])
 
@@ -43,6 +45,7 @@ def get_challenger_prediction(symbol: str = "RELIANCE.NS") -> Dict[str, Any]:
     Returns real-time shadow inference forecast for the V2 GRU Challenger model (EXP-06).
     Exclusively authorized for RELIANCE.NS.
     Enforces completed-candle rules and rejects stale data with HTTP 503.
+    Pure read-only endpoint with zero prospective logging side effects.
     """
     clean_symbol = symbol.strip().upper()
     if clean_symbol != "RELIANCE.NS":
@@ -52,26 +55,7 @@ def get_challenger_prediction(symbol: str = "RELIANCE.NS") -> Dict[str, Any]:
         )
 
     try:
-        pred = challenger_prediction_service.get_prediction(clean_symbol)
-
-        # Synchronize prospective evaluation stream
-        try:
-            prod_service = PredictionService()
-            v1_pred = prod_service._get_stationary_prediction(clean_symbol)
-            prospective_v2_service.record_daily_forecasts(
-                symbol=clean_symbol,
-                target_date=pred["target_trading_date"],
-                input_window_end=pred["latest_completed_input_date"],
-                previous_close=pred["latest_completed_close"],
-                v1_pred=v1_pred,
-                v2_pred=pred,
-                data_source=pred.get("data_provider", "Yahoo Finance")
-            )
-        except Exception as sync_exc:
-            # Failure to record shadow prospective log should not crash inference endpoint
-            pass
-
-        return pred
+        return challenger_prediction_service.get_prediction(clean_symbol)
     except StaleMarketDataError as sme:
         raise HTTPException(status_code=503, detail=f"Market data is stale: {str(sme)}")
     except ValueError as ve:
@@ -80,6 +64,144 @@ def get_challenger_prediction(symbol: str = "RELIANCE.NS") -> Dict[str, Any]:
         raise HTTPException(status_code=503, detail=str(re))
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to generate V2 GRU challenger prediction: {str(e)}")
+
+
+@router.get("/latest-forecast", summary="Get Latest Next-Session Synchronized Forecast Trio")
+@router.get("/latest-forecast/{symbol}", summary="Get Latest Next-Session Forecast by Symbol")
+def get_latest_forecast(symbol: str = "RELIANCE.NS") -> Dict[str, Any]:
+    """
+    Returns the authoritative next-session forecast comparison trio (Production V1, GRU V2, Naive Baseline).
+    Pure read-only endpoint with zero prospective logging side effects.
+    Includes target date, input cutoff, predicted prices, returns, model versions, hashes, and data freshness.
+    """
+    clean_symbol = symbol.strip().upper()
+    if clean_symbol != "RELIANCE.NS":
+        return {
+            "symbol": clean_symbol,
+            "supported": False,
+            "message": f"Synchronized multi-model next-session forecasts are currently authorized exclusively for RELIANCE.NS. Symbol '{clean_symbol}' is evaluated via standard V1 production serving.",
+            "authorized_symbol": "RELIANCE.NS",
+            "models": {},
+            "is_stale": False,
+        }
+
+    now_ist = market_status_service.get_current_time()
+    market_state = market_status_service.get_market_status(now_ist)
+    latest_completed = market_status_service.get_latest_completed_trading_day(now_ist)
+    next_trading_day = market_status_service.get_next_trading_day(latest_completed)
+
+    try:
+        # 1. Fetch V2 GRU prediction
+        v2 = challenger_prediction_service.get_prediction(clean_symbol)
+        ref_close = v2["latest_completed_close"]
+        input_cutoff = v2["latest_completed_input_date"]
+        target_date = v2["target_trading_date"]
+
+        # 2. Fetch V1 Production prediction
+        prod_service = PredictionService()
+        v1 = prod_service._get_stationary_prediction(clean_symbol)
+
+        # 3. Model metadata from registry
+        registry = ResearchV2Registry()
+        reg_manifest, _, _, _ = registry.load(clean_symbol)
+        gru_hash = reg_manifest["files"].get("model.keras", reg_manifest["files"].get("model", {})).get("sha256", "")
+        prod_hash = "a4715e84cdd7a16d1b334936c9a39b35249bb594aec5c987a4f6ee62d50d4f11"
+
+        v1_close = float(v1.get("predicted_close", v1.get("predicted_next_session_close", ref_close)))
+        v1_ret = float(v1.get("predicted_return", 0.0))
+        v1_dir = str(v1.get("direction", "FLAT")).upper()
+
+        v2_close = float(v2["predicted_next_session_close"])
+        v2_ret = float(v2["predicted_simple_return"])
+        v2_dir = str(v2["direction"]).upper()
+
+        return {
+            "symbol": clean_symbol,
+            "supported": True,
+            "target_trading_date": target_date,
+            "latest_completed_input_date": input_cutoff,
+            "reference_close": ref_close,
+            "market_status": market_state,
+            "current_time_ist": now_ist.strftime("%Y-%m-%d %H:%M:%S IST"),
+            "data_provider": v2.get("data_provider", "Yahoo Finance (Daily OHLCV)"),
+            "data_freshness": v2.get("data_freshness", "COMPLETED"),
+            "is_stale": False,
+            "stale_reason": None,
+            "models": {
+                "production_v1": {
+                    "name": "Production CNN-LSTM V1",
+                    "role": "Production Baseline",
+                    "status_badge": "PRODUCTION",
+                    "is_experimental": False,
+                    "predicted_next_session_close": round(v1_close, 2),
+                    "predicted_return": round(v1_ret, 6),
+                    "predicted_return_pct": round(v1_ret * 100, 2),
+                    "predicted_direction": v1_dir,
+                    "reference_close": ref_close,
+                    "input_cutoff_date": input_cutoff,
+                    "target_trading_date": target_date,
+                    "model_version": "stationary-return-v1",
+                    "model_hash": prod_hash,
+                    "training_cutoff": "2026-10-06",
+                },
+                "gru_v2_challenger": {
+                    "name": "GRU V2 Challenger",
+                    "role": "Research Challenger (Shadow)",
+                    "status_badge": "EXPERIMENTAL",
+                    "is_experimental": True,
+                    "predicted_next_session_close": round(v2_close, 2),
+                    "predicted_return": round(v2_ret, 6),
+                    "predicted_return_pct": round(v2_ret * 100, 2),
+                    "predicted_direction": v2_dir,
+                    "reference_close": ref_close,
+                    "input_cutoff_date": input_cutoff,
+                    "target_trading_date": target_date,
+                    "model_version": "stocksense-v2-gru-challenger",
+                    "model_hash": gru_hash,
+                    "training_cutoff": "2025-12-11",
+                },
+                "naive_baseline": {
+                    "name": "Naive Persistence Benchmark",
+                    "role": "Reference Benchmark",
+                    "status_badge": "BASELINE",
+                    "is_experimental": False,
+                    "predicted_next_session_close": round(ref_close, 2),
+                    "predicted_return": 0.0,
+                    "predicted_return_pct": 0.0,
+                    "predicted_direction": "FLAT",
+                    "reference_close": ref_close,
+                    "input_cutoff_date": input_cutoff,
+                    "target_trading_date": target_date,
+                    "model_version": "zero-parameter-persistence",
+                    "model_hash": "zero_parameter_baseline",
+                    "training_cutoff": "N/A",
+                }
+            }
+        }
+    except StaleMarketDataError as sme:
+        return {
+            "symbol": clean_symbol,
+            "supported": True,
+            "target_trading_date": next_trading_day.strftime("%Y-%m-%d"),
+            "latest_completed_input_date": latest_completed.strftime("%Y-%m-%d"),
+            "reference_close": None,
+            "market_status": market_state,
+            "is_stale": True,
+            "stale_reason": str(sme),
+            "models": {}
+        }
+    except Exception as e:
+        return {
+            "symbol": clean_symbol,
+            "supported": True,
+            "target_trading_date": next_trading_day.strftime("%Y-%m-%d"),
+            "latest_completed_input_date": latest_completed.strftime("%Y-%m-%d"),
+            "reference_close": None,
+            "market_status": market_state,
+            "is_stale": True,
+            "stale_reason": f"Forecast currently unavailable: {str(e)}",
+            "models": {}
+        }
 
 
 @router.get("/exp06-comparison", summary="Get EXP-06 V2 Prospective Model Comparison")

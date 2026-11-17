@@ -26,18 +26,21 @@ import {
   BarChart2,
   HelpCircle,
   Lock,
+  Sparkles,
 } from 'lucide-react';
-import { getForecastAccuracy } from '../services/api';
+import { getForecastAccuracy, getLatestForecast } from '../services/api';
 import HistoricalPredictionExplorer from './HistoricalPredictionExplorer';
 import './ForecastAccuracyPanel.css';
 
 export default function ForecastAccuracyPanel({ symbol = 'RELIANCE.NS' }) {
   const [activeView, setActiveView] = useState('PROSPECTIVE'); // 'PROSPECTIVE' | 'HISTORICAL'
   const [data, setData] = useState(null);
+  const [latestForecast, setLatestForecast] = useState(null);
+  const [latestForecastLoading, setLatestForecastLoading] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedModel, setSelectedModel] = useState('ALL');
-  const [statusFilter, setStatusFilter] = useState('RESOLVED'); // 'RESOLVED', 'PENDING', 'ALL'
+  const [statusFilter, setStatusFilter] = useState('ALL'); // 'ALL' by default so pending forecasts are visible!
   const [limitFilter, setLimitFilter] = useState(null); // null (all), 20, 60
   const [activeTabModel, setActiveTabModel] = useState('GRU V2 Challenger');
   const [showGuide, setShowGuide] = useState(false);
@@ -45,27 +48,42 @@ export default function ForecastAccuracyPanel({ symbol = 'RELIANCE.NS' }) {
 
   const fetchData = useCallback(async () => {
     setLoading(true);
+    setLatestForecastLoading(true);
     setError(null);
     try {
-      const res = await getForecastAccuracy(symbol, {
-        limit: limitFilter,
-        includeHistorical: true,
-      });
-      setData(res);
+      const [resResult, lfResult] = await Promise.allSettled([
+        getForecastAccuracy(symbol, {
+          limit: limitFilter,
+          includeHistorical: true,
+        }),
+        getLatestForecast(symbol),
+      ]);
 
-      // Auto-select first available model family for the summary tab
-      if (res?.per_family_metrics) {
-        const families = Object.keys(res.per_family_metrics);
-        if (families.includes('GRU V2 Challenger')) {
-          setActiveTabModel('GRU V2 Challenger');
-        } else if (families.length > 0) {
-          setActiveTabModel(families[0]);
+      if (resResult.status === 'fulfilled') {
+        const res = resResult.value;
+        setData(res);
+
+        // Auto-select first available model family for the summary tab
+        if (res?.per_family_metrics) {
+          const families = Object.keys(res.per_family_metrics);
+          if (families.includes('GRU V2 Challenger')) {
+            setActiveTabModel('GRU V2 Challenger');
+          } else if (families.length > 0) {
+            setActiveTabModel(families[0]);
+          }
         }
+      } else {
+        throw new Error(resResult.reason?.message || 'Failed to load forecast accuracy track record');
+      }
+
+      if (lfResult.status === 'fulfilled') {
+        setLatestForecast(lfResult.value);
       }
     } catch (err) {
       setError(err.message || 'Failed to load forecast accuracy track record');
     } finally {
       setLoading(false);
+      setLatestForecastLoading(false);
     }
   }, [symbol, limitFilter]);
 
@@ -285,6 +303,143 @@ export default function ForecastAccuracyPanel({ symbol = 'RELIANCE.NS' }) {
             {loading ? 'Refreshing…' : 'Refresh'}
           </button>
         </div>
+      </div>
+
+      {/* AREA A — LATEST NEXT-SESSION FORECAST HERO PANEL */}
+      <div className="latest-forecast-hero-container">
+        <div className="latest-forecast-hero-header">
+          <div className="hero-header-left">
+            <span className="hero-eyebrow">
+              <Sparkles size={14} className="accent-icon" />
+              LATEST NEXT-SESSION FORECAST · VERIFIED SHADOW INFERENCE
+            </span>
+            <h3 className="hero-title">
+              Target Trading Session: {latestForecast?.target_trading_date || 'Awaiting Session'}
+            </h3>
+            <p className="hero-subtitle">
+              Reference Completed Close:{' '}
+              <strong>
+                ₹{latestForecast?.reference_close !== null && latestForecast?.reference_close !== undefined
+                  ? latestForecast.reference_close.toFixed(2)
+                  : '—'}
+              </strong>
+              {latestForecast?.latest_completed_input_date && ` (${latestForecast.latest_completed_input_date})`} ·{' '}
+              Data Provider: <span>{latestForecast?.data_provider || 'Yahoo Finance (Daily OHLCV)'}</span> ·{' '}
+              Market Status: <span className="market-status-pill">{latestForecast?.market_status || 'CLOSED'}</span>
+            </p>
+          </div>
+          <div className="hero-header-right">
+            <span className="forecast-sync-badge">
+              <Clock size={13} />
+              Automated Daily Shadow Sync Active
+            </span>
+          </div>
+        </div>
+
+        {latestForecast?.is_stale ? (
+          <div className="hero-stale-banner">
+            <AlertTriangle size={16} />
+            <span>
+              <strong>Notice:</strong> {latestForecast.stale_reason || 'Next session forecast pending finalized market candle.'}
+            </span>
+          </div>
+        ) : latestForecast?.models ? (
+          <div className="latest-forecast-grid">
+            {/* 1. Production CNN-LSTM V1 Card */}
+            <div className="latest-forecast-card card-v1">
+              <div className="forecast-card-top">
+                <span className="card-model-badge badge-prod">PRODUCTION BASELINE</span>
+                <span className="card-version">stationary-return-v1</span>
+              </div>
+              <h4 className="card-model-name">Production CNN-LSTM V1</h4>
+              <div className="forecast-price-row">
+                <span className="forecast-currency">₹</span>
+                <span className="forecast-price">
+                  {latestForecast.models.production_v1?.predicted_next_session_close?.toFixed(2) || '—'}
+                </span>
+              </div>
+              <div className="forecast-return-row">
+                <span className={`forecast-dir-pill ${latestForecast.models.production_v1?.predicted_direction?.toLowerCase()}`}>
+                  {latestForecast.models.production_v1?.predicted_direction === 'UP' || latestForecast.models.production_v1?.predicted_direction === 'BULLISH' ? (
+                    <TrendingUp size={13} />
+                  ) : (
+                    <TrendingDown size={13} />
+                  )}
+                  {latestForecast.models.production_v1?.predicted_direction || 'FLAT'}
+                </span>
+                <span className="forecast-return-val">
+                  {latestForecast.models.production_v1?.predicted_return_pct > 0 ? '+' : ''}
+                  {latestForecast.models.production_v1?.predicted_return_pct !== undefined ? `${latestForecast.models.production_v1.predicted_return_pct.toFixed(2)}%` : '—'}
+                </span>
+              </div>
+              <div className="forecast-card-meta">
+                <div className="meta-row"><span>Training Cutoff:</span> <strong>2026-10-06</strong></div>
+                <div className="meta-row"><span>Model Role:</span> <strong>Active Production</strong></div>
+              </div>
+            </div>
+
+            {/* 2. GRU V2 Challenger Card */}
+            <div className="latest-forecast-card card-v2-challenger">
+              <div className="forecast-card-top">
+                <span className="card-model-badge badge-experimental">EXPERIMENTAL CHALLENGER</span>
+                <span className="card-version">v2-gru-challenger</span>
+              </div>
+              <h4 className="card-model-name">GRU V2 Challenger</h4>
+              <div className="forecast-price-row">
+                <span className="forecast-currency">₹</span>
+                <span className="forecast-price accent-blue">
+                  {latestForecast.models.gru_v2_challenger?.predicted_next_session_close?.toFixed(2) || '—'}
+                </span>
+              </div>
+              <div className="forecast-return-row">
+                <span className={`forecast-dir-pill ${latestForecast.models.gru_v2_challenger?.predicted_direction?.toLowerCase()}`}>
+                  {latestForecast.models.gru_v2_challenger?.predicted_direction === 'UP' || latestForecast.models.gru_v2_challenger?.predicted_direction === 'BULLISH' ? (
+                    <TrendingUp size={13} />
+                  ) : (
+                    <TrendingDown size={13} />
+                  )}
+                  {latestForecast.models.gru_v2_challenger?.predicted_direction || 'FLAT'}
+                </span>
+                <span className="forecast-return-val accent-blue">
+                  {latestForecast.models.gru_v2_challenger?.predicted_return_pct > 0 ? '+' : ''}
+                  {latestForecast.models.gru_v2_challenger?.predicted_return_pct !== undefined ? `${latestForecast.models.gru_v2_challenger.predicted_return_pct.toFixed(2)}%` : '—'}
+                </span>
+              </div>
+              <div className="forecast-card-meta">
+                <div className="meta-row"><span>Training Cutoff:</span> <strong>2025-12-11</strong></div>
+                <div className="meta-row"><span>Evaluation Mode:</span> <strong>Shadow Stream (EXP-06)</strong></div>
+              </div>
+            </div>
+
+            {/* 3. Naive Persistence Baseline Card */}
+            <div className="latest-forecast-card card-naive">
+              <div className="forecast-card-top">
+                <span className="card-model-badge badge-naive">REFERENCE BENCHMARK</span>
+                <span className="card-version">zero-parameter</span>
+              </div>
+              <h4 className="card-model-name">Naive Persistence</h4>
+              <div className="forecast-price-row">
+                <span className="forecast-currency">₹</span>
+                <span className="forecast-price accent-amber">
+                  {latestForecast.models.naive_baseline?.predicted_next_session_close?.toFixed(2) || latestForecast.reference_close?.toFixed(2) || '—'}
+                </span>
+              </div>
+              <div className="forecast-return-row">
+                <span className="forecast-dir-pill flat">FLAT</span>
+                <span className="forecast-return-val">0.00%</span>
+              </div>
+              <div className="forecast-card-meta">
+                <div className="meta-row"><span>Decision Rule:</span> <strong>y(t+1) = y(t)</strong></div>
+                <div className="meta-row"><span>Parameters:</span> <strong>0 (No Weight Learning)</strong></div>
+              </div>
+            </div>
+          </div>
+        ) : (
+          <div className="hero-loading-state">
+            <RotateCw size={16} className="accuracy-spinning" />
+            <span>Retrieving synchronized multi-model next-session forecasts…</span>
+          </div>
+        )}
       </div>
 
       {error && (
