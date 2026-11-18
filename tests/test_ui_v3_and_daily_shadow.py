@@ -160,3 +160,15 @@ def test_dry_run_daily_shadow_script():
     code = run_daily_shadow_evaluation(symbol="RELIANCE.NS", dry_run=True)
     # Exit code should be 0 (success) or 2 (skipped if market is active)
     assert code in {0, 2}
+
+
+def test_trigger_daily_shadow_evaluation_endpoint(client):
+    """Verify POST /api/research/trigger-daily-shadow-evaluation works in dry-run mode."""
+    resp = client.post("/api/research/trigger-daily-shadow-evaluation?symbol=RELIANCE.NS&dry_run=true")
+    assert resp.status_code == 200
+    data = resp.json()
+    assert data["symbol"] == "RELIANCE.NS"
+    assert data["dry_run"] is True
+    assert data["status"] in {"SUCCESS", "SKIPPED_MARKET_ACTIVE_OR_UNFINISHED"}
+    assert data["exit_code"] in {0, 2}
+

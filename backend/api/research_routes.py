@@ -286,4 +286,37 @@ def get_historical_predictions(
         raise HTTPException(status_code=500, detail=f"Failed to query historical predictions for '{symbol}': {str(e)}")
 
 
+@router.post("/trigger-daily-shadow-evaluation", summary="Trigger Automated Daily Prospective Shadow Evaluation")
+def trigger_daily_shadow_evaluation(
+    symbol: str = Query("RELIANCE.NS", description="Equity symbol (e.g. RELIANCE.NS)"),
+    dry_run: bool = Query(False, description="Dry run mode without committing changes")
+) -> Dict[str, Any]:
+    """
+    Triggers the prospective shadow evaluation pipeline on-demand.
+    Resolves pending forecasts against finalized daily close (if market completed)
+    and logs synchronized prospective forecasts for the next market session.
+    Returns status:
+      SUCCESS: Generated or verified forecast
+      FAILED: Data provider or model error
+      SKIPPED: Active trading session or market open
+    """
+    from scripts.run_daily_shadow_evaluation import run_daily_shadow_evaluation
+    try:
+        exit_code = run_daily_shadow_evaluation(symbol=symbol, dry_run=dry_run)
+        status_map = {
+            0: "SUCCESS",
+            1: "FAILED",
+            2: "SKIPPED_MARKET_ACTIVE_OR_UNFINISHED"
+        }
+        return {
+            "status": status_map.get(exit_code, "UNKNOWN"),
+            "exit_code": exit_code,
+            "symbol": symbol,
+            "dry_run": dry_run
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to run daily shadow evaluation: {str(e)}")
+
+
+
 

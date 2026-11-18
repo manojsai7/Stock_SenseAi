@@ -34,8 +34,44 @@ async def lifespan(app: FastAPI):
             logger.info(f"[STARTUP] Pre-warmed stationary model artifacts: {warmed_stationary}")
     except Exception as e:
         logger.warning(f"[STARTUP] Model warming notice: {e}")
-    yield
-    logger.info("[SHUTDOWN] Shutting down StockSense AI Backend...")
+
+    # Launch non-blocking background shadow evaluation worker
+    import asyncio
+    shadow_task = asyncio.create_task(_background_daily_shadow_task())
+
+    try:
+        yield
+    finally:
+        shadow_task.cancel()
+        try:
+            await shadow_task
+        except asyncio.CancelledError:
+            pass
+        logger.info("[SHUTDOWN] Shutting down StockSense AI Backend...")
+
+
+async def _background_daily_shadow_task():
+    """
+    Background worker that runs daily prospective shadow evaluation inside the container.
+    Periodically checks if the market session has closed and evaluations are needed.
+    """
+    import asyncio
+    from scripts.run_daily_shadow_evaluation import run_daily_shadow_evaluation
+    # Wait 45 seconds after server startup to allow full initialisation
+    await asyncio.sleep(45)
+    while True:
+        try:
+            exit_code = await asyncio.to_thread(run_daily_shadow_evaluation, "RELIANCE.NS", False)
+            logger.info(f"[DAILY-SHADOW-BACKGROUND] Evaluation check completed with code: {exit_code}")
+        except asyncio.CancelledError:
+            break
+        except Exception as err:
+            logger.warning(f"[DAILY-SHADOW-BACKGROUND] Check notice: {err}")
+        try:
+            await asyncio.sleep(1800)  # Check every 30 minutes
+        except asyncio.CancelledError:
+            break
+
 
 app = FastAPI(
     title=settings.PROJECT_NAME,

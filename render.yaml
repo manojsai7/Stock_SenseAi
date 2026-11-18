@@ -20,19 +20,4 @@ services:
         value: "180"
       - key: PREDICTION_CACHE_TTL
         value: "600"
-  - type: cron
-    name: stocksense-daily-shadow-eval
-    runtime: docker
-    dockerfilePath: ./Dockerfile
-    dockerContext: .
-    region: singapore
-    plan: starter
-    schedule: "30 11 * * 1-5" # 11:30 UTC = 17:00 IST Monday-Friday (after 15:30 IST market close)
-    command: python scripts/run_daily_shadow_evaluation.py
-    envVars:
-      - key: ENVIRONMENT
-        value: production
-      - key: MARKET_TIMEZONE
-        value: Asia/Kolkata
-      - key: PREDICTION_PIPELINE_VERSION
-        value: stationary-return-v1
+
