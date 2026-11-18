@@ -127,15 +127,33 @@ export default function ResearchComparisonPanel({ symbol = 'RELIANCE.NS' }) {
               <line x1="12" y1="8" x2="12" y2="12" />
               <line x1="12" y1="16" x2="12.01" y2="16" />
             </svg>
-            <span>Research Model Serving: RELIANCE.NS Only</span>
+            <span>Asset-Isolated Shadow Trial: Active on RELIANCE.NS</span>
           </div>
           <p>
-            The <strong>GRU V2 Challenger</strong> and live prospective evaluation protocols (EXP-05 / EXP-06)
-            are trained and locked exclusively for <strong>RELIANCE.NS</strong>. Selected symbol <strong>{symbol}</strong> does not currently have an active shadow model.
+            The <strong>GRU V2 Challenger (EXP-06)</strong> is our active deep-learning experiment running in "Shadow Mode". Because quantitative neural networks require strictly fitted weights per equity (preventing cross-asset contamination), the live shadow trial is currently registered on <strong>RELIANCE.NS</strong>.
           </p>
-          <small>
-            To prevent cross-asset leakage, model checkpoints and prospective pipelines are scoped strictly to their preregistered equities. Select <strong>Reliance Industries</strong> in the equity picker to inspect live shadow forecasts and comparative evaluations.
-          </small>
+          <div style={{ marginTop: '12px', display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
+            <span style={{ fontSize: '0.8125rem', color: 'var(--text-secondary)' }}>
+              Looking for <strong>{symbol.replace('.NS', '')}</strong>'s previous prediction track record?
+            </span>
+            <a
+              href="#forecast-accuracy-section"
+              style={{
+                fontSize: '0.8125rem',
+                fontWeight: 600,
+                color: 'var(--primary-green)',
+                backgroundColor: 'rgba(17, 122, 86, 0.08)',
+                padding: '4px 10px',
+                borderRadius: '6px',
+                textDecoration: 'none',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '4px'
+              }}
+            >
+              Explore {symbol.replace('.NS', '')}'s 552-session Historical Audit Below ↓
+            </a>
+          </div>
         </div>
       </section>
     );

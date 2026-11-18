@@ -9,6 +9,7 @@ const StockChart = lazy(() => import('./components/StockChart'));
 const BenchmarkMatrix = lazy(() => import('./components/BenchmarkMatrix'));
 const ArchitectureModal = lazy(() => import('./components/ArchitectureModal'));
 const PlainEnglishGuideModal = lazy(() => import('./components/PlainEnglishGuideModal'));
+const CnnLstmExplainer = lazy(() => import('./components/CnnLstmExplainer'));
 const FeatureExplainabilityPanel = lazy(() => import('./components/FeatureExplainabilityPanel'));
 const ResearchComparisonPanel = lazy(() => import('./components/ResearchComparisonPanel'));
 const ForecastAccuracyPanel = lazy(() => import('./components/ForecastAccuracyPanel'));
@@ -236,6 +237,14 @@ export default function App() {
           <ErrorBoundary title="Feature Sensitivity Analysis">
             <Suspense fallback={<section className="fintech-card explainability-card" role="status" aria-busy="true">Preparing feature sensitivity analysis…</section>}>
               <FeatureExplainabilityPanel symbol={selectedSymbol} />
+            </Suspense>
+          </ErrorBoundary>
+        </motion.div>
+
+        <motion.div className="dashboard-section" initial={{ opacity: 1, y: 7 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: 0.105 }}>
+          <ErrorBoundary title="Neural Architecture & Ablation Visualizer">
+            <Suspense fallback={<section className="fintech-card cnn-lstm-explainer-card" role="status" aria-busy="true">Loading neural architecture visualizer…</section>}>
+              <CnnLstmExplainer />
             </Suspense>
           </ErrorBoundary>
         </motion.div>

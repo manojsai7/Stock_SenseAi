@@ -47,6 +47,13 @@ export default function ForecastAccuracyPanel({ symbol = 'RELIANCE.NS' }) {
   const [showGuide, setShowGuide] = useState(false);
   const [showHistorical, setShowHistorical] = useState(false);
 
+  // Automatically surface the rich 552-record Historical Walk-Forward Explorer for non-Reliance stocks
+  useEffect(() => {
+    if (symbol.trim().toUpperCase() !== 'RELIANCE.NS') {
+      setActiveView('HISTORICAL');
+    }
+  }, [symbol]);
+
   const fetchData = useCallback(async () => {
     setLoading(true);
     setLatestForecastLoading(true);
@@ -125,7 +132,7 @@ export default function ForecastAccuracyPanel({ symbol = 'RELIANCE.NS' }) {
   // Render Historical Walk-Forward Explorer view when selected
   if (activeView === 'HISTORICAL') {
     return (
-      <section className="fintech-card forecast-accuracy-card" aria-labelledby="accuracy-heading">
+      <section className="fintech-card forecast-accuracy-card" id="forecast-accuracy-section" aria-labelledby="accuracy-heading">
         <div className="accuracy-view-tabs" role="tablist" aria-label="Forecast Accuracy View Selector">
           <button
             type="button"
@@ -159,7 +166,7 @@ export default function ForecastAccuracyPanel({ symbol = 'RELIANCE.NS' }) {
   // Unsupported Symbol State for Prospective Tracking
   if (data && !data.supported) {
     return (
-      <section className="fintech-card forecast-accuracy-card" aria-labelledby="accuracy-heading">
+      <section className="fintech-card forecast-accuracy-card" id="forecast-accuracy-section" aria-labelledby="accuracy-heading">
         <div className="accuracy-view-tabs" role="tablist" aria-label="Forecast Accuracy View Selector">
           <button
             type="button"
@@ -230,7 +237,7 @@ export default function ForecastAccuracyPanel({ symbol = 'RELIANCE.NS' }) {
   const historicalBenchmarks = data?.historical_backtest_benchmarks || {};
 
   return (
-    <section className="fintech-card forecast-accuracy-card" aria-labelledby="accuracy-heading">
+    <section className="fintech-card forecast-accuracy-card" id="forecast-accuracy-section" aria-labelledby="accuracy-heading">
       {/* Top-Level View Selector */}
       <div className="accuracy-view-tabs" role="tablist" aria-label="Forecast Accuracy View Selector">
         <button
