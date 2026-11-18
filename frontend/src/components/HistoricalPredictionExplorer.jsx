@@ -29,6 +29,7 @@ import {
   ShieldAlert,
 } from 'lucide-react';
 import { getHistoricalPredictions } from '../services/api';
+import HelpTooltip from './common/HelpTooltip';
 import './HistoricalPredictionExplorer.css';
 
 export default function HistoricalPredictionExplorer({ symbol = 'RELIANCE.NS' }) {
@@ -117,7 +118,10 @@ export default function HistoricalPredictionExplorer({ symbol = 'RELIANCE.NS' })
             <div className="capability-badge-cluster">
               <Award size={20} className="capability-award-icon" style={{ color: capabilityScore.color }} />
               <div>
-                <span className="capability-score-kicker">EXPLORATORY MODEL CAPABILITY INDEX</span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                  <span className="capability-score-kicker">EXPLORATORY MODEL CAPABILITY INDEX</span>
+                  <HelpTooltip term="capability_score" />
+                </div>
                 <h4>
                   {selectedModel} · {symbol}
                 </h4>
@@ -145,7 +149,10 @@ export default function HistoricalPredictionExplorer({ symbol = 'RELIANCE.NS' })
 
           <div className="capability-components-grid">
             <div className="capability-sub-metric">
-              <span className="sub-metric-label">Directional Skill</span>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <span className="sub-metric-label">Directional Skill</span>
+                <HelpTooltip term="win_rate" />
+              </div>
               <div className="sub-metric-bar-bg">
                 <div
                   className="sub-metric-bar-fill"
@@ -162,7 +169,10 @@ export default function HistoricalPredictionExplorer({ symbol = 'RELIANCE.NS' })
             </div>
 
             <div className="capability-sub-metric">
-              <span className="sub-metric-label">Matthews Correlation (MCC)</span>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <span className="sub-metric-label">Matthews Correlation (MCC)</span>
+                <HelpTooltip term="mcc" />
+              </div>
               <div className="sub-metric-bar-bg">
                 <div
                   className="sub-metric-bar-fill"
@@ -179,7 +189,10 @@ export default function HistoricalPredictionExplorer({ symbol = 'RELIANCE.NS' })
             </div>
 
             <div className="capability-sub-metric">
-              <span className="sub-metric-label">Price Edge vs. Naive Baseline</span>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <span className="sub-metric-label">Price Edge vs. Naive</span>
+                <HelpTooltip term="naive_baseline" />
+              </div>
               <div className="sub-metric-bar-bg">
                 <div
                   className="sub-metric-bar-fill"
@@ -196,7 +209,10 @@ export default function HistoricalPredictionExplorer({ symbol = 'RELIANCE.NS' })
             </div>
 
             <div className="capability-sub-metric">
-              <span className="sub-metric-label">Regime & Recall Balance</span>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <span className="sub-metric-label">Regime & Recall Balance</span>
+                <HelpTooltip term="up_recall" />
+              </div>
               <div className="sub-metric-bar-bg">
                 <div
                   className="sub-metric-bar-fill"
@@ -561,17 +577,41 @@ export default function HistoricalPredictionExplorer({ symbol = 'RELIANCE.NS' })
           <table className="accuracy-table historical-detail-table">
             <thead>
               <tr>
-                <th className="sticky-col col-date">Target Date</th>
+                <th className="sticky-col col-date">
+                  Target Date
+                  <HelpTooltip title="Target Date" text="The historical date that was predicted out-of-sample." />
+                </th>
                 <th className="sticky-col col-model">Model</th>
-                <th>Fold</th>
-                <th>Prev Close</th>
-                <th>Predicted Close</th>
-                <th>Actual Close</th>
-                <th>Abs Error (₹)</th>
-                <th>Abs Error (%)</th>
+                <th>
+                  Fold
+                  <HelpTooltip title="Time-Slice Fold" text="The chronological walk-forward fold (e.g. Fold 1, 2, or 3) testing past historical epochs without peeking." />
+                </th>
+                <th>
+                  Reference Close
+                  <HelpTooltip title="Previous Close" text="The market price the day before the target date." />
+                </th>
+                <th>
+                  Predicted Close
+                  <HelpTooltip title="Predicted Close" text="Model's forecasted price for that historical day." />
+                </th>
+                <th>
+                  Actual Close
+                  <HelpTooltip title="Actual Close" text="Real price observed in historical market records." />
+                </th>
+                <th>
+                  Cash Error (₹)
+                  <HelpTooltip term="mae" />
+                </th>
+                <th>
+                  Percent Error (%)
+                  <HelpTooltip term="bps" />
+                </th>
                 <th>Pred Dir</th>
                 <th>Actual Dir</th>
-                <th>Result</th>
+                <th>
+                  Result
+                  <HelpTooltip term="win_rate" />
+                </th>
               </tr>
             </thead>
             <tbody>

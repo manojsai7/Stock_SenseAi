@@ -1,5 +1,6 @@
 import React from 'react';
 import { Clock, TrendingDown, TrendingUp } from 'lucide-react';
+import HelpTooltip from './common/HelpTooltip';
 
 const price = (value) => value === null || value === undefined || !Number.isFinite(Number(value))
   ? '—'
@@ -65,10 +66,34 @@ export default function StockHeader({ info, quote, loading = false }) {
       </div>
 
       <dl className="hero-stats">
-        <div className="hero-stat hero-stat-range"><dt>DAY RANGE</dt><dd className="tabular-num">{dayRange}</dd></div>
-        <div className="hero-stat"><dt>VOLUME</dt><dd className="tabular-num">{volume(quote?.volume)}</dd></div>
-        <div className="hero-stat"><dt>52-WEEK RANGE</dt><dd className="tabular-num">{range52}</dd></div>
-        <div className="hero-stat"><dt>MARKET CAP</dt><dd className="tabular-num">{info?.market_cap ? `₹${(Number(info.market_cap) / 1e7).toLocaleString('en-IN', { maximumFractionDigits: 2 })} Cr` : '—'}</dd></div>
+        <div className="hero-stat hero-stat-range">
+          <dt>
+            DAY RANGE
+            <HelpTooltip title="Day's Price Range" text="The lowest and highest prices traded during today's market session." />
+          </dt>
+          <dd className="tabular-num">{dayRange}</dd>
+        </div>
+        <div className="hero-stat">
+          <dt>
+            VOLUME
+            <HelpTooltip title="Daily Share Volume" text="Total number of shares bought and sold today across the National Stock Exchange (NSE)." />
+          </dt>
+          <dd className="tabular-num">{volume(quote?.volume)}</dd>
+        </div>
+        <div className="hero-stat">
+          <dt>
+            52-WEEK RANGE
+            <HelpTooltip title="52-Week Range" text="The lowest and highest prices traded over the past 365 trading days (1 full year)." />
+          </dt>
+          <dd className="tabular-num">{range52}</dd>
+        </div>
+        <div className="hero-stat">
+          <dt>
+            MARKET CAP
+            <HelpTooltip title="Market Capitalization" text="Total market worth of all outstanding shares (Share Price × Total Shares) in Crores (₹ Cr)." />
+          </dt>
+          <dd className="tabular-num">{info?.market_cap ? `₹${(Number(info.market_cap) / 1e7).toLocaleString('en-IN', { maximumFractionDigits: 2 })} Cr` : '—'}</dd>
+        </div>
       </dl>
     </section>
   );

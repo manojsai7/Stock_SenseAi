@@ -12,6 +12,7 @@ import {
   ChevronUp
 } from 'lucide-react';
 import { triggerHaptic } from '../lib/haptics';
+import HelpTooltip from './common/HelpTooltip';
 
 const ParticleButton = lazy(() => import('./kokonutui/particle-button'));
 
@@ -190,6 +191,48 @@ export default function ForecastPanel({
             {' · This is daily prediction input data; the quote above is provided separately.'}
           </div>
 
+          {/* Plain-English Executive Summary Banner */}
+          <div style={{
+            backgroundColor: isUp ? 'rgba(17, 122, 86, 0.08)' : isDown ? 'rgba(214, 69, 69, 0.08)' : 'var(--surface-subtle)',
+            border: `1px solid ${isUp ? 'var(--green-border)' : isDown ? 'var(--red-border)' : 'var(--border-subtle)'}`,
+            borderRadius: '10px',
+            padding: '14px 18px',
+            marginBottom: '16px',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '14px',
+            flexWrap: 'wrap'
+          }}>
+            <div style={{
+              width: '38px',
+              height: '38px',
+              borderRadius: '50%',
+              backgroundColor: isUp ? '#e9f2ec' : isDown ? '#fdecec' : '#f1f5f9',
+              color: isUp ? 'var(--primary-green)' : isDown ? 'var(--accent-red)' : 'var(--text-secondary)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              flexShrink: 0
+            }}>
+              {isUp ? <TrendingUp size={22} /> : isDown ? <TrendingDown size={22} /> : <Minus size={22} />}
+            </div>
+            <div style={{ flex: 1, minWidth: '240px' }}>
+              <div style={{
+                fontSize: '0.6875rem',
+                textTransform: 'uppercase',
+                letterSpacing: '0.06em',
+                fontWeight: 700,
+                color: isUp ? 'var(--primary-green)' : isDown ? 'var(--accent-red)' : 'var(--text-secondary)',
+                marginBottom: '2px'
+              }}>
+                Plain English AI Takeaway
+              </div>
+              <div style={{ fontSize: '0.875rem', fontWeight: 600, color: 'var(--text-primary)', lineHeight: 1.45 }}>
+                For tomorrow ({prediction.target_date || 'next session'}), the AI expects <strong>{symbol.replace('.NS', '')}</strong> to move <strong>{isUp ? 'HIGHER' : isDown ? 'LOWER' : 'SIDEWAYS'}</strong> towards <strong>{formatPrice(prediction.predicted_close)}</strong>, an estimated move of {Number(prediction.expected_change) > 0 ? '+' : ''}{Number(prediction.expected_change).toFixed(2)} {currency} ({Number(prediction.expected_change_pct) > 0 ? '+' : ''}{Number(prediction.expected_change_pct).toFixed(2)}% / {Math.round(Number(prediction.expected_change_pct || 0) * 100)} bps).
+              </div>
+            </div>
+          </div>
+
           {/* Financial Metrics Cards */}
           <div style={{
             display: 'grid',
@@ -204,8 +247,11 @@ export default function ForecastPanel({
               borderRadius: '8px',
               padding: '16px'
             }}>
-              <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', marginBottom: '4px', fontWeight: 500 }}>
-                Forecasted Close ({prediction.target_date || 'Next Session'})
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '4px' }}>
+                <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', fontWeight: 500 }}>
+                  Forecasted Close
+                </span>
+                <HelpTooltip title="Forecasted Close" text="The AI's estimated settlement price for tomorrow's closing bell (15:30 IST)." example="Based on the last 30 completed trading days of price momentum." />
               </div>
               <div className="tabular-num" style={{
                 fontSize: '1.625rem',
@@ -226,8 +272,11 @@ export default function ForecastPanel({
               borderRadius: '8px',
               padding: '16px'
             }}>
-              <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', marginBottom: '4px', fontWeight: 500 }}>
-                Reference Session Close
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '4px' }}>
+                <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', fontWeight: 500 }}>
+                  Reference Session Close
+                </span>
+                <HelpTooltip title="Reference Session Close" text="The official market closing price from the most recently completed trading day used as the baseline." />
               </div>
               <div className="tabular-num" style={{
                 fontSize: '1.625rem',
@@ -248,8 +297,11 @@ export default function ForecastPanel({
               borderRadius: '8px',
               padding: '16px'
             }}>
-              <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', marginBottom: '6px', fontWeight: 500 }}>
-                Expected Delta
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '6px' }}>
+                <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', fontWeight: 500 }}>
+                  Expected Price Move
+                </span>
+                <HelpTooltip term="bps" />
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
                 <span className={isUp ? 'badge-up' : isDown ? 'badge-down' : 'badge-neutral'}>
@@ -263,6 +315,9 @@ export default function ForecastPanel({
                 color: isUp ? 'var(--primary-green)' : isDown ? 'var(--accent-red)' : 'var(--text-secondary)'
               }}>
                 {Number(prediction.expected_change) > 0 ? '+' : ''}{Number(prediction.expected_change).toFixed(2)} {currency} ({Number(prediction.expected_change_pct) > 0 ? '+' : ''}{Number(prediction.expected_change_pct).toFixed(2)}%)
+                <span style={{ fontSize: '0.71875rem', color: 'var(--text-muted)', fontWeight: 500, marginLeft: '4px' }}>
+                  ({Math.round(Number(prediction.expected_change_pct || 0) * 100)} bps)
+                </span>
               </div>
             </div>
 
@@ -273,8 +328,11 @@ export default function ForecastPanel({
               borderRadius: '8px',
               padding: '16px'
             }}>
-              <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', marginBottom: '4px', fontWeight: 500 }}>
-                Historical Directional Accuracy
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '4px' }}>
+                <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', fontWeight: 500 }}>
+                  Direction Win Rate
+                </span>
+                <HelpTooltip term="win_rate" />
               </div>
               <div className="tabular-num" style={{
                 fontSize: prediction.historical_directional_accuracy != null ? '1.625rem' : '1.25rem',
@@ -289,7 +347,7 @@ export default function ForecastPanel({
               </div>
               <div style={{ fontSize: '0.6875rem', color: 'var(--text-muted)', marginTop: '4px' }}>
                 {prediction.historical_directional_accuracy != null
-                  ? 'Held-Out Chronological Test Set'
+                  ? 'Historical Chronological Test Set'
                   : 'Not evaluated on an untouched test set'}
               </div>
             </div>
@@ -316,9 +374,12 @@ export default function ForecastPanel({
             }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
                 <span>Model: <strong>{prediction.model_version || 'v1.0'}</strong></span>
-                <span>Architecture: <strong>{prediction.architecture || 'CNN-LSTM (Conv1D + LSTM)'}</strong></span>
+                <span>
+                  Architecture: <strong>{prediction.architecture || 'CNN-LSTM (Conv1D + LSTM)'}</strong>
+                  <HelpTooltip title="CNN-LSTM Architecture" text="Combines a 1D Convolutional layer to scan technical patterns with an LSTM cell to track time-based trends." />
+                </span>
                 <span>Input: <strong>{prediction.input_window_size || 30} Completed Sessions</strong></span>
-                <span>Features: <strong>{prediction.features_used?.length || 7} Features</strong></span>
+                <span>Features: <strong>{prediction.features_used?.length || 7} Stationary Features</strong></span>
               </div>
 
               {prediction.recent_input_candles?.length > 0 && (

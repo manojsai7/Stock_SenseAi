@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { BookOpen, Search, X } from 'lucide-react';
+import { BookOpen, HelpCircle, Search, X } from 'lucide-react';
 import { searchStocks } from '../services/api';
 import { triggerHaptic } from '../lib/haptics';
 
@@ -11,7 +11,13 @@ const WATCHLIST_STOCKS = [
   { symbol: 'ICICIBANK.NS', label: 'ICICI BANK' },
 ];
 
-export default function Navbar({ currentSymbol, onSelectSymbol, onOpenArchitecture, marketStatus = 'CLOSED' }) {
+export default function Navbar({
+  currentSymbol,
+  onSelectSymbol,
+  onOpenArchitecture,
+  onOpenGuide,
+  marketStatus = 'CLOSED'
+}) {
   const [query, setQuery] = useState('');
   const [searchResults, setSearchResults] = useState([]);
   const [searching, setSearching] = useState(false);
@@ -119,6 +125,29 @@ export default function Navbar({ currentSymbol, onSelectSymbol, onOpenArchitectu
               </div>
             )}
           </div>
+          <button
+            className="research-link guide-nav-btn"
+            type="button"
+            onClick={onOpenGuide}
+            title="Learn all financial & AI concepts in simple plain English"
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '6px',
+              backgroundColor: 'rgba(17, 122, 86, 0.08)',
+              color: 'var(--primary-green)',
+              border: '1px solid var(--green-border)',
+              borderRadius: '6px',
+              padding: '6px 12px',
+              fontWeight: 600,
+              fontSize: '0.78125rem',
+              cursor: 'pointer',
+              transition: 'all 0.15s ease'
+            }}
+          >
+            <HelpCircle size={15} />
+            <span>Plain English Guide</span>
+          </button>
           <button className="research-link" type="button" onClick={onOpenArchitecture}><BookOpen size={15} /><span>Methodology</span></button>
         </div>
       </div>

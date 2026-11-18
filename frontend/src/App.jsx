@@ -8,6 +8,7 @@ import ErrorBoundary from './components/ErrorBoundary';
 const StockChart = lazy(() => import('./components/StockChart'));
 const BenchmarkMatrix = lazy(() => import('./components/BenchmarkMatrix'));
 const ArchitectureModal = lazy(() => import('./components/ArchitectureModal'));
+const PlainEnglishGuideModal = lazy(() => import('./components/PlainEnglishGuideModal'));
 const FeatureExplainabilityPanel = lazy(() => import('./components/FeatureExplainabilityPanel'));
 const ResearchComparisonPanel = lazy(() => import('./components/ResearchComparisonPanel'));
 const ForecastAccuracyPanel = lazy(() => import('./components/ForecastAccuracyPanel'));
@@ -33,6 +34,7 @@ export default function App() {
   const [chartError, setChartError] = useState(null);
   const [forecastError, setForecastError] = useState(null);
   const [isArchitectureOpen, setIsArchitectureOpen] = useState(false);
+  const [isGuideOpen, setIsGuideOpen] = useState(false);
 
   const selectedSymbolRef = useRef(selectedSymbol);
   selectedSymbolRef.current = selectedSymbol;
@@ -190,6 +192,7 @@ export default function App() {
         currentSymbol={selectedSymbol}
         onSelectSymbol={handleSelectSymbol}
         onOpenArchitecture={() => setIsArchitectureOpen(true)}
+        onOpenGuide={() => setIsGuideOpen(true)}
         marketStatus={stockQuote?.market_status || 'UNKNOWN'}
       />
 
@@ -268,6 +271,7 @@ export default function App() {
 
       <Suspense fallback={null}>
         <ArchitectureModal isOpen={isArchitectureOpen} onClose={() => setIsArchitectureOpen(false)} />
+        <PlainEnglishGuideModal isOpen={isGuideOpen} onClose={() => setIsGuideOpen(false)} />
       </Suspense>
     </div>
   );

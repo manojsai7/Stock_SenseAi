@@ -10,6 +10,7 @@ import {
   CartesianGrid
 } from 'recharts';
 import { Award, CheckCircle, Info, TrendingUp } from 'lucide-react';
+import HelpTooltip from './common/HelpTooltip';
 
 export default function BenchmarkMatrix({ metricsData, symbol, currency = '₹' }) {
   if (!metricsData) return null;
@@ -114,10 +115,19 @@ export default function BenchmarkMatrix({ metricsData, symbol, currency = '₹' 
             }}>
               <th style={{ padding: '8px 12px' }}>Model</th>
               <th style={{ padding: '8px 12px' }}>Implementation</th>
-              <th style={{ padding: '8px 12px', textAlign: 'right' }}>MAE ({currency}) ↓</th>
-              <th style={{ padding: '8px 12px', textAlign: 'right' }}>RMSE ({currency}) ↓</th>
+              <th style={{ padding: '8px 12px', textAlign: 'right' }}>
+                MAE ({currency}) ↓
+                <HelpTooltip term="mae" />
+              </th>
+              <th style={{ padding: '8px 12px', textAlign: 'right' }}>
+                RMSE ({currency}) ↓
+                <HelpTooltip term="rmse" />
+              </th>
               <th style={{ padding: '8px 12px', textAlign: 'right' }}>MAPE (%) ↓</th>
-              <th style={{ padding: '8px 12px', textAlign: 'right' }}>Directional Acc (%) ↑</th>
+              <th style={{ padding: '8px 12px', textAlign: 'right' }}>
+                Win Rate (%) ↑
+                <HelpTooltip term="win_rate" />
+              </th>
               <th style={{ padding: '8px 12px' }}>Role</th>
             </tr>
           </thead>

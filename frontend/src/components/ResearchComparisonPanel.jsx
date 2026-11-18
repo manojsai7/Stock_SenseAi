@@ -14,6 +14,7 @@ import {
   getChallengerPrediction,
   getExp06Comparison,
 } from '../services/api';
+import HelpTooltip from './common/HelpTooltip';
 import './ResearchComparisonPanel.css';
 
 export default function ResearchComparisonPanel({ symbol = 'RELIANCE.NS' }) {
@@ -229,7 +230,10 @@ export default function ResearchComparisonPanel({ symbol = 'RELIANCE.NS' }) {
         <div className="v2-challenger-hero-card">
           <div className="hero-top-bar">
             <div className="hero-title-group">
-              <span className="v2-shadow-badge">EXPERIMENTAL — SHADOW EVALUATION</span>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <span className="v2-shadow-badge">EXPERIMENTAL — SHADOW EVALUATION</span>
+                <HelpTooltip term="shadow_mode" />
+              </div>
               <h3 className="hero-heading">GRU V2 Research Challenger Forecast</h3>
             </div>
             <div className="hero-status-pill">
@@ -331,6 +335,26 @@ export default function ResearchComparisonPanel({ symbol = 'RELIANCE.NS' }) {
       {/* Main Tab Views */}
       {activeTab === 'overview' && (
         <>
+          {/* Plain-English Overview Banner */}
+          <div style={{
+            backgroundColor: 'rgba(2, 132, 199, 0.07)',
+            border: '1px solid var(--blue-border)',
+            borderRadius: '10px',
+            padding: '12px 16px',
+            marginBottom: '16px',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '12px',
+            fontSize: '0.8125rem',
+            color: 'var(--text-primary)',
+            lineHeight: 1.45
+          }}>
+            <span style={{ fontSize: '1.25rem' }}>🔬</span>
+            <div>
+              <strong>What is this experiment?</strong> We are evaluating an experimental <strong>GRU V2 neural network</strong> silently in the background alongside our official <strong>CNN-LSTM V1 model</strong> and a simple <strong>Naive benchmark</strong>. The gate is locked until 60–100 real sessions conclude, proving scientifically whether the new model is genuinely better.
+            </div>
+          </div>
+
           {/* Side-by-Side Model Comparison Cards (4 Models) */}
           <div className="section-subheading">
             <h4>Comparative Model Registry Status</h4>
@@ -350,7 +374,10 @@ export default function ResearchComparisonPanel({ symbol = 'RELIANCE.NS' }) {
               </div>
               <div className="model-metrics-box">
                 <div className="metric-item">
-                  <span>Price MAE</span>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '3px' }}>
+                    <span>Price MAE</span>
+                    <HelpTooltip term="mae" />
+                  </div>
                   <strong>₹11.57</strong>
                 </div>
                 <div className="metric-item">
@@ -375,7 +402,10 @@ export default function ResearchComparisonPanel({ symbol = 'RELIANCE.NS' }) {
               </div>
               <div className="model-metrics-box">
                 <div className="metric-item">
-                  <span>Price MAE</span>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '3px' }}>
+                    <span>Price MAE</span>
+                    <HelpTooltip term="mae" />
+                  </div>
                   <strong>₹12.49</strong>
                 </div>
                 <div className="metric-item">
@@ -400,11 +430,17 @@ export default function ResearchComparisonPanel({ symbol = 'RELIANCE.NS' }) {
               </div>
               <div className="model-metrics-box">
                 <div className="metric-item">
-                  <span>Exploratory MAE</span>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '3px' }}>
+                    <span>Exploratory MAE</span>
+                    <HelpTooltip term="mae" />
+                  </div>
                   <strong>₹12.66 (Fold 3)</strong>
                 </div>
                 <div className="metric-item">
-                  <span>Dir Accuracy</span>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '3px' }}>
+                    <span>Dir Accuracy</span>
+                    <HelpTooltip term="win_rate" />
+                  </div>
                   <strong>54.0% (MCC +0.12)</strong>
                 </div>
               </div>
@@ -425,7 +461,10 @@ export default function ResearchComparisonPanel({ symbol = 'RELIANCE.NS' }) {
               </div>
               <div className="model-metrics-box">
                 <div className="metric-item">
-                  <span>Price MAE</span>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '3px' }}>
+                    <span>Price MAE</span>
+                    <HelpTooltip term="naive_baseline" />
+                  </div>
                   <strong>₹11.80</strong>
                 </div>
                 <div className="metric-item">

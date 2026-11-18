@@ -30,6 +30,7 @@ import {
 } from 'lucide-react';
 import { getForecastAccuracy, getLatestForecast } from '../services/api';
 import HistoricalPredictionExplorer from './HistoricalPredictionExplorer';
+import HelpTooltip from './common/HelpTooltip';
 import './ForecastAccuracyPanel.css';
 
 export default function ForecastAccuracyPanel({ symbol = 'RELIANCE.NS' }) {
@@ -503,7 +504,10 @@ export default function ForecastAccuracyPanel({ symbol = 'RELIANCE.NS' }) {
         <div className="accuracy-scorecard-grid">
           <div className="accuracy-metric-card primary-card">
             <div className="metric-header-row">
-              <span className="metric-label">Mean Absolute Error (MAE)</span>
+              <span className="metric-label">
+                Mean Absolute Error (MAE)
+                <HelpTooltip term="mae" />
+              </span>
               <span className="metric-n-badge">N={activeMetrics.sample_size}</span>
             </div>
             <div className="metric-val-row">
@@ -517,7 +521,10 @@ export default function ForecastAccuracyPanel({ symbol = 'RELIANCE.NS' }) {
 
           <div className="accuracy-metric-card">
             <div className="metric-header-row">
-              <span className="metric-label">Directional Accuracy</span>
+              <span className="metric-label">
+                Directional Win Rate
+                <HelpTooltip term="win_rate" />
+              </span>
               <span className="metric-n-badge">N={activeMetrics.sample_size}</span>
             </div>
             <div className="metric-val-row">
@@ -553,7 +560,10 @@ export default function ForecastAccuracyPanel({ symbol = 'RELIANCE.NS' }) {
 
           <div className="accuracy-metric-card">
             <div className="metric-header-row">
-              <span className="metric-label">Mean Abs % Error (MAPE)</span>
+              <span className="metric-label">
+                Mean Abs % Error (MAPE)
+                <HelpTooltip title="Mean Absolute Percentage Error (MAPE)" text="Percentage difference between predicted price and real closing price." example="A 0.40% MAPE on a ₹1,000 stock means an average error of ₹4." />
+              </span>
               <span className="metric-n-badge">N={activeMetrics.sample_size}</span>
             </div>
             <div className="metric-val-row">
@@ -566,7 +576,10 @@ export default function ForecastAccuracyPanel({ symbol = 'RELIANCE.NS' }) {
 
           <div className="accuracy-metric-card">
             <div className="metric-header-row">
-              <span className="metric-label">Root Mean Squared Error</span>
+              <span className="metric-label">
+                Root Mean Squared Error
+                <HelpTooltip term="rmse" />
+              </span>
               <span className="metric-n-badge">N={activeMetrics.sample_size}</span>
             </div>
             <div className="metric-val-row">
@@ -579,7 +592,10 @@ export default function ForecastAccuracyPanel({ symbol = 'RELIANCE.NS' }) {
 
           <div className="accuracy-metric-card">
             <div className="metric-header-row">
-              <span className="metric-label">Matthews Correlation (MCC)</span>
+              <span className="metric-label">
+                Matthews Correlation (MCC)
+                <HelpTooltip term="mcc" />
+              </span>
               <span className="metric-n-badge">N={activeMetrics.sample_size}</span>
             </div>
             <div className="metric-val-row">
@@ -606,7 +622,10 @@ export default function ForecastAccuracyPanel({ symbol = 'RELIANCE.NS' }) {
 
           <div className="accuracy-metric-card">
             <div className="metric-header-row">
-              <span className="metric-label">Return Prediction Error</span>
+              <span className="metric-label">
+                Return Prediction Error
+                <HelpTooltip term="bps" />
+              </span>
               <span className="metric-n-badge">N={activeMetrics.sample_size}</span>
             </div>
             <div className="metric-val-row">
@@ -903,17 +922,41 @@ export default function ForecastAccuracyPanel({ symbol = 'RELIANCE.NS' }) {
           <table className="accuracy-table history-table">
             <thead>
               <tr>
-                <th>Target Date</th>
+                <th>
+                  Target Date
+                  <HelpTooltip title="Target Trading Date" text="The future market session that was forecasted before market open (09:15 IST)." />
+                </th>
                 <th>Model</th>
-                <th>Input Prev Close</th>
-                <th>Predicted Close</th>
-                <th>Actual Close</th>
-                <th>Abs Error (₹)</th>
-                <th>Abs Error (%)</th>
+                <th>
+                  Reference Close
+                  <HelpTooltip title="Reference Price" text="Official closing price of the session immediately preceding this forecast." />
+                </th>
+                <th>
+                  Predicted Close
+                  <HelpTooltip title="AI Forecasted Close" text="The price forecasted by the model before market open." />
+                </th>
+                <th>
+                  Actual Close
+                  <HelpTooltip title="Realized Market Close" text="The actual closing price settled by the exchange at 15:30 IST." />
+                </th>
+                <th>
+                  Cash Error (₹)
+                  <HelpTooltip term="mae" />
+                </th>
+                <th>
+                  Percent Error (%)
+                  <HelpTooltip term="bps" />
+                </th>
                 <th>Pred Dir</th>
                 <th>Actual Dir</th>
-                <th>Direction Result</th>
-                <th>Status</th>
+                <th>
+                  Direction Call
+                  <HelpTooltip term="win_rate" />
+                </th>
+                <th>
+                  Status
+                  <HelpTooltip title="Forecast Status" text="RESOLVED = Scored against official close. PENDING_OUTCOME = Forecast locked, waiting for market session to complete." />
+                </th>
               </tr>
             </thead>
             <tbody>

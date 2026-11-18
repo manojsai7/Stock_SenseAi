@@ -8,6 +8,7 @@ import { YAxis } from './charts/y-axis';
 import { ChartTooltip } from './charts/tooltip/chart-tooltip';
 import { useChart } from './charts/chart-context';
 import { triggerHaptic } from '../lib/haptics';
+import HelpTooltip from './common/HelpTooltip';
 
 const PERIODS = [
   { key: '1mo', label: '1M' },
@@ -89,7 +90,10 @@ export default function StockChart({
       <div className="chart-toolbar">
         <div className="chart-heading">
           <span className="section-index">01 / MARKET SERIES</span>
-          <h2 id="price-history-title">Price history</h2>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <h2 id="price-history-title">Price history</h2>
+            <HelpTooltip title="Candlestick Price Chart" text="Each candle shows 1 trading day on the National Stock Exchange (NSE). Green body means buyers pushed price up; red body means price dropped." example="The thin wicks show the day's extreme high and low." />
+          </div>
           <p>Daily OHLC data · NSE sessions</p>
         </div>
         <div className="chart-controls">
@@ -109,20 +113,23 @@ export default function StockChart({
               </button>
             ))}
           </div>
-          <button
-            type="button"
-            className={`indicator-toggle ${showMA20 && hasMA20 ? 'is-active' : ''}`}
-            aria-pressed={showMA20 && hasMA20}
-            disabled={!hasMA20}
-            title={hasMA20 ? 'Toggle the API supplied 20-day moving average' : 'The selected history response has no valid MA20 values'}
-            onClick={() => {
-              triggerHaptic();
-              setShowMA20((value) => !value);
-            }}
-          >
-            <span className="indicator-swatch" />
-            <span>MA20</span>
-          </button>
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: '3px' }}>
+            <button
+              type="button"
+              className={`indicator-toggle ${showMA20 && hasMA20 ? 'is-active' : ''}`}
+              aria-pressed={showMA20 && hasMA20}
+              disabled={!hasMA20}
+              title={hasMA20 ? 'Toggle the API supplied 20-day moving average' : 'The selected history response has no valid MA20 values'}
+              onClick={() => {
+                triggerHaptic();
+                setShowMA20((value) => !value);
+              }}
+            >
+              <span className="indicator-swatch" />
+              <span>MA20</span>
+            </button>
+            <HelpTooltip term="sma20" />
+          </div>
         </div>
       </div>
 
